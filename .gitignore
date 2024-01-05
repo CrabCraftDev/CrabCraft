@@ -11,3 +11,7 @@ target/
 
 # JetBrain's IDEs
 .idea
+
+# Log files
+/log/*
+!/log/.keep
