@@ -4,12 +4,11 @@ use std::{
     sync::{Arc, Mutex},
     thread::{self, JoinHandle},
 };
+use std::fs::create_dir_all;
 use std::net::{TcpListener, TcpStream};
 
 use chrono::Utc;
 use log::debug;
-
-use crate::utils::fs::create_subdirectories;
 
 pub struct TcpServer {
     address: String,
@@ -51,12 +50,12 @@ impl TcpServer {
         let buf_reader = BufReader::new(&mut stream);
         let bytes = buf_reader.bytes();
 
+        create_dir_all("logs").expect("Failed to create directories");
         let path = format!("logs/{}.bin", Utc::now().timestamp());
-        create_subdirectories(&path);
         let mut file = OpenOptions::new()
             .create(true)
             .write(true)
-            .open(&path)
+            .open(path)
             .expect("Couldn't open file!");
 
         for byte in bytes {

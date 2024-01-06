@@ -14,6 +14,7 @@ fn main() {
     });
 
     log::set_logger(&Logger).unwrap();
+    Logger::rename_log_file().expect("TODO: panic message");
 
     info!("CrabCraft started!");
 
