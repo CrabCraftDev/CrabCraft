@@ -1,18 +1,23 @@
-use std::{fs::{OpenOptions, self}, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}, time::{self, UNIX_EPOCH}};
+use std::{fs::{OpenOptions, self}, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}};
 use std::net::{TcpListener, TcpStream};
 
 use super::packet_byte_buffer::{to_var_int, WriteByteBuffer};
 
+use std::fs::create_dir_all;
+
+use chrono::Utc;
+use log::debug;
+
 pub struct TcpServer {
     address: String,
-    pub thread: Option<JoinHandle<()>>
+    pub thread: Option<JoinHandle<()>>,
 }
 
 impl TcpServer {
     pub fn start(address: String) -> Arc<Mutex<TcpServer>> {
         let server = Arc::new(Mutex::new(TcpServer {
             address,
-            thread: None
+            thread: None,
         }));
 
         let listener = TcpListener::bind(&server.lock().unwrap().address).unwrap();
@@ -21,7 +26,10 @@ impl TcpServer {
         let handle = thread::spawn(move || {
             for stream in listener.incoming() {
                 let stream = stream.unwrap();
-                println!("Connection established! {}", stream.local_addr().unwrap().ip());
+                debug!(
+                    "Connection established {}",
+                    stream.local_addr().unwrap().ip()
+                );
                 cloned_server.lock().unwrap().handle_connection(stream);
             }
         });
@@ -42,23 +50,24 @@ impl TcpServer {
         let buf_reader = BufReader::new(&mut stream);
         let bytes = buf_reader.bytes();
 
-        let time_now = time::SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
-        
+        create_dir_all("logs").expect("Failed to create directories");
+        let path = format!("logs/{}.bin", Utc::now().timestamp());
         let mut file = OpenOptions::new()
             .create(true)
             .write(true)
-            .open(format!("log/{}.bin", &time_now.to_string()))
-            .expect("Couldn't open file!"); 
+            .open(path)
+            .expect("Couldn't open file!");
 
         for byte in bytes {
-            file.write_all(&[byte.unwrap()]).expect("Problems with i/o!");
+            file.write_all(&[byte.unwrap()])
+                .expect("Couldn't write to file!");
         }
         
         // prepare for server list ping
         let mut response = vec![];
         response.put_var_int(0);
-        let status = fs::read_to_string("log/status.json")
-            .expect("Couldn't find log/status.json");
+        let status = fs::read_to_string("logs/status.json")
+            .expect("Couldn't find logs/status.json");
         response.put_string(status);
 
         self.send(&stream, response);
