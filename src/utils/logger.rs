@@ -1,14 +1,37 @@
-use std::fs::OpenOptions;
+use std::fs::{create_dir_all, metadata, OpenOptions};
 use std::io::Write;
+use std::path::Path;
+use std::{fs, io};
 
-use chrono::Local;
-use log::{Level, Metadata, Record};
+use chrono::{DateTime, Local};
+use log::{Level, Log, Metadata, Record};
 
-use crate::utils::fs::create_subdirectories;
+use crate::utils::fs::count_files_with_prefix;
 
 pub struct Logger;
 
-impl log::Log for Logger {
+impl Logger {
+    pub fn rename_log_file() -> io::Result<()> {
+        let log_path = Path::new("logs/latest.log");
+
+        if !log_path.exists() {
+            return Ok(());
+        }
+
+        let time = metadata(log_path)?.modified()?;
+        let modification_datetime: DateTime<Local> = time.into();
+        let formatted_time = modification_datetime.format("%Y-%m-%d").to_string();
+
+        let file_count = count_files_with_prefix(Path::new("logs/"), &formatted_time)?;
+
+        let new_log_path = format!("logs/{}-{}.log", formatted_time, file_count + 1);
+        fs::rename(log_path, new_log_path)?;
+
+        Ok(())
+    }
+}
+
+impl Log for Logger {
     fn enabled(&self, metadata: &Metadata) -> bool {
         metadata.level() <= Level::Debug
     }
@@ -20,12 +43,13 @@ impl log::Log for Logger {
 
             print!("{}", message);
 
-            create_subdirectories("logs/latest.txt");
+            create_dir_all("logs").expect("Failed to create directories");
+
             let file = OpenOptions::new()
                 .create(true)
                 .write(true)
                 .append(true)
-                .open("logs/latest.txt");
+                .open("logs/latest.log");
 
             file.unwrap()
                 .write_all(message.as_bytes())
