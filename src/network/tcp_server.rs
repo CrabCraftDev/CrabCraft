@@ -1,4 +1,4 @@
-use std::{fs::OpenOptions, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}, time::{self, UNIX_EPOCH}, collections::HashMap};
+use std::{fs::OpenOptions, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}, time::{self, UNIX_EPOCH}};
 use std::net::{TcpListener, TcpStream};
 
 pub struct TcpServer {
@@ -29,6 +29,7 @@ impl TcpServer {
         server
     }
 
+    #[allow(dead_code)]
     pub fn send(&self, mut stream: TcpStream, bytes: &[u8]) {
         stream.write_all(bytes).unwrap();
     }
