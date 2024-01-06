@@ -1,7 +1,7 @@
 use std::{fs::{OpenOptions, self}, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}};
 use std::net::{TcpListener, TcpStream};
 
-use super::packet_byte_buffer::{to_var_int, WriteByteBuffer};
+use super::packet_byte_buffer::{to_var_int, WriteByteBuf};
 
 use std::fs::create_dir_all;
 

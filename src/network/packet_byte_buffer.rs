@@ -6,10 +6,10 @@ use bytes::Buf;
 const CONTINUE_BIT: i32 = 0x80;
 const SEGMENT_BITS: i32 = 0x7F;
 
-pub trait ReadByteBuffer : Buf {
+pub trait ReadByteBuf : Buf {
     fn get_var_int(&mut self) -> i32 {
         let mut value: i32 = 0;
-        let mut position = 0;
+        let mut position: i8 = 0;
         let mut current_byte: i8;
 
         loop {
@@ -23,6 +23,26 @@ pub trait ReadByteBuffer : Buf {
             position += 7;
             
             assert!(position < 32);
+        }
+
+        value
+    }
+    fn get_var_long(&mut self) -> i64 {
+        let mut value: i64 = 0;
+        let mut position: i8 = 0;
+        let mut current_byte: i8;
+
+        loop {
+            current_byte = self.get_i8();
+            value |= (current_byte as i64 & SEGMENT_BITS as i64) << position;
+
+            if (current_byte as i64 & CONTINUE_BIT as i64) == 0 {
+                break
+            }
+
+            position += 7;
+            
+            assert!(position < 64);
         }
 
         value
@@ -48,9 +68,9 @@ pub trait ReadByteBuffer : Buf {
     }
     
 }
-impl ReadByteBuffer for &[u8] {}
+impl ReadByteBuf for &[u8] {}
 
-pub trait WriteByteBuffer : BufMut {
+pub trait WriteByteBuf : BufMut {
     fn put_var_int(&mut self, mut value: i32) {
         loop {
             if (value & !SEGMENT_BITS) == 0 {
@@ -59,6 +79,19 @@ pub trait WriteByteBuffer : BufMut {
             }
 
             self.put_u8(((value & SEGMENT_BITS) | CONTINUE_BIT) as u8);
+
+            value >>= 7;
+        }
+    }
+
+    fn put_var_long(&mut self, mut value: i64) {
+        loop {
+            if (value & !(SEGMENT_BITS as i64)) == 0 {
+                self.put_u8(value as u8);
+                return;
+            }
+
+            self.put_u8(((value & SEGMENT_BITS as i64) | CONTINUE_BIT as i64) as u8);
 
             value >>= 7;
         }
@@ -81,7 +114,7 @@ pub trait WriteByteBuffer : BufMut {
     }
 }
 
-impl WriteByteBuffer for Vec<u8> {}
+impl WriteByteBuf for Vec<u8> {}
 
 pub fn to_var_int(mut value: i32) -> Vec<u8> {
     let mut bytes: Vec<u8> = vec![];
