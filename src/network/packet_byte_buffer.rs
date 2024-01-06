@@ -1,18 +1,13 @@
+use std::str::from_utf8;
+
 use bytes::BufMut;
 use bytes::Buf;
 
-pub trait Packet {
-    fn get_id(&self) -> u8;
-}
-pub trait ReadByteBuffer : Buf {
-    fn read_var_int(&mut self) -> i32;
-}
-
 const CONTINUE_BIT: i32 = 0x80;
 const SEGMENT_BITS: i32 = 0x7F;
-impl dyn ReadByteBuffer {
-    #[allow(dead_code)]
-    fn read_var_int(&mut self) -> i32 {
+
+pub trait ReadByteBuffer : Buf {
+    fn get_var_int(&mut self) -> i32 {
         let mut value: i32 = 0;
         let mut position = 0;
         let mut current_byte: i8;
@@ -30,16 +25,32 @@ impl dyn ReadByteBuffer {
             assert!(position < 32);
         }
 
-        return value;
+        value
     }
+    fn get_string(&mut self) -> String {
+        let length = self.get_var_int();
+        let bytes = self.get_bytes(length);
+
+        let str = from_utf8(bytes.as_slice()).expect("Couldn't parse string from ByteBuf!");
+
+        str.to_string()
+    }
+    fn get_boolean(&mut self) -> bool {
+        self.get_u8() != 0
+    }
+    fn get_bytes(&mut self, amount: i32) -> Vec<u8> {
+        let mut bytes: Vec<u8> = vec![];
+        
+        for _ in 1..amount {
+            bytes.push(self.get_u8())
+        }
+        bytes
+    }
+    
 }
+impl ReadByteBuffer for &[u8] {}
 
 pub trait WriteByteBuffer : BufMut {
-    fn put_var_int(&mut self, value: i32);
-    fn put_string(&mut self, data: String);
-}
-
-impl WriteByteBuffer for Vec<u8> {
     fn put_var_int(&mut self, mut value: i32) {
         loop {
             if (value & !SEGMENT_BITS) == 0 {
@@ -52,7 +63,6 @@ impl WriteByteBuffer for Vec<u8> {
             value >>= 7;
         }
     }
-
     fn put_string(&mut self, data: String) {
         let bytes = data.as_bytes();
         self.put_var_int(bytes.len() as i32);
@@ -61,7 +71,17 @@ impl WriteByteBuffer for Vec<u8> {
             self.put_u8(*byte);
         }
     }
+    fn put_boolean(&mut self, value: bool) {
+        self.put_u8(if value { 1 } else { 0 });
+    }
+    fn put_byte_array(&mut self, value: &[u8]) {
+        for ele in value {
+            self.put_u8(*ele)
+        }
+    }
 }
+
+impl WriteByteBuffer for Vec<u8> {}
 
 pub fn to_var_int(mut value: i32) -> Vec<u8> {
     let mut bytes: Vec<u8> = vec![];
