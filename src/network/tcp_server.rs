@@ -1,5 +1,7 @@
-use std::{fs::OpenOptions, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}, time::{self, UNIX_EPOCH}};
+use std::{fs::{OpenOptions, self}, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}, time::{self, UNIX_EPOCH}};
 use std::net::{TcpListener, TcpStream};
+
+use super::packet_byte_buffer::{to_var_int, WriteByteBuffer};
 
 pub struct TcpServer {
     address: String,
@@ -30,8 +32,10 @@ impl TcpServer {
     }
 
     #[allow(dead_code)]
-    pub fn send(&self, mut stream: TcpStream, bytes: &[u8]) {
-        stream.write_all(bytes).unwrap();
+    pub fn send(&self, mut stream: &TcpStream, bytes: Vec<u8>) {
+        if stream.write(to_var_int(bytes.len() as i32).as_slice()).err().is_some() || stream.write_all(bytes.as_slice()).err().is_some() {
+            println!("Couldn't send packet!")
+        }
     }
 
     fn handle_connection(&self, mut stream: TcpStream) {
@@ -49,5 +53,14 @@ impl TcpServer {
         for byte in bytes {
             file.write_all(&[byte.unwrap()]).expect("Problems with i/o!");
         }
+        
+        // prepare for server list ping
+        let mut response = vec![];
+        response.put_var_int(0);
+        let status = fs::read_to_string("log/status.json")
+            .expect("Couldn't find log/status.json");
+        response.put_string(status);
+
+        self.send(&stream, response);
     }
 }
