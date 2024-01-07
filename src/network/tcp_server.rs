@@ -1,75 +1,78 @@
 use std::sync::Arc;
 
-use bytes::BytesMut;
-use log::debug;
+use bytes::{Bytes, BytesMut};
+use log::{debug, error};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
     sync::Mutex,
-    task::JoinHandle,
 };
 
-use crate::network::handlers::global_handler::GlobalHandler;
-use crate::network::handlers::handshake_handler::HandshakeHandler;
-use crate::network::packet_byte_buffer::ReadByteBuf;
+use crate::network::packet_byte_buffer::{to_var_int, ReadByteBuf};
 use crate::network::packet_handler::PacketHandler;
 
 pub struct TcpServer {
     address: String,
-    event_handlers: Arc<Mutex<Vec<Box<dyn PacketHandler + Send>>>>,
-    pub thread: Option<JoinHandle<()>>,
+    pub handlers: Arc<Mutex<Vec<Box<dyn PacketHandler + Send>>>>,
 }
 
 impl TcpServer {
-    pub async fn start(address: String) -> Arc<Mutex<TcpServer>> {
-        let event_handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(HandshakeHandler), Box::new(GlobalHandler)];
-
-        let server = Arc::new(Mutex::new(TcpServer {
+    pub fn new(address: String, handlers: Vec<Box<dyn PacketHandler + Send>>) -> TcpServer {
+        TcpServer {
             address,
-            event_handlers: Arc::new(Mutex::new(event_handlers)),
-            thread: None,
-        }));
+            handlers: Arc::new(Mutex::new(handlers)),
+        }
+    }
 
-        let listener = TcpListener::bind(&server.lock().await.address).await.unwrap();
+    pub async fn start(&self) {
+        let listener = TcpListener::bind(&self.address).await.unwrap();
 
-        let cloned_server = Arc::clone(&server);
-        let handle = tokio::spawn(async move {
-            loop {
-                match listener.accept().await {
-                    Ok((stream, address)) => {
-                        debug!("Connection established {}!", address);
-                        let cloned_server = Arc::clone(&cloned_server);
-                        tokio::spawn(async move {
-                            cloned_server.lock().await.handle_connection(stream).await;
-                        });
-                    }
-                    Err(_) => continue,
+        loop {
+            match listener.accept().await {
+                Ok((socket, address)) => {
+                    let handlers_clone = Arc::clone(&self.handlers);
+                    debug!("Connection established {}!", address);
+                    tokio::spawn(Self::handle_connection(socket, handlers_clone));
+                }
+                Err(e) => {
+                    eprintln!("Error accepting connection: {}", e);
                 }
             }
-        });
-
-        server.lock().await.thread = Some(handle);
-
-        server
+        }
     }
 
-    pub async fn send(stream: &mut TcpStream, bytes: Vec<u8>) {
-        stream.write_all(&bytes).await.expect("Couldn't write to stream!");
+    pub async fn send(stream: &mut TcpStream, bytes: Bytes) {
+        stream.write_all(&to_var_int(bytes.len() as i32)).await.unwrap();
+        stream.write_all(&bytes).await.unwrap();
     }
 
-    async fn handle_connection(&self, mut stream: TcpStream) {
-        let mut buffer = BytesMut::new();
-        stream.read_buf(&mut buffer).await.expect("Invalid stream!");
-        let bytes = buffer.freeze();
+    async fn handle_connection(mut stream: TcpStream, handlers: Arc<Mutex<Vec<Box<dyn PacketHandler + Send>>>>) {
+        let mut buf = [0; 1024];
 
-        let mut byte = bytes.clone();
+        loop {
+            match stream.read(&mut buf).await {
+                Ok(0) => {
+                    debug!("Connection closed {:?}!", stream.peer_addr().unwrap());
+                    break;
+                }
+                Ok(n) => {
+                    let mut_bytes = BytesMut::from(&buf[0..n]);
+                    let mut byte = mut_bytes.freeze();
 
-        let _length = byte.get_var_int();
-        let packet_id = byte.get_var_int();
-        debug!("Received packet ({}): {:?}", packet_id, byte);
+                    let _length = byte.get_var_int();
+                    let packet_id = byte.get_var_int();
+                    debug!("Received packet ({}): {:?}", packet_id, BytesMut::from(&buf[0..n]));
 
-        for handler in self.event_handlers.lock().await.iter() {
-            handler.handle_packet(&mut stream, byte.clone(), packet_id);
+                    let handlers = handlers.lock().await;
+                    for handler in handlers.iter() {
+                        handler.handle_packet(&mut stream, byte.clone(), packet_id);
+                    }
+                }
+                Err(e) => {
+                    error!("Error reading from socket: {}", e);
+                    break;
+                }
+            }
         }
     }
 }
