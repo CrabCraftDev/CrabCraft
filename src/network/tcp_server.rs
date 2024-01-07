@@ -1,75 +1,75 @@
-use std::{fs::{OpenOptions, self}, io::{BufReader, Read, Write}, sync::{Arc, Mutex}, thread::{self, JoinHandle}};
-use std::net::{TcpListener, TcpStream};
+use std::sync::Arc;
 
-use super::packet_byte_buffer::{to_var_int, WriteByteBuf};
-
-use std::fs::create_dir_all;
-
-use chrono::Utc;
+use bytes::BytesMut;
 use log::debug;
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::{TcpListener, TcpStream},
+    sync::Mutex,
+    task::JoinHandle,
+};
+
+use crate::network::handlers::global_handler::GlobalHandler;
+use crate::network::handlers::handshake_handler::HandshakeHandler;
+use crate::network::packet_byte_buffer::ReadByteBuf;
+use crate::network::packet_handler::PacketHandler;
 
 pub struct TcpServer {
     address: String,
+    event_handlers: Arc<Mutex<Vec<Box<dyn PacketHandler + Send>>>>,
     pub thread: Option<JoinHandle<()>>,
 }
 
 impl TcpServer {
-    pub fn start(address: String) -> Arc<Mutex<TcpServer>> {
+    pub async fn start(address: String) -> Arc<Mutex<TcpServer>> {
+        let event_handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(HandshakeHandler), Box::new(GlobalHandler)];
+
         let server = Arc::new(Mutex::new(TcpServer {
             address,
+            event_handlers: Arc::new(Mutex::new(event_handlers)),
             thread: None,
         }));
 
-        let listener = TcpListener::bind(&server.lock().unwrap().address).unwrap();
+        let listener = TcpListener::bind(&server.lock().await.address).await.unwrap();
 
         let cloned_server = Arc::clone(&server);
-        let handle = thread::spawn(move || {
-            for stream in listener.incoming() {
-                let stream = stream.unwrap();
-                debug!(
-                    "Connection established {}",
-                    stream.local_addr().unwrap().ip()
-                );
-                cloned_server.lock().unwrap().handle_connection(stream);
+        let handle = tokio::spawn(async move {
+            loop {
+                match listener.accept().await {
+                    Ok((stream, address)) => {
+                        debug!("Connection established {}!", address);
+                        let cloned_server = Arc::clone(&cloned_server);
+                        tokio::spawn(async move {
+                            cloned_server.lock().await.handle_connection(stream).await;
+                        });
+                    }
+                    Err(_) => continue,
+                }
             }
         });
 
-        server.lock().unwrap().thread = Some(handle);
+        server.lock().await.thread = Some(handle);
 
         server
     }
 
-    #[allow(dead_code)]
-    pub fn send(&self, mut stream: &TcpStream, bytes: Vec<u8>) {
-        if stream.write(to_var_int(bytes.len() as i32).as_slice()).err().is_some() || stream.write_all(bytes.as_slice()).err().is_some() {
-            println!("Couldn't send packet!")
-        }
+    pub async fn send(stream: &mut TcpStream, bytes: Vec<u8>) {
+        stream.write_all(&bytes).await.expect("Couldn't write to stream!");
     }
 
-    fn handle_connection(&self, mut stream: TcpStream) {
-        let buf_reader = BufReader::new(&mut stream);
-        let bytes = buf_reader.bytes();
+    async fn handle_connection(&self, mut stream: TcpStream) {
+        let mut buffer = BytesMut::new();
+        stream.read_buf(&mut buffer).await.expect("Invalid stream!");
+        let bytes = buffer.freeze();
 
-        create_dir_all("logs").expect("Failed to create directories");
-        let path = format!("logs/{}.bin", Utc::now().timestamp());
-        let mut file = OpenOptions::new()
-            .create(true)
-            .write(true)
-            .open(path)
-            .expect("Couldn't open file!");
+        let mut byte = bytes.clone();
 
-        for byte in bytes {
-            file.write_all(&[byte.unwrap()])
-                .expect("Couldn't write to file!");
+        let _length = byte.get_var_int();
+        let packet_id = byte.get_var_int();
+        debug!("Received packet ({}): {:?}", packet_id, byte);
+
+        for handler in self.event_handlers.lock().await.iter() {
+            handler.handle_packet(&mut stream, byte.clone(), packet_id);
         }
-        
-        // prepare for server list ping
-        let mut response = vec![];
-        response.put_var_int(0);
-        let status = fs::read_to_string("logs/status.json")
-            .expect("Couldn't find logs/status.json");
-        response.put_string(status);
-
-        self.send(&stream, response);
     }
 }
