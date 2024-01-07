@@ -1,7 +1,6 @@
-use std::fs::{create_dir_all, metadata, OpenOptions};
-use std::io::Write;
+use std::fs::{create_dir_all, metadata, OpenOptions, rename};
+use std::io::{Result, Write};
 use std::path::Path;
-use std::{fs, io};
 
 use chrono::{DateTime, Local};
 use log::{Level, Log, Metadata, Record};
@@ -11,7 +10,7 @@ use crate::utils::fs::count_files_with_prefix;
 pub struct Logger;
 
 impl Logger {
-    pub fn rename_log_file() -> io::Result<()> {
+    pub fn rename_log_file() -> Result<()> {
         let log_path = Path::new("logs/latest.log");
 
         if !log_path.exists() {
@@ -25,7 +24,7 @@ impl Logger {
         let file_count = count_files_with_prefix(Path::new("logs/"), &formatted_time)?;
 
         let new_log_path = format!("logs/{}-{}.log", formatted_time, file_count + 1);
-        fs::rename(log_path, new_log_path)?;
+        rename(log_path, new_log_path)?;
 
         Ok(())
     }
