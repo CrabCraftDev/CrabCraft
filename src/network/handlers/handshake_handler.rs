@@ -48,7 +48,7 @@ impl PacketHandler for HandshakeHandler {
             description: Description {
                 text: String::from("CrabCraft!"),
             },
-            enforces_secure_chat: true,
+            enforces_secure_chat: false,
             previews_chat: true,
         };
         response.put_string(serde_json::to_string(&status_response).unwrap());
