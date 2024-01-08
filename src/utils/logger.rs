@@ -1,4 +1,4 @@
-use std::fs::{create_dir_all, metadata, OpenOptions, rename};
+use std::fs::{create_dir_all, metadata, rename, OpenOptions};
 use std::io::{Result, Write};
 use std::path::Path;
 

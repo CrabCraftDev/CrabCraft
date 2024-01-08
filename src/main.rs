@@ -9,6 +9,9 @@ use crate::network::handlers::handshake_handler::HandshakeHandler;
 mod network;
 mod utils;
 
+#[cfg(test)]
+mod tests;
+
 #[tokio::main]
 async fn main() {
     log::set_max_level(if cfg!(debug_assertions) {
