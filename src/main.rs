@@ -7,6 +7,7 @@ use crate::network::handlers::global_handler::GlobalHandler;
 use crate::network::handlers::handshake_handler::HandshakeHandler;
 
 mod network;
+mod types;
 mod utils;
 
 #[cfg(test)]
