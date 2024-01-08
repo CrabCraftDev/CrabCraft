@@ -8,8 +8,9 @@ use tokio::{
     sync::Mutex,
 };
 
-use crate::network::packet_byte_buffer::{to_var_int, ReadByteBuf};
+use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
+use crate::utils::network::to_var_int;
 
 pub struct TcpServer {
     address: String,
