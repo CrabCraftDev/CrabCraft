@@ -6,7 +6,8 @@ use tokio::net::TcpStream;
 use tokio::runtime::Handle;
 use tokio::task::block_in_place;
 
-use crate::network::packet_byte_buffer::{ReadByteBuf, WriteByteBuf};
+use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
+use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::packet_handler::PacketHandler;
 use crate::network::tcp_server::TcpServer;
 
