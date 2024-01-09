@@ -1,5 +1,6 @@
 use bytes::{Buf, Bytes, BytesMut};
 use log::debug;
+use serde_json::json;
 use tokio::net::TcpStream;
 use tokio::runtime::Handle;
 use tokio::task::block_in_place;
@@ -8,7 +9,6 @@ use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::packet_handler::PacketHandler;
 use crate::network::tcp_server::TcpServer;
-use crate::types::server_status_response::{Description, Players, ServerStatusResponse, Version};
 
 pub struct HandshakeHandler;
 
@@ -35,22 +35,22 @@ impl PacketHandler for HandshakeHandler {
 
         let mut response = BytesMut::new();
         response.put_var_int(0);
-        let status_response = ServerStatusResponse {
-            version: Version {
-                name: String::from("1.20.2"),
-                protocol: 764,
+
+        let status_response = json!({
+            "version": {
+                "name": "1.20.2",
+                "protocol": 764,
             },
-            players: Players {
-                max: 100,
-                online: 0,
-                sample: Vec::new(),
+            "players": {
+                "online": 0,
+                "max": 100,
+                "sample": Vec::<String>::new(),
             },
-            description: Description {
-                text: String::from("CrabCraft!"),
-            },
-            enforces_secure_chat: false,
-            previews_chat: true,
-        };
+            "description": "CrabCraft!",
+            "enforces_secure_chat": false,
+            "previews_chat": true,
+        });
+
         response.put_string(serde_json::to_string(&status_response).unwrap());
 
         block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
