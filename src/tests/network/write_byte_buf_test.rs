@@ -8,14 +8,18 @@ use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 fn test_put_byte() {
     let mut buf = Vec::new();
     buf.put_byte(3);
-    assert_eq!(buf, vec![0x03]);
+    buf.put_byte(i8::MAX);
+
+    assert_eq!(buf, vec![0x03, 127]);
 }
 
 #[test]
 fn test_put_unsigned_byte() {
     let mut buf = Vec::new();
-    buf.put_byte(3);
-    assert_eq!(buf, vec![0x03]);
+    buf.put_unsigned_byte(3);
+    buf.put_unsigned_byte(u8::MAX);
+
+    assert_eq!(buf, vec![0x03, 255]);
 }
 
 #[test]
