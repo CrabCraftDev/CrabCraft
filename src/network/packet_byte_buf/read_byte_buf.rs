@@ -7,12 +7,12 @@ use uuid::Uuid;
 use crate::utils::network::{CONTINUE_BIT, SEGMENT_BITS};
 
 pub trait ReadByteBuf: Buf {
-    fn get_byte(&mut self) -> u8 {
-        self.get_u8()
+    fn get_byte(&mut self) -> i8 {
+        self.get_i8()
     }
 
-    fn get_unsigned_byte(&mut self) -> i8 {
-        self.get_i8()
+    fn get_unsigned_byte(&mut self) -> u8 {
+        self.get_u8()
     }
 
     fn get_var_int(&mut self) -> i32 {
@@ -21,7 +21,7 @@ pub trait ReadByteBuf: Buf {
         let mut current_byte: i8;
 
         loop {
-            current_byte = self.get_unsigned_byte();
+            current_byte = self.get_byte();
             value |= (current_byte as i32 & SEGMENT_BITS) << position;
 
             if (current_byte as i32 & CONTINUE_BIT) == 0 {
@@ -42,7 +42,7 @@ pub trait ReadByteBuf: Buf {
         let mut current_byte: i8;
 
         loop {
-            current_byte = self.get_unsigned_byte();
+            current_byte = self.get_byte();
             value |= (current_byte as i64 & SEGMENT_BITS as i64) << position;
 
             if (current_byte as i64 & CONTINUE_BIT as i64) == 0 {
@@ -74,7 +74,7 @@ pub trait ReadByteBuf: Buf {
         let mut bytes: Vec<u8> = vec![];
 
         for _ in 0..amount {
-            bytes.push(self.get_byte())
+            bytes.push(self.get_byte() as u8)
         }
         bytes
     }

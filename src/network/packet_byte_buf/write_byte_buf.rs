@@ -5,22 +5,22 @@ use uuid::Uuid;
 use crate::utils::network::{CONTINUE_BIT, SEGMENT_BITS};
 
 pub trait WriteByteBuf: BufMut {
-    fn put_byte(&mut self, value: u8) {
-        self.put_u8(value)
+    fn put_byte(&mut self, value: i8) {
+        self.put_i8(value)
     }
 
-    fn put_unsigned_byte(&mut self, value: i8) {
-        self.put_i8(value)
+    fn put_unsigned_byte(&mut self, value: u8) {
+        self.put_u8(value)
     }
 
     fn put_var_int(&mut self, mut value: i32) {
         loop {
             if (value & !SEGMENT_BITS) == 0 {
-                self.put_byte(value as u8);
+                self.put_byte(value as i8);
                 return;
             }
 
-            self.put_u8(((value & SEGMENT_BITS) | CONTINUE_BIT) as u8);
+            self.put_byte(((value & SEGMENT_BITS) | CONTINUE_BIT) as i8);
 
             value >>= 7;
         }
@@ -29,11 +29,11 @@ pub trait WriteByteBuf: BufMut {
     fn put_var_long(&mut self, mut value: i64) {
         loop {
             if (value & !(SEGMENT_BITS as i64)) == 0 {
-                self.put_byte(value as u8);
+                self.put_byte(value as i8);
                 return;
             }
 
-            self.put_byte(((value & SEGMENT_BITS as i64) | CONTINUE_BIT as i64) as u8);
+            self.put_byte(((value & SEGMENT_BITS as i64) | CONTINUE_BIT as i64) as i8);
 
             value >>= 7;
         }
@@ -44,7 +44,7 @@ pub trait WriteByteBuf: BufMut {
         self.put_var_int(bytes.len() as i32);
 
         for byte in bytes {
-            self.put_byte(*byte);
+            self.put_byte(*byte as i8);
         }
     }
 
@@ -54,7 +54,7 @@ pub trait WriteByteBuf: BufMut {
 
     fn put_byte_array(&mut self, value: &[u8]) {
         for ele in value {
-            self.put_byte(*ele)
+            self.put_byte(*ele as i8)
         }
     }
 
