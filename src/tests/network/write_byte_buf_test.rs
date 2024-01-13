@@ -1,4 +1,22 @@
+use std::str::FromStr;
+
+use uuid::Uuid;
+
 use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
+
+#[test]
+fn test_put_byte() {
+    let mut buf = Vec::new();
+    buf.put_byte(3);
+    assert_eq!(buf, vec![0x03]);
+}
+
+#[test]
+fn test_put_unsigned_byte() {
+    let mut buf = Vec::new();
+    buf.put_byte(3);
+    assert_eq!(buf, vec![0x03]);
+}
 
 #[test]
 fn test_put_var_int() {
@@ -37,4 +55,13 @@ fn test_put_byte_array() {
     let mut buf = Vec::new();
     buf.put_byte_array(&[0x01, 0x02, 0x03]);
     assert_eq!(buf, vec![0x01, 0x02, 0x03]);
+}
+
+#[test]
+fn test_put_uuid() {
+    let uuid = Uuid::from_str("123e4567-e89b-12d3-a456-426614174000").unwrap();
+    let mut buf = Vec::new();
+    buf.put_uuid(uuid);
+
+    assert_eq!(buf, uuid.as_bytes())
 }

@@ -12,3 +12,4 @@ log = "0.4.20"
 tokio = { version = "1.35.1", features = ["full"] }
 serde_json = { version = "1.0.111", features = [] }
 serde = { version = "1.0.195", features = ["derive"] }
+uuid = "1.6.1"

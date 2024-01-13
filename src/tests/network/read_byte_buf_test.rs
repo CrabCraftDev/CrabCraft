@@ -1,6 +1,23 @@
+use std::str::FromStr;
+
 use bytes::Bytes;
+use uuid::Uuid;
 
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
+
+#[test]
+fn test_get_byte() {
+    let mut buf = Bytes::from(b"\x01" as &[u8]);
+    let result = buf.get_byte();
+    assert_eq!(result, 1);
+}
+
+#[test]
+fn test_get_unsigned_byte() {
+    let mut buf = Bytes::from(b"\x01" as &[u8]);
+    let result = buf.get_unsigned_byte();
+    assert_eq!(result, 1);
+}
 
 #[test]
 fn test_get_var_int() {
@@ -39,4 +56,13 @@ fn test_get_bytes() {
     let mut buf: &[u8] = &[0x01, 0x02, 0x03];
     let result = buf.get_bytes(3);
     assert_eq!(result, vec![1, 2, 3]);
+}
+
+#[test]
+fn test_get_uuid() {
+    let uuid = Uuid::from_str("123e4567-e89b-12d3-a456-426614174000").unwrap();
+    let mut bytes: &[u8] = uuid.as_bytes();
+
+    let result = bytes.get_uuid();
+    assert_eq!(uuid, result)
 }
