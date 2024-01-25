@@ -2,9 +2,7 @@ name: Building code
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches-ignore: []
   workflow_dispatch:
 
 env:
