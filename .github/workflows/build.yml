@@ -1,10 +1,9 @@
-name: Building code
+name: Build
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: ["*"]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -15,8 +14,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: cargo build --verbose
       - name: Run Clippy
         run: cargo clippy --all-targets --all-features
+  release:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: windows-latest
+            ext: ".exe"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crabcraft_build_${{ github.event.head_commit.id }}${{ matrix.ext }}
+          path: target/release/crab_craft${{ matrix.ext }}
