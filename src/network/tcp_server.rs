@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use bytes::{Bytes, BytesMut};
 use flate2::Compression;
+use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
 use log::{debug, error};
 use tokio::{
@@ -10,6 +11,7 @@ use tokio::{
     net::{TcpListener, TcpStream},
     sync::Mutex,
 };
+use std::io::Read;
 
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
@@ -60,6 +62,25 @@ impl TcpServer {
         stream.write_all(&data_length).await.unwrap(); // Data length
         stream.write_all(&compressed).await.unwrap();
     }
+    /// # Arguments
+    /// * `bytes`: The bytes that shall only be read after reading the whole packet length.
+    /// returns: Decompressed bytes
+    /// # Example
+    /// ```
+    /// let _length = bytes.get_var_int();
+    /// bytes = Self::decompress_packet(byte);
+    /// ```
+    #[allow(dead_code)]
+    pub async fn decompress_packet(mut bytes: Bytes) -> Bytes {
+        let mut new_bytes = Vec::new();
+        let data_length = bytes.get_var_int();
+
+        let compressed = &*bytes.get_bytes(data_length);
+        let mut decoder = ZlibDecoder::new(compressed);
+        decoder.read_to_end(&mut new_bytes).unwrap();
+
+        return Bytes::from(new_bytes);
+    }
 
     async fn handle_connection(mut stream: TcpStream, handlers: Arc<Mutex<Vec<Box<dyn PacketHandler + Send>>>>) {
         let mut buf = [0; 1024];
@@ -72,15 +93,16 @@ impl TcpServer {
                 }
                 Ok(n) => {
                     let mut_bytes = BytesMut::from(&buf[0..n]);
-                    let mut byte = mut_bytes.freeze();
+                    let mut bytes = mut_bytes.freeze();
 
-                    let _length = byte.get_var_int();
-                    let packet_id = byte.get_var_int();
+                    let _length = bytes.get_var_int();
+                    // use bytes = Self::decompress_packet(byte); to decompress packet
+                    let packet_id = bytes.get_var_int();
                     debug!("Received packet ({}): {:?}", packet_id, BytesMut::from(&buf[0..n]));
 
                     let handlers = handlers.lock().await;
                     for handler in handlers.iter() {
-                        handler.handle_packet(&mut stream, byte.clone(), packet_id);
+                        handler.handle_packet(&mut stream, bytes.clone(), packet_id);
                     }
                 }
                 Err(e) => {
