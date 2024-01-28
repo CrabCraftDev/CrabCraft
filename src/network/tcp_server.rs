@@ -1,6 +1,9 @@
+use std::io::Write;
 use std::sync::Arc;
 
 use bytes::{Bytes, BytesMut};
+use flate2::Compression;
+use flate2::write::ZlibEncoder;
 use log::{debug, error};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
@@ -45,6 +48,17 @@ impl TcpServer {
     pub async fn send(stream: &mut TcpStream, bytes: Bytes) {
         stream.write_all(&to_var_int(bytes.len() as i32)).await.unwrap();
         stream.write_all(&bytes).await.unwrap();
+    }
+    #[allow(dead_code)]
+    pub async fn send_compressed(stream: &mut TcpStream, bytes: Bytes) {
+        let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(&bytes).expect("TODO: panic message");
+        let compressed = encoder.finish().unwrap();
+
+        let data_length = to_var_int(bytes.len() as i32);
+        stream.write_all(&to_var_int((data_length.len() + compressed.len()) as i32)).await.unwrap(); // Packet length
+        stream.write_all(&data_length).await.unwrap(); // Data length
+        stream.write_all(&compressed).await.unwrap();
     }
 
     async fn handle_connection(mut stream: TcpStream, handlers: Arc<Mutex<Vec<Box<dyn PacketHandler + Send>>>>) {
