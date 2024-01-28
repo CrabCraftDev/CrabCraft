@@ -2,7 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: ["*"]
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -14,5 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
       - name: Run tests
         run: cargo test --verbose
