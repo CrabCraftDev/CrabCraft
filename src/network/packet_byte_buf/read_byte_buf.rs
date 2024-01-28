@@ -61,7 +61,7 @@ pub trait ReadByteBuf: Buf {
         let length = self.get_var_int();
         let bytes = self.get_bytes(length);
 
-        let str = from_utf8(&*bytes).expect("Couldn't parse string from ByteBuf!");
+        let str = from_utf8(&bytes).expect("Couldn't parse string from ByteBuf!");
 
         str.to_string()
     }
