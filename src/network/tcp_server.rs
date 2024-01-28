@@ -2,16 +2,16 @@ use std::io::Write;
 use std::sync::Arc;
 
 use bytes::{Bytes, BytesMut};
-use flate2::Compression;
 use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
+use flate2::Compression;
 use log::{debug, error};
+use std::io::Read;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
     sync::Mutex,
 };
-use std::io::Read;
 
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
@@ -52,28 +52,37 @@ impl TcpServer {
         stream.write_all(&bytes).await.unwrap();
     }
     #[allow(dead_code)]
-    pub async fn send_compressed(stream: &mut TcpStream, bytes: Bytes) {
-        let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
-        encoder.write_all(&bytes).expect("TODO: panic message");
-        let compressed = encoder.finish().unwrap();
+    pub async fn send_compressed(stream: &mut TcpStream, bytes: Bytes, compression_threshold: i32) {
+        let should_compress = compression_threshold < 0 || compression_threshold < bytes.len() as i32;
+        let data_length = if should_compress {
+            to_var_int(0)
+        } else {
+            to_var_int(bytes.len() as i32)
+        };
 
-        let data_length = to_var_int(bytes.len() as i32);
-        stream.write_all(&to_var_int((data_length.len() + compressed.len()) as i32)).await.unwrap(); // Packet length
-        stream.write_all(&data_length).await.unwrap(); // Data length
-        stream.write_all(&compressed).await.unwrap();
+        let data;
+        if should_compress {
+            let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
+            encoder.write_all(&bytes).expect("Couldn't compress packet!");
+            data = encoder.finish().unwrap();
+        } else {
+            data = Vec::from(bytes)
+        }
+
+        let packet_length = to_var_int((data_length.len() + data.len()) as i32);
+
+        stream.write_all(&packet_length).await.unwrap();
+        stream.write_all(&data_length).await.unwrap();
+        stream.write_all(&data).await.unwrap();
     }
-    /// # Arguments
-    /// * `bytes`: The bytes that shall only be read after reading the whole packet length.
-    /// returns: Decompressed bytes
-    /// # Example
-    /// ```
-    /// let _length = bytes.get_var_int();
-    /// bytes = Self::decompress_packet(byte);
-    /// ```
+
     #[allow(dead_code)]
     pub async fn decompress_packet(mut bytes: Bytes) -> Bytes {
         let mut new_bytes = Vec::new();
         let data_length = bytes.get_var_int();
+        if data_length == 0 {
+            return Bytes::from(bytes.get_bytes(data_length));
+        }
 
         let compressed = &*bytes.get_bytes(data_length);
         let mut decoder = ZlibDecoder::new(compressed);
