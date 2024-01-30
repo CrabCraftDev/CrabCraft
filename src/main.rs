@@ -3,9 +3,6 @@ use log::{info, LevelFilter};
 use network::tcp_server::TcpServer;
 use utils::logger::Logger;
 
-use crate::network::handlers::global_handler::GlobalHandler;
-use crate::network::handlers::handshake_handler::HandshakeHandler;
-
 mod network;
 mod utils;
 
@@ -25,10 +22,7 @@ async fn main() {
 
     info!("CrabCraft started!");
 
-    let server = TcpServer::new(
-        "127.0.0.1:25565".to_string(),
-        vec![Box::new(HandshakeHandler), Box::new(GlobalHandler)],
-    );
+    let server = TcpServer::new("127.0.0.1:25565".to_string());
     server.start().await;
 
     info!("CrabCraft server disabled!");
