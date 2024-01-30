@@ -4,6 +4,7 @@ use flate2::write::ZlibEncoder;
 use flate2::Compression;
 use log::debug;
 use std::io::Read;
+use std::io::Write;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
