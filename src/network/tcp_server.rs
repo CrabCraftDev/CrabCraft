@@ -10,13 +10,26 @@ use tokio::{
     net::{TcpListener, TcpStream},
 };
 
-use crate::network::handlers::connect_handler::HandshakeHandler;
+use crate::network::handlers::connection_handler::ConnectionHandler;
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
 use crate::utils::network::{get_var_int_from_stream, to_var_int};
 
 pub struct TcpServer {
     address: String,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ProtocolState {
+    Handshake,
+    Status,
+    Login,
+    Configuration,
+    Play,
+}
+
+pub struct ConnectionData {
+    pub(crate) state: ProtocolState,
 }
 
 impl TcpServer {
@@ -84,7 +97,10 @@ impl TcpServer {
     }
 
     async fn handle_connection(mut stream: TcpStream) {
-        let mut handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(HandshakeHandler::new())];
+        let mut handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(ConnectionHandler)];
+        let mut connection_data = ConnectionData {
+            state: ProtocolState::Handshake,
+        };
 
         while let Ok(len) = get_var_int_from_stream(&mut stream).await {
             let mut buffer = vec![0; len as usize];
@@ -100,7 +116,7 @@ impl TcpServer {
             debug!("Received packet ({:#X}): {:?}", packet_id, mut_bytes);
 
             for handler in &mut handlers {
-                handler.handle_packet(&mut stream, byte.clone(), packet_id);
+                handler.handle_packet(&mut stream, &mut connection_data, byte.clone(), packet_id);
             }
         }
         debug!("Connection closed {:?}!", stream.peer_addr().unwrap());
