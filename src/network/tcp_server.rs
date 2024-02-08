@@ -55,6 +55,7 @@ impl TcpServer {
     }
 
     pub async fn send(stream: &mut TcpStream, bytes: Bytes) {
+        debug!("Sent: {:?}", &bytes);
         stream.write_all(&to_var_int(bytes.len() as i32)).await.unwrap();
         stream.write_all(&bytes).await.unwrap();
     }
@@ -113,7 +114,10 @@ impl TcpServer {
             let mut byte = mut_bytes.clone().freeze();
 
             let packet_id = byte.get_var_int();
-            debug!("Received packet ({:#X}): {:?}", packet_id, mut_bytes);
+            debug!(
+                "Received packet [{:?}] ({:#X}): {:?}",
+                connection_data.state, packet_id, mut_bytes
+            );
 
             for handler in &mut handlers {
                 handler.handle_packet(&mut stream, &mut connection_data, byte.clone(), packet_id);

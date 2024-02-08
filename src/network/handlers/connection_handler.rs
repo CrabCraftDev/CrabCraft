@@ -101,6 +101,13 @@ impl PacketHandler for ConnectionHandler {
             let packet = include_bytes!("../../../assets/registry-data.nbt");
             block_in_place(|| Handle::current().block_on(TcpServer::send(stream, Bytes::from(packet.to_vec()))));
 
+            // Server brand packet
+            let mut response = BytesMut::new();
+            response.put_var_int(0x0);
+            response.put_string("minecraft:brand".to_string());
+            response.put_string("CrabCraft".to_string());
+            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+
             let mut response = BytesMut::new();
             response.put_var_int(2);
             block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
@@ -136,6 +143,32 @@ impl PacketHandler for ConnectionHandler {
             response.put_boolean(false); // Has Death Location
             response.put_var_int(20); // Portal Cooldown
 
+            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+
+            // Set Default Spawn Position
+            let mut response = BytesMut::new();
+            response.put_var_int(0x54);
+            response.put_i64(0b0100011000000111011000110010110000010101101101001000001100111111);
+            response.put_f32(0.0);
+            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+
+            // Synchronize Player Position
+            let mut response = BytesMut::new();
+            response.put_var_int(0x3E);
+            response.put_f64(0.0); // Position
+            response.put_f64(-999.0);
+            response.put_f64(0.0);
+            response.put_f32(0.0); // Rotation
+            response.put_f32(0.0);
+            response.put_byte(0); // Flags
+            response.put_var_int(2137); // Teleport ID
+            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+
+            // Game Event - Start waiting for level chunks
+            let mut response = BytesMut::new();
+            response.put_var_int(0x20);
+            response.put_unsigned_byte(13);
+            response.put_f32(0.0);
             block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
         }
     }
