@@ -156,7 +156,7 @@ impl PacketHandler for ConnectionHandler {
             let mut response = BytesMut::new();
             response.put_var_int(0x3E);
             response.put_f64(0.0); // Position
-            response.put_f64(-999.0);
+            response.put_f64(0.0);
             response.put_f64(0.0);
             response.put_f32(0.0); // Rotation
             response.put_f32(0.0);
