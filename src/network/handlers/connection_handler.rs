@@ -1,4 +1,5 @@
 use bytes::{Buf, BufMut, Bytes, BytesMut};
+use log::info;
 use serde_json::json;
 use tokio::net::TcpStream;
 use tokio::runtime::Handle;
@@ -63,6 +64,8 @@ impl PacketHandler for ConnectionHandler {
             response.put_string(serde_json::to_string(&status_response).unwrap());
 
             block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+
+            info!("Pinged server list!");
             return;
         }
 
@@ -170,6 +173,8 @@ impl PacketHandler for ConnectionHandler {
             response.put_unsigned_byte(13);
             response.put_f32(0.0);
             block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+
+            info!("Player joined!");
         }
     }
 }
