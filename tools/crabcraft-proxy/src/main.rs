@@ -1,10 +1,10 @@
 use bytes::BytesMut;
 use clap::Parser;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::{
     net::{TcpListener, TcpStream},
     select,
 };
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use crab_craft::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crab_craft::utils::network::{get_var_int_from_stream, to_var_int};
@@ -14,7 +14,7 @@ use crab_craft::utils::network::{get_var_int_from_stream, to_var_int};
 struct Args {
     /// IP of proxy
     #[arg(short, long, default_value = "127.0.0.1:25566")]
-    client: String,
+    listen: String,
 
     /// IP of server to connect
     #[arg(short, long, default_value = "127.0.0.1:25565")]
@@ -26,7 +26,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     println!("CrabCraft proxy started...");
 
-    let proxy_server = TcpListener::bind(args.client).await?;
+    let proxy_server = TcpListener::bind(args.listen).await?;
 
     while let Ok((client, _)) = proxy_server.accept().await {
         let server_target = args.target.clone();
