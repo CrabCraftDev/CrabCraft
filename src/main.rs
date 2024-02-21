@@ -37,8 +37,8 @@ async fn main() {
     mc_server.tick_loop().await;
 
     // Shutdown
-    mc_server.shutdown();
+    mc_server.do_shutdown();
     server_future.await;
 
-    info!("CrabCraft server disabled!");
+    info!("Exiting!");
 }
