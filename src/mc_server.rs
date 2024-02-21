@@ -1,8 +1,8 @@
-use std::time::Duration;
+use crate::network::tcp_server::TcpServer;
 use chrono::Local;
 use log::warn;
+use std::time::Duration;
 use tokio::time::sleep;
-use crate::network::tcp_server::TcpServer;
 
 const TPS: u64 = 20;
 const MAX_TICK_DURATION: u64 = 1000 / TPS;
@@ -11,7 +11,7 @@ const MAX_TICK_DURATION: u64 = 1000 / TPS;
 pub struct McServer<'a> {
     tcp_server: &'a TcpServer,
     running: bool,
-    current_tick: u64
+    current_tick: u64,
 }
 
 impl McServer<'_> {
@@ -19,7 +19,7 @@ impl McServer<'_> {
         McServer {
             tcp_server,
             running: true,
-            current_tick: 0
+            current_tick: 0,
         }
     }
 
@@ -33,8 +33,11 @@ impl McServer<'_> {
             let tick_end = Local::now().timestamp_millis() as u64;
             let tick_duration = tick_end - tick_start;
             if tick_duration > MAX_TICK_DURATION {
-                warn!("Can't keep up! Is the server overloaded? The last tick took {}ms, while max is {}ms!", tick_duration, MAX_TICK_DURATION);
-                continue
+                warn!(
+                    "Can't keep up! Is the server overloaded? The last tick took {}ms, while max is {}ms!",
+                    tick_duration, MAX_TICK_DURATION
+                );
+                continue;
             }
             sleep(Duration::from_millis(MAX_TICK_DURATION - tick_duration)).await;
         }
@@ -42,6 +45,6 @@ impl McServer<'_> {
     pub fn tick(&mut self) {
         // TODO implement tick
     }
-    
+
     pub fn shutdown(&mut self) {}
 }
