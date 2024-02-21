@@ -1,4 +1,4 @@
-use std::fs::{create_dir_all, metadata, OpenOptions, rename};
+use std::fs::{create_dir_all, metadata, rename, OpenOptions};
 use std::io::{Result, Write};
 use std::path::Path;
 
@@ -44,10 +44,7 @@ impl Log for Logger {
 
             create_dir_all("logs").expect("Failed to create directories");
 
-            let file = OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open("logs/latest.log");
+            let file = OpenOptions::new().create(true).append(true).open("logs/latest.log");
 
             file.unwrap()
                 .write_all(message.as_bytes())
