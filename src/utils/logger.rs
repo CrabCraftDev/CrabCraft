@@ -46,7 +46,6 @@ impl Log for Logger {
 
             let file = OpenOptions::new()
                 .create(true)
-                .write(true)
                 .append(true)
                 .open("logs/latest.log");
 
