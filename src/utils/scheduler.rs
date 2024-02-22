@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct ServerScheduler {
     tasks: HashMap<u64, ScheduledTask>,
     next_id: u64,
@@ -13,12 +14,6 @@ pub struct ScheduledTask {
 }
 
 impl ServerScheduler {
-    pub fn new() -> Self {
-        Self {
-            next_id: 0,
-            tasks: HashMap::new(),
-        }
-    }
     #[allow(dead_code)]
     pub fn run_task(&mut self, func: fn(), delay: u64, repeat: bool) -> u64 {
         let task = ScheduledTask {
@@ -38,21 +33,20 @@ impl ServerScheduler {
     }
 
     pub fn tick(&mut self) {
-        // let mut completed = vec![];
-        for pair in self.tasks.iter_mut() {
-            let task = pair.1;
+        let mut completed = vec![];
+        for (id, task) in self.tasks.iter_mut() {
             task.cooldown -= 1;
             if task.cooldown == 0 {
                 if task.repeat {
                     task.cooldown = task.delay;
                 } else {
-                    // completed.push(pair.0);
+                    completed.push(*id);
                 }
                 (task.func)()
             }
         }
-        // for id in completed {
-        //     self.tasks.remove(id);
-        // }
+        for id in completed {
+            self.tasks.remove(&id);
+        }
     }
 }

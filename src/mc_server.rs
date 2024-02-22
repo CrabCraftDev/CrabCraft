@@ -24,7 +24,7 @@ impl McServer<'_> {
             tcp_server,
             running: true,
             current_tick: 0,
-            scheduler: ServerScheduler::new(),
+            scheduler: ServerScheduler::default(),
         }
     }
 
