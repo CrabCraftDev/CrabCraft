@@ -12,6 +12,7 @@ mod utils;
 
 mod mc_server;
 #[cfg(test)]
+#[path = "../tests/mod.rs"]
 mod tests;
 
 #[tokio::main]
