@@ -2,9 +2,10 @@ use chrono::Local;
 use log::{info, LevelFilter};
 use tokio::select;
 
-use crate::mc_server::McServer;
 use network::tcp_server::TcpServer;
 use utils::logger::Logger;
+
+use crate::mc_server::McServer;
 
 mod network;
 mod utils;
