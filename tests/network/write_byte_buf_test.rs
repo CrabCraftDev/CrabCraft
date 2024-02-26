@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use uuid::Uuid;
 
-use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
+use crab_craft::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 
 #[test]
 fn test_put_byte() {

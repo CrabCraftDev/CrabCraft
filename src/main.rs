@@ -2,15 +2,17 @@ use chrono::Local;
 use log::{info, LevelFilter};
 use tokio::select;
 
-use crate::mc_server::McServer;
 use network::tcp_server::TcpServer;
 use utils::logger::Logger;
+
+use crate::mc_server::McServer;
 
 mod network;
 mod utils;
 
 mod mc_server;
 #[cfg(test)]
+#[path = "../tests/mod.rs"]
 mod tests;
 
 #[tokio::main]

@@ -3,7 +3,7 @@ use std::str::FromStr;
 use bytes::Bytes;
 use uuid::Uuid;
 
-use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
+use crab_craft::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 
 #[test]
 fn test_get_byte() {
