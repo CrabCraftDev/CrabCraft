@@ -18,3 +18,4 @@ serde = { version = "1.0.195", features = ["derive"] }
 uuid = "1.6.1"
 flate2 = "1.0.28"
 cargo-husky = { version = "1.5.0", features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy"] }
+base64 = "0.21.7"

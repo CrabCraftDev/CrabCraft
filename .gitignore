@@ -12,5 +12,5 @@ target/
 # JetBrain's IDEs
 .idea
 
-# Log files
-/logs/*
+# Minecraft server files
+/server/*
