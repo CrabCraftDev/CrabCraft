@@ -1,6 +1,9 @@
+use base64::prelude::BASE64_STANDARD;
+use base64::Engine;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use log::info;
-use serde_json::json;
+use serde_json::{json, Value};
+use std::fs;
 use tokio::net::TcpStream;
 use tokio::runtime::Handle;
 use tokio::task::block_in_place;
@@ -9,6 +12,7 @@ use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::packet_handler::PacketHandler;
 use crate::network::tcp_server::{ConnectionData, ProtocolState, TcpServer};
+use crate::utils::fs::get_server_path;
 
 pub struct ConnectionHandler;
 
@@ -46,7 +50,7 @@ impl PacketHandler for ConnectionHandler {
             let mut response = BytesMut::new();
             response.put_var_int(0);
 
-            let status_response = json!({
+            let mut status_response = json!({
                 "version": {
                     "name": "1.20.4",
                     "protocol": 765,
@@ -60,6 +64,15 @@ impl PacketHandler for ConnectionHandler {
                 "enforces_secure_chat": false,
                 "previews_chat": true,
             });
+
+            let server_icon_path = get_server_path().join("server-icon.png");
+            if server_icon_path.exists() {
+                let png_data = fs::read(server_icon_path).unwrap();
+                let mut buf = "data:image/png;base64,".to_owned();
+                let encoded_png = BASE64_STANDARD.encode(png_data);
+                buf.push_str(&encoded_png);
+                status_response["favicon"] = Value::String(buf);
+            }
 
             response.put_string(serde_json::to_string(&status_response).unwrap());
 

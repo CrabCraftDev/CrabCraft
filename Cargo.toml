@@ -20,3 +20,4 @@ flate2 = "1.0.28"
 
 [dev-dependencies]
 cargo-husky = { version = "1.5.0", features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy"] }
+base64 = "0.21.7"
