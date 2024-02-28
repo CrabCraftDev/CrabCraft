@@ -1,6 +1,6 @@
 use std::fs::read_dir;
-use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::{env, io};
 
 pub fn count_files_with_prefix(dir: &Path, prefix: &str) -> io::Result<usize> {
     let mut count = 0;
@@ -13,4 +13,13 @@ pub fn count_files_with_prefix(dir: &Path, prefix: &str) -> io::Result<usize> {
         count += (path.is_file() && path.file_name().unwrap().to_str().unwrap().starts_with(prefix)) as usize;
     }
     Ok(count)
+}
+
+pub fn get_server_path() -> PathBuf {
+    if cfg!(debug_assertions) {
+        let manifest_str = env::var("CARGO_MANIFEST_DIR").unwrap();
+        Path::new(&manifest_str).join("server").to_path_buf()
+    } else {
+        env::current_dir().unwrap().to_path_buf()
+    }
 }
