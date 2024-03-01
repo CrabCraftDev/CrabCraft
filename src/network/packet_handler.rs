@@ -1,7 +1,7 @@
-use crate::network::tcp_server::ConnectionData;
 use bytes::Bytes;
-use tokio::net::TcpStream;
+
+use crate::network::tcp_server::Connection;
 
 pub trait PacketHandler {
-    fn handle_packet(&mut self, stream: &mut TcpStream, data: &mut ConnectionData, bytes: Bytes, packet_id: i32);
+    fn handle_packet(&mut self, connection_data: &mut Connection, bytes: Bytes, packet_id: i32);
 }

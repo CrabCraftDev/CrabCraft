@@ -1,11 +1,12 @@
-use std::io::Read;
-use std::io::Write;
+use std::net::SocketAddr;
+use std::sync::Arc;
 
 use bytes::{Bytes, BytesMut};
-use flate2::read::ZlibDecoder;
-use flate2::write::ZlibEncoder;
-use flate2::Compression;
-use log::debug;
+use log::{debug, error};
+use tokio::io::{ReadHalf, WriteHalf};
+use tokio::runtime::Handle;
+use tokio::sync::Mutex;
+use tokio::task::block_in_place;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
@@ -18,6 +19,7 @@ use crate::utils::network::{get_var_int_from_stream, to_var_int};
 
 pub struct TcpServer {
     address: String,
+    pub connections: Arc<Mutex<Vec<Arc<Mutex<Connection>>>>>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -29,13 +31,20 @@ pub enum ProtocolState {
     Play,
 }
 
-pub struct ConnectionData {
+#[derive(Debug)]
+pub struct Connection {
     pub(crate) state: ProtocolState,
+    pub(crate) write_half: WriteHalf<TcpStream>,
+    pub(crate) address: SocketAddr,
+    is_closed: bool,
 }
 
 impl TcpServer {
     pub fn new(address: String) -> TcpServer {
-        TcpServer { address }
+        TcpServer {
+            address,
+            connections: Arc::new(Mutex::new(Vec::new())),
+        }
     }
 
     pub async fn start(&self) {
@@ -45,68 +54,51 @@ impl TcpServer {
             match listener.accept().await {
                 Ok((stream, address)) => {
                     debug!("Connection established {address}!");
+
                     stream.set_nodelay(true).unwrap();
-                    tokio::spawn(Self::handle_connection(stream));
+                    let (read_half, write_half) = tokio::io::split(stream);
+
+                    let connection = Arc::new(Mutex::new(Connection {
+                        write_half,
+                        state: ProtocolState::Handshake,
+                        is_closed: false,
+                        address,
+                    }));
+                    self.connections.lock().await.push(connection.clone());
+                    let connections_mutex = Arc::clone(&self.connections);
+
+                    tokio::spawn(async move {
+                        TcpServer::handle_connection(connection, read_half).await;
+                        connections_mutex
+                            .lock()
+                            .await
+                            .retain(|conn| !conn.try_lock().unwrap().is_closed)
+                    });
                 }
-                Err(e) => {
-                    eprintln!("Error accepting connection: {}", e);
+                Err(err) => {
+                    error!("Error accepting connection: {err}");
                 }
             }
         }
     }
 
-    pub async fn send(stream: &mut TcpStream, bytes: Bytes) {
+    pub async fn send(stream: &mut (impl AsyncWriteExt + Unpin), bytes: Bytes) {
         stream.write_all(&to_var_int(bytes.len() as i32)).await.unwrap();
         stream.write_all(&bytes).await.unwrap();
     }
 
-    #[allow(dead_code)]
-    pub async fn send_compressed(stream: &mut TcpStream, bytes: Bytes, compression_threshold: i32) {
-        let should_compress = compression_threshold < 0 || compression_threshold < bytes.len() as i32;
-        let mut data_length = if should_compress {
-            to_var_int(0)
-        } else {
-            to_var_int(bytes.len() as i32)
-        };
-
-        let mut data;
-        if should_compress {
-            let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
-            encoder.write_all(&bytes).expect("Couldn't compress packet!");
-            data = encoder.finish().unwrap();
-        } else {
-            data = Vec::from(bytes)
-        }
-
-        data_length.append(&mut data);
-        Self::send(stream, Bytes::from(data_length)).await;
+    pub fn send_sync(connection: &mut Connection, bytes: Bytes) {
+        block_in_place(|| Handle::current().block_on(TcpServer::send(&mut connection.write_half, bytes)));
     }
 
-    #[allow(dead_code)]
-    pub async fn decompress_packet(mut bytes: Bytes) -> Bytes {
-        let mut new_bytes = Vec::new();
-        let data_length = bytes.get_var_int();
-        if data_length == 0 {
-            return Bytes::from(bytes.get_bytes(data_length));
-        }
-
-        let compressed = &*bytes.get_bytes(data_length);
-        let mut decoder = ZlibDecoder::new(compressed);
-        decoder.read_to_end(&mut new_bytes).unwrap();
-
-        Bytes::from(new_bytes)
-    }
-
-    async fn handle_connection(mut stream: TcpStream) {
+    async fn handle_connection(connection: Arc<Mutex<Connection>>, mut read_half: ReadHalf<TcpStream>) {
+        let connection = Arc::clone(&connection);
         let mut handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(ConnectionHandler)];
-        let mut connection_data = ConnectionData {
-            state: ProtocolState::Handshake,
-        };
 
-        while let Ok(len) = get_var_int_from_stream(&mut stream).await {
+        while let Ok(len) = get_var_int_from_stream(&mut read_half).await {
             let mut buffer = vec![0; len as usize];
 
-            if let Ok(0) = stream.read_exact(&mut buffer).await {
+            if let Ok(0) = read_half.read_exact(&mut buffer).await {
                 break;
             }
 
@@ -115,10 +107,14 @@ impl TcpServer {
 
             let packet_id = byte.get_var_int();
 
+            let mut connection = connection.lock().await;
             for handler in &mut handlers {
-                handler.handle_packet(&mut stream, &mut connection_data, byte.clone(), packet_id);
+                handler.handle_packet(&mut connection, byte.clone(), packet_id);
             }
         }
-        debug!("Connection closed {:?}!", stream.peer_addr().unwrap());
+
+        let mut connection = connection.lock().await;
+        connection.is_closed = true;
+        debug!("Connection closed {:?}!", connection.address);
     }
 }

@@ -1,4 +1,5 @@
 use std::ops::Add;
+use std::sync::Arc;
 use std::time::Duration;
 
 use log::{info, warn};
@@ -11,9 +12,7 @@ const TPS: u64 = 20;
 const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);
 const SERVER_OVERLOAD_WARNING_COOLDOWN: Duration = Duration::from_secs(20);
 
-#[allow(dead_code)]
-pub struct McServer<'a> {
-    tcp_server: &'a TcpServer,
+pub struct McServer {
     running: bool,
     current_tick: u64,
     scheduler: ServerScheduler,
@@ -21,10 +20,9 @@ pub struct McServer<'a> {
     last_overload_warning: Instant,
 }
 
-impl McServer<'_> {
-    pub fn new(tcp_server: &TcpServer) -> McServer {
+impl McServer {
+    pub fn new() -> McServer {
         McServer {
-            tcp_server,
             running: true,
             current_tick: 0,
             scheduler: ServerScheduler::default(),
@@ -33,7 +31,24 @@ impl McServer<'_> {
         }
     }
 
-    pub async fn tick_loop(&mut self) {
+    pub async fn start(mut self, ip_address: String) {
+        let tcp_server = TcpServer::new(ip_address);
+        let tcp_server_arc = Arc::new(tcp_server);
+
+        let tcp_server_task = {
+            let tcp_server_arc = Arc::clone(&tcp_server_arc);
+            tokio::spawn(async move {
+                tcp_server_arc.start().await;
+            })
+        };
+
+        self.tick_loop(tcp_server_arc).await;
+        tcp_server_task.await.unwrap();
+
+        self.shutdown();
+    }
+
+    pub async fn tick_loop(&mut self, tcp_server: Arc<TcpServer>) {
         while self.running {
             let last_tick_time = Instant::now() - self.next_tick_start + MAX_TICK_DURATION;
             if last_tick_time.as_millis() > MAX_TICK_DURATION.as_millis() + 5
@@ -48,21 +63,25 @@ impl McServer<'_> {
             }
             self.next_tick_start = Instant::now().add(MAX_TICK_DURATION);
 
-            self.tick();
+            self.tick(tcp_server.clone()).await;
 
             sleep_until(self.next_tick_start).await;
         }
     }
-    pub fn tick(&mut self) {
+
+    pub async fn tick(&mut self, _tcp_server: Arc<TcpServer>) {
         self.current_tick += 1;
         self.scheduler.tick();
     }
+
     #[allow(dead_code)]
     pub fn shutdown(&mut self) {
         info!("Stopping the server");
         self.running = false;
     }
+
     #[allow(clippy::needless_return)]
+    #[allow(dead_code)]
     pub(crate) fn do_shutdown(&mut self) {
         if self.running {
             warn!("There was an attempt to process shutdown logic while still running!");
