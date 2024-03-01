@@ -4,28 +4,25 @@ use bytes::{Buf, BufMut, Bytes, BytesMut};
 use log::info;
 use serde_json::{json, Value};
 use std::fs;
-use tokio::net::TcpStream;
-use tokio::runtime::Handle;
-use tokio::task::block_in_place;
 
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::packet_handler::PacketHandler;
-use crate::network::tcp_server::{ConnectionData, ProtocolState, TcpServer};
+use crate::network::tcp_server::{Connection, ProtocolState, TcpServer};
 use crate::utils::fs::get_server_path;
 
 pub struct ConnectionHandler;
 
 impl PacketHandler for ConnectionHandler {
-    fn handle_packet(&mut self, stream: &mut TcpStream, data: &mut ConnectionData, mut bytes: Bytes, packet_id: i32) {
+    fn handle_packet(&mut self, connection_data: &mut Connection, mut bytes: Bytes, packet_id: i32) {
         // =================== HANDSHAKE
-        if packet_id == 0x00 && data.state == ProtocolState::Handshake {
+        if packet_id == 0x00 && connection_data.state == ProtocolState::Handshake {
             let _version = bytes.get_var_int();
             let _address_ = bytes.get_string();
             let _port = bytes.get_u16();
             let next_state = bytes.get_var_int();
 
-            data.state = match next_state {
+            connection_data.state = match next_state {
                 1 => ProtocolState::Status,
                 2 => ProtocolState::Login,
                 _ => panic!("Invalid state!"),
@@ -36,17 +33,17 @@ impl PacketHandler for ConnectionHandler {
 
         // =================== STATUS
         // Ping request
-        if packet_id == 0x01 && data.state == ProtocolState::Status {
+        if packet_id == 0x01 && connection_data.state == ProtocolState::Status {
             let time = bytes.get_u64();
             let mut response = BytesMut::new();
             response.put_var_int(0x01);
             response.put_u64(time);
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
             return;
         }
 
         // Server list ping
-        if packet_id == 0x00 && data.state == ProtocolState::Status {
+        if packet_id == 0x00 && connection_data.state == ProtocolState::Status {
             let mut response = BytesMut::new();
             response.put_var_int(0);
 
@@ -76,7 +73,7 @@ impl PacketHandler for ConnectionHandler {
 
             response.put_string(serde_json::to_string(&status_response).unwrap());
 
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
 
             info!("Pinged server list!");
             return;
@@ -84,7 +81,7 @@ impl PacketHandler for ConnectionHandler {
 
         // =================== LOGIN
         // Login start
-        if packet_id == 0x00 && data.state == ProtocolState::Login {
+        if packet_id == 0x00 && connection_data.state == ProtocolState::Login {
             let username = bytes.get_string();
             let uuid = bytes.get_uuid();
 
@@ -94,17 +91,17 @@ impl PacketHandler for ConnectionHandler {
             response.put_string(username);
             response.put_var_int(0);
 
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
         }
 
         // Login acknowledged
-        if packet_id == 0x03 && data.state == ProtocolState::Login {
-            data.state = ProtocolState::Configuration;
+        if packet_id == 0x03 && connection_data.state == ProtocolState::Login {
+            connection_data.state = ProtocolState::Configuration;
             return;
         }
 
         // =================== CONFIGURATION
-        if packet_id == 0x00 && data.state == ProtocolState::Configuration {
+        if packet_id == 0x00 && connection_data.state == ProtocolState::Configuration {
             let _language = bytes.get_string();
             let _view_distance = bytes.get_byte();
             let _chat_mode = bytes.get_var_int();
@@ -115,29 +112,29 @@ impl PacketHandler for ConnectionHandler {
             let _allow_server_listening = bytes.get_boolean();
 
             let packet = include_bytes!("../../../assets/registry-data.nbt");
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, Bytes::from(packet.to_vec()))));
+            TcpServer::send_sync(connection_data, Bytes::from(packet.to_vec()));
 
             // Server brand packet
             let mut response = BytesMut::new();
             response.put_var_int(0x0);
             response.put_string("minecraft:brand".to_string());
             response.put_string("CrabCraft".to_string());
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
 
             let mut response = BytesMut::new();
             response.put_var_int(2);
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
         }
 
         // Plugin Message
-        if packet_id == 0x01 && data.state == ProtocolState::Configuration {
+        if packet_id == 0x01 && connection_data.state == ProtocolState::Configuration {
             let _namespace = bytes.get_string();
             let _data = Bytes::from(bytes.get_bytes(bytes.len() as i32));
         }
 
         // Finish Configuration
-        if packet_id == 0x02 && data.state == ProtocolState::Configuration {
-            data.state = ProtocolState::Play;
+        if packet_id == 0x02 && connection_data.state == ProtocolState::Configuration {
+            connection_data.state = ProtocolState::Play;
             let mut response = BytesMut::new();
             response.put_var_int(0x29);
             response.put_u32(0); // Entity ID
@@ -159,14 +156,14 @@ impl PacketHandler for ConnectionHandler {
             response.put_boolean(false); // Has Death Location
             response.put_var_int(20); // Portal Cooldown
 
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
 
             // Set Default Spawn Position
             let mut response = BytesMut::new();
             response.put_var_int(0x54);
             response.put_i64(0b0100011000000111011000110010110000010101101101001000001100111111);
             response.put_f32(0.0);
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
 
             // Synchronize Player Position
             let mut response = BytesMut::new();
@@ -178,14 +175,14 @@ impl PacketHandler for ConnectionHandler {
             response.put_f32(0.0);
             response.put_byte(0); // Flags
             response.put_var_int(2137); // Teleport ID
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
 
             // Game Event - Start waiting for level chunks
             let mut response = BytesMut::new();
             response.put_var_int(0x20);
             response.put_unsigned_byte(13);
             response.put_f32(0.0);
-            block_in_place(|| Handle::current().block_on(TcpServer::send(stream, response.freeze())));
+            TcpServer::send_sync(connection_data, response.freeze());
 
             info!("Player joined!");
         }
