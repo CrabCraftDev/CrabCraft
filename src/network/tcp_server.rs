@@ -3,14 +3,14 @@ use std::sync::Arc;
 use bytes::{Bytes, BytesMut};
 use chrono::Local;
 use log::{debug, error};
-use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
-    net::{TcpListener, TcpStream},
-};
 use tokio::io::ReadHalf;
 use tokio::runtime::Handle;
 use tokio::sync::Mutex;
 use tokio::task::block_in_place;
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::{TcpListener, TcpStream},
+};
 
 use crate::network::connection::Connection;
 use crate::network::handlers::connection_handler::ConnectionHandler;
@@ -90,9 +90,7 @@ impl TcpServer {
         let connections = self.connections.lock().await;
         for conn in connections.iter() {
             let mut conn = conn.lock().await;
-            if conn.state == ProtocolState::Play {
-                conn.keep_connection_alive().await;
-            }
+            conn.keep_connection_alive().await;
         }
     }
 
