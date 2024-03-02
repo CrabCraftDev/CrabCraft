@@ -69,9 +69,10 @@ impl McServer {
         }
     }
 
-    pub async fn tick(&mut self, _tcp_server: Arc<TcpServer>) {
+    pub async fn tick(&mut self, tcp_server: Arc<TcpServer>) {
         self.current_tick += 1;
         self.scheduler.tick();
+        tcp_server.tick().await;
     }
 
     #[allow(dead_code)]

@@ -1,17 +1,18 @@
-use std::net::SocketAddr;
 use std::sync::Arc;
 
 use bytes::{Bytes, BytesMut};
+use chrono::Local;
 use log::{debug, error};
-use tokio::io::{ReadHalf, WriteHalf};
-use tokio::runtime::Handle;
-use tokio::sync::Mutex;
-use tokio::task::block_in_place;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
 };
+use tokio::io::ReadHalf;
+use tokio::runtime::Handle;
+use tokio::sync::Mutex;
+use tokio::task::block_in_place;
 
+use crate::network::connection::Connection;
 use crate::network::handlers::connection_handler::ConnectionHandler;
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
@@ -29,14 +30,6 @@ pub enum ProtocolState {
     Login,
     Configuration,
     Play,
-}
-
-#[derive(Debug)]
-pub struct Connection {
-    pub(crate) state: ProtocolState,
-    pub(crate) write_half: WriteHalf<TcpStream>,
-    pub(crate) address: SocketAddr,
-    is_closed: bool,
 }
 
 impl TcpServer {
@@ -63,6 +56,8 @@ impl TcpServer {
                         state: ProtocolState::Handshake,
                         is_closed: false,
                         address,
+                        keepalive_pending: false,
+                        last_keepalive_time: Local::now().timestamp_millis(),
                     }));
                     self.connections.lock().await.push(connection.clone());
                     let connections_mutex = Arc::clone(&self.connections);
@@ -89,6 +84,16 @@ impl TcpServer {
 
     pub fn send_sync(connection: &mut Connection, bytes: Bytes) {
         block_in_place(|| Handle::current().block_on(TcpServer::send(&mut connection.write_half, bytes)));
+    }
+
+    pub async fn tick(&self) {
+        let connections = self.connections.lock().await;
+        for conn in connections.iter() {
+            let mut conn = conn.lock().await;
+            if conn.state == ProtocolState::Play {
+                conn.keep_connection_alive().await;
+            }
+        }
     }
 
     async fn handle_connection(connection: Arc<Mutex<Connection>>, mut read_half: ReadHalf<TcpStream>) {
