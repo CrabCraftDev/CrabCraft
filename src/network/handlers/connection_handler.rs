@@ -1,14 +1,18 @@
+use std::fs;
+
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use log::info;
 use serde_json::{json, Value};
-use std::fs;
+use tokio::runtime::Handle;
+use tokio::task::block_in_place;
 
+use crate::network::connection::Connection;
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::packet_handler::PacketHandler;
-use crate::network::tcp_server::{Connection, ProtocolState, TcpServer};
+use crate::network::tcp_server::{ProtocolState, TcpServer};
 use crate::utils::fs::get_server_path;
 
 pub struct ConnectionHandler;
@@ -185,6 +189,17 @@ impl PacketHandler for ConnectionHandler {
             TcpServer::send_sync(connection_data, response.freeze());
 
             info!("Player joined!");
+        }
+
+        // =================== PLAY
+        if packet_id == 0x15 && connection_data.state == ProtocolState::Play {
+            let keep_alive_challenge = bytes.get_u64() as i64;
+
+            if connection_data.keepalive_pending && connection_data.last_keepalive_time == keep_alive_challenge {
+                connection_data.keepalive_pending = false
+            } else {
+                block_in_place(|| Handle::current().block_on(connection_data.disconnect("Timeout!")));
+            }
         }
     }
 }
