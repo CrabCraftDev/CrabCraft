@@ -1,23 +1,28 @@
 use std::io::Read;
 use std::io::Write;
+use std::sync::Arc;
+use std::sync::Mutex;
 
-use bytes::{Bytes, BytesMut};
+use bytes::Bytes;
 use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
 use log::debug;
 use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
+    io::AsyncWriteExt,
     net::{TcpListener, TcpStream},
 };
 
+use crate::network::connection::ConnectionHandle;
+use crate::network::connection::PlayerConnection;
 use crate::network::handlers::connection_handler::ConnectionHandler;
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
-use crate::utils::network::{get_var_int_from_stream, to_var_int};
+use crate::utils::network::to_var_int;
 
 pub struct TcpServer {
     address: String,
+    connections: Arc<Mutex<Vec<ConnectionHandle>>>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -29,13 +34,12 @@ pub enum ProtocolState {
     Play,
 }
 
-pub struct ConnectionData {
-    pub(crate) state: ProtocolState,
-}
-
 impl TcpServer {
     pub fn new(address: String) -> TcpServer {
-        TcpServer { address }
+        TcpServer {
+            address,
+            connections: Arc::new(Mutex::new(Vec::new())),
+        }
     }
 
     pub async fn start(&self) {
@@ -46,7 +50,7 @@ impl TcpServer {
                 Ok((stream, address)) => {
                     debug!("Connection established {address}!");
                     stream.set_nodelay(true).unwrap();
-                    tokio::spawn(Self::handle_connection(stream));
+                    tokio::spawn(Self::handle_connection(stream, Arc::clone(&self.connections)));
                 }
                 Err(e) => {
                     eprintln!("Error accepting connection: {}", e);
@@ -97,28 +101,11 @@ impl TcpServer {
         Bytes::from(new_bytes)
     }
 
-    async fn handle_connection(mut stream: TcpStream) {
-        let mut handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(ConnectionHandler)];
-        let mut connection_data = ConnectionData {
-            state: ProtocolState::Handshake,
-        };
+    async fn handle_connection(stream: TcpStream, connections: Arc<Mutex<Vec<ConnectionHandle>>>) {
+        let handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(ConnectionHandler)];
 
-        while let Ok(len) = get_var_int_from_stream(&mut stream).await {
-            let mut buffer = vec![0; len as usize];
-
-            if let Ok(0) = stream.read_exact(&mut buffer).await {
-                break;
-            }
-
-            let mut_bytes = BytesMut::from(buffer.as_slice());
-            let mut byte = mut_bytes.clone().freeze();
-
-            let packet_id = byte.get_var_int();
-
-            for handler in &mut handlers {
-                handler.handle_packet(&mut stream, &mut connection_data, byte.clone(), packet_id);
-            }
-        }
-        debug!("Connection closed {:?}!", stream.peer_addr().unwrap());
+        let (mut connection, handle) = PlayerConnection::create(stream, handlers);
+        connections.lock().unwrap().push(handle);
+        connection.listen().await;
     }
 }

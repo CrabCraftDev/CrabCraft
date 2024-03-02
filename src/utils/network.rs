@@ -18,7 +18,8 @@ pub fn to_var_int(mut value: i32) -> Vec<u8> {
         value >>= 7;
     }
 }
-
+// Still used in proxy
+#[allow(dead_code)]
 pub async fn get_var_int_from_stream(stream: &mut (impl AsyncReadExt + Unpin)) -> Result<i32, Box<dyn Error + Send>> {
     let mut value: i32 = 0;
     let mut position: i8 = 0;

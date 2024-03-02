@@ -1,7 +1,6 @@
 use std::str::from_utf8;
 
 use bytes::Buf;
-use bytes::Bytes;
 use uuid::Uuid;
 
 use crate::utils::network::{CONTINUE_BIT, SEGMENT_BITS};
@@ -85,6 +84,4 @@ pub trait ReadByteBuf: Buf {
     }
 }
 
-impl ReadByteBuf for &[u8] {}
-
-impl ReadByteBuf for Bytes {}
+impl<T: Buf> ReadByteBuf for T {}

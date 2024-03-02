@@ -1,5 +1,4 @@
 use bytes::BufMut;
-use bytes::BytesMut;
 use uuid::Uuid;
 
 use crate::utils::network::{CONTINUE_BIT, SEGMENT_BITS};
@@ -63,6 +62,4 @@ pub trait WriteByteBuf: BufMut {
     }
 }
 
-impl WriteByteBuf for Vec<u8> {}
-
-impl WriteByteBuf for BytesMut {}
+impl<T: BufMut> WriteByteBuf for T {}

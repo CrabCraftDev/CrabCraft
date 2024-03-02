@@ -11,21 +11,22 @@ use tokio::task::block_in_place;
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::packet_handler::PacketHandler;
-use crate::network::tcp_server::{ConnectionData, ProtocolState, TcpServer};
+
+use crate::network::tcp_server::{ProtocolState, TcpServer};
 use crate::utils::fs::get_server_path;
 
 pub struct ConnectionHandler;
 
 impl PacketHandler for ConnectionHandler {
-    fn handle_packet(&mut self, stream: &mut TcpStream, data: &mut ConnectionData, mut bytes: Bytes, packet_id: i32) {
+    fn handle_packet(&mut self, stream: &mut TcpStream, state: &mut ProtocolState, mut bytes: Bytes, packet_id: i32) {
         // =================== HANDSHAKE
-        if packet_id == 0x00 && data.state == ProtocolState::Handshake {
+        if packet_id == 0x00 && *state == ProtocolState::Handshake {
             let _version = bytes.get_var_int();
             let _address_ = bytes.get_string();
             let _port = bytes.get_u16();
             let next_state = bytes.get_var_int();
 
-            data.state = match next_state {
+            *state = match next_state {
                 1 => ProtocolState::Status,
                 2 => ProtocolState::Login,
                 _ => panic!("Invalid state!"),
@@ -36,7 +37,7 @@ impl PacketHandler for ConnectionHandler {
 
         // =================== STATUS
         // Ping request
-        if packet_id == 0x01 && data.state == ProtocolState::Status {
+        if packet_id == 0x01 && *state == ProtocolState::Status {
             let time = bytes.get_u64();
             let mut response = BytesMut::new();
             response.put_var_int(0x01);
@@ -46,7 +47,7 @@ impl PacketHandler for ConnectionHandler {
         }
 
         // Server list ping
-        if packet_id == 0x00 && data.state == ProtocolState::Status {
+        if packet_id == 0x00 && *state == ProtocolState::Status {
             let mut response = BytesMut::new();
             response.put_var_int(0);
 
@@ -84,7 +85,7 @@ impl PacketHandler for ConnectionHandler {
 
         // =================== LOGIN
         // Login start
-        if packet_id == 0x00 && data.state == ProtocolState::Login {
+        if packet_id == 0x00 && *state == ProtocolState::Login {
             let username = bytes.get_string();
             let uuid = bytes.get_uuid();
 
@@ -98,13 +99,13 @@ impl PacketHandler for ConnectionHandler {
         }
 
         // Login acknowledged
-        if packet_id == 0x03 && data.state == ProtocolState::Login {
-            data.state = ProtocolState::Configuration;
+        if packet_id == 0x03 && *state == ProtocolState::Login {
+            *state = ProtocolState::Configuration;
             return;
         }
 
         // =================== CONFIGURATION
-        if packet_id == 0x00 && data.state == ProtocolState::Configuration {
+        if packet_id == 0x00 && *state == ProtocolState::Configuration {
             let _language = bytes.get_string();
             let _view_distance = bytes.get_byte();
             let _chat_mode = bytes.get_var_int();
@@ -130,14 +131,14 @@ impl PacketHandler for ConnectionHandler {
         }
 
         // Plugin Message
-        if packet_id == 0x01 && data.state == ProtocolState::Configuration {
+        if packet_id == 0x01 && *state == ProtocolState::Configuration {
             let _namespace = bytes.get_string();
             let _data = Bytes::from(bytes.get_bytes(bytes.len() as i32));
         }
 
         // Finish Configuration
-        if packet_id == 0x02 && data.state == ProtocolState::Configuration {
-            data.state = ProtocolState::Play;
+        if packet_id == 0x02 && *state == ProtocolState::Configuration {
+            *state = ProtocolState::Play;
             let mut response = BytesMut::new();
             response.put_var_int(0x29);
             response.put_u32(0); // Entity ID
