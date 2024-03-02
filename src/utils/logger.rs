@@ -2,6 +2,7 @@ use std::fs::{create_dir_all, metadata, rename, OpenOptions};
 use std::io::{Result, Write};
 
 use chrono::{DateTime, Local};
+use colored::Colorize;
 use log::{Level, Log, Metadata, Record};
 
 use crate::utils::fs::{count_files_with_prefix, get_server_path};
@@ -39,9 +40,16 @@ impl Log for Logger {
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
             let timestamp = Local::now().format("%H:%M:%S");
-            let message = format!("[{}] [{}] {}\n", timestamp, record.level(), record.args());
+            let uncolored_message = format!("[{}] [{}] {}", timestamp, record.level(), record.args());
 
-            print!("{}", message);
+            let message = match record.level() {
+                Level::Debug => uncolored_message.blue(),
+                Level::Warn => uncolored_message.yellow(),
+                Level::Error => uncolored_message.red(),
+                _ => uncolored_message.normal(),
+            };
+
+            println!("{}", message);
 
             create_dir_all(get_server_path().join("logs")).expect("Failed to create directories");
 
@@ -51,7 +59,7 @@ impl Log for Logger {
                 .open(get_server_path().join("logs/latest.log"));
 
             file.unwrap()
-                .write_all(message.as_bytes())
+                .write_all(format!("{uncolored_message}\n").as_bytes())
                 .expect("Couldn't write to file!");
         }
     }
