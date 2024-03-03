@@ -3,6 +3,7 @@ use std::net::SocketAddr;
 use bytes::{BufMut, BytesMut};
 use chrono::Local;
 use log::info;
+use serde_json::json;
 use tokio::io::{AsyncWriteExt, WriteHalf};
 use tokio::net::TcpStream;
 
@@ -22,12 +23,31 @@ pub struct Connection {
 const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
 
 impl Connection {
-    pub async fn disconnect(&mut self, _message: &str) {
-        info!("Disconnected player!");
+    pub async fn disconnect(&mut self, message: &str) {
+        let payload = message.as_bytes();
+        let mut response = BytesMut::new();
 
-        // ToDo: Send disconnect packet. For now we don't have NBT support
+        match self.state {
+            ProtocolState::Configuration | ProtocolState::Play => {
+                let packet_type = if self.state == ProtocolState::Play { 0x1B } else { 0x01 };
+                response.put_var_int(packet_type);
+                // NBT representation of TAG_String
+                response.put_u8(8);
+                response.put_u16(payload.len() as u16);
+                response.put(payload);
+            }
+            ProtocolState::Login => {
+                response.put_var_int(0x00);
+                response.put_string(json!({"text": message}).to_string());
+            }
+            _ => {}
+        }
 
+        if !response.is_empty() {
+            TcpServer::send(&mut self.write_half, response.freeze()).await;
+        }
         self.write_half.shutdown().await.unwrap();
+        info!("Disconnected player!");
     }
 
     pub async fn keep_connection_alive(&mut self) {
