@@ -25,12 +25,12 @@ async fn main() {
     log::set_logger(&Logger).unwrap();
     Logger::rename_log_file().expect("Failed to prepare logger! Exiting!");
 
-    let mc_server = McServer::new();
+    let mc_server = McServer::new("127.0.0.1:25565".to_string());
 
     let startup_finish = Local::now().timestamp_millis();
     info!("CrabCraft started in {}ms!", startup_finish - startup_begin);
 
-    mc_server.start("127.0.0.1:25565".to_string()).await;
+    mc_server.start().await;
 
     info!("Exiting!");
 }
