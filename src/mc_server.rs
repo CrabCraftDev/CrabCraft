@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use log::{info, warn};
 use tokio::time::{sleep_until, Instant};
+use tokio::{select, signal};
 
 use crate::network::tcp_server::TcpServer;
 use crate::utils::scheduler::ServerScheduler;
@@ -42,10 +43,18 @@ impl McServer {
             })
         };
 
-        self.tick_loop().await;
-        tcp_server_task.await.unwrap();
+        let ctrl_c = signal::ctrl_c();
 
-        self.shutdown();
+        select! {
+            _ = ctrl_c => {
+                println!(); // To write new messages after ^C
+                self.shutdown();
+            },
+            _ = tcp_server_task => {},
+            _ = self.tick_loop() => {},
+        }
+
+        self.do_shutdown().await;
     }
 
     pub async fn tick_loop(&mut self) {
@@ -76,18 +85,24 @@ impl McServer {
         self.tcp_server.tick().await;
     }
 
-    #[allow(dead_code)]
     pub fn shutdown(&mut self) {
-        info!("Stopping the server");
+        info!("Disabling the server...");
         self.running = false;
     }
 
-    #[allow(clippy::needless_return)]
-    #[allow(dead_code)]
-    pub(crate) fn do_shutdown(&mut self) {
+    async fn do_shutdown(&mut self) {
+        info!("Stopping server...");
         if self.running {
-            warn!("There was an attempt to process shutdown logic while still running!");
+            warn!("Stopping server while it is still running!");
             return;
         }
+
+        let connections = &self.tcp_server.connections.lock().await;
+        for connection in connections.iter() {
+            let mut connection = connection.lock().await;
+            connection.disconnect("Server shutting down!").await;
+        }
+
+        info!("CrabCraft stopped! Bye!")
     }
 }
