@@ -16,39 +16,39 @@ pub struct McServer {
     running: bool,
     current_tick: u64,
     scheduler: ServerScheduler,
+    tcp_server: Arc<TcpServer>,
     next_tick_start: Instant,
     last_overload_warning: Instant,
 }
 
 impl McServer {
-    pub fn new() -> McServer {
+    pub fn new(ip_address: String) -> McServer {
+        let tcp_server = TcpServer::new(ip_address);
         McServer {
             running: true,
             current_tick: 0,
+            tcp_server: Arc::new(tcp_server),
             scheduler: ServerScheduler::default(),
             next_tick_start: Instant::now(),
             last_overload_warning: Instant::now().checked_sub(SERVER_OVERLOAD_WARNING_COOLDOWN).unwrap(),
         }
     }
 
-    pub async fn start(mut self, ip_address: String) {
-        let tcp_server = TcpServer::new(ip_address);
-        let tcp_server_arc = Arc::new(tcp_server);
-
+    pub async fn start(mut self) {
+        let tcp_server_arc = Arc::clone(&self.tcp_server);
         let tcp_server_task = {
-            let tcp_server_arc = Arc::clone(&tcp_server_arc);
             tokio::spawn(async move {
                 tcp_server_arc.start().await;
             })
         };
 
-        self.tick_loop(tcp_server_arc).await;
+        self.tick_loop().await;
         tcp_server_task.await.unwrap();
 
         self.shutdown();
     }
 
-    pub async fn tick_loop(&mut self, tcp_server: Arc<TcpServer>) {
+    pub async fn tick_loop(&mut self) {
         while self.running {
             let last_tick_time = Instant::now() - self.next_tick_start + MAX_TICK_DURATION;
             if last_tick_time.as_millis() > MAX_TICK_DURATION.as_millis() + 5
@@ -63,16 +63,17 @@ impl McServer {
             }
             self.next_tick_start = Instant::now().add(MAX_TICK_DURATION);
 
-            self.tick(tcp_server.clone()).await;
+            self.tick().await;
 
             sleep_until(self.next_tick_start).await;
         }
     }
 
-    pub async fn tick(&mut self, tcp_server: Arc<TcpServer>) {
+    pub async fn tick(&mut self) {
         self.current_tick += 1;
         self.scheduler.tick();
-        tcp_server.tick().await;
+
+        self.tcp_server.tick().await;
     }
 
     #[allow(dead_code)]
