@@ -18,7 +18,7 @@ pub struct McServer {
     current_tick: u64,
     scheduler: ServerScheduler,
     tcp_server: Arc<TcpServer>,
-    suppress_overload_warning: Instant,
+    overload_warning_cooldown: Instant,
 }
 
 impl McServer {
@@ -29,7 +29,7 @@ impl McServer {
             current_tick: 0,
             tcp_server: Arc::new(tcp_server),
             scheduler: ServerScheduler::default(),
-            suppress_overload_warning: Instant::now(),
+            overload_warning_cooldown: Instant::now(),
         }
     }
 
@@ -63,13 +63,13 @@ impl McServer {
 
             sleep_until(tick_start.add(MAX_TICK_DURATION)).await;
 
-            if last_tick_duration > MAX_TICK_DURATION && self.suppress_overload_warning < Instant::now() {
+            if last_tick_duration > MAX_TICK_DURATION && self.overload_warning_cooldown < Instant::now() {
                 warn!(
                     "Can't keep up! Is the server overloaded? The last tick took {}ms, while max tick time is {}ms!",
                     last_tick_duration.as_millis(),
                     MAX_TICK_DURATION.as_millis()
                 );
-                self.suppress_overload_warning = Instant::now().add(SERVER_OVERLOAD_WARNING_COOLDOWN);
+                self.overload_warning_cooldown = Instant::now().add(SERVER_OVERLOAD_WARNING_COOLDOWN);
             }
         }
     }
