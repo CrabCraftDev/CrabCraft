@@ -3,8 +3,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use log::{info, warn};
-use tokio::time::{sleep_until, Instant};
 use tokio::{select, signal};
+use tokio::time::{Instant, sleep_until};
 
 use crate::network::tcp_server::TcpServer;
 use crate::utils::scheduler::ServerScheduler;
@@ -18,8 +18,7 @@ pub struct McServer {
     current_tick: u64,
     scheduler: ServerScheduler,
     tcp_server: Arc<TcpServer>,
-    next_tick_start: Instant,
-    last_overload_warning: Instant,
+    suppress_overload_warning: Instant,
 }
 
 impl McServer {
@@ -30,8 +29,7 @@ impl McServer {
             current_tick: 0,
             tcp_server: Arc::new(tcp_server),
             scheduler: ServerScheduler::default(),
-            next_tick_start: Instant::now(),
-            last_overload_warning: Instant::now().checked_sub(SERVER_OVERLOAD_WARNING_COOLDOWN).unwrap(),
+            suppress_overload_warning: Instant::now(),
         }
     }
 
@@ -59,22 +57,20 @@ impl McServer {
 
     pub async fn tick_loop(&mut self) {
         while self.running {
-            let last_tick_time = Instant::now() - self.next_tick_start + MAX_TICK_DURATION;
-            if last_tick_time.as_millis() > MAX_TICK_DURATION.as_millis() + 5
-                && self.last_overload_warning.add(SERVER_OVERLOAD_WARNING_COOLDOWN) < Instant::now()
-            {
+            let tick_start = Instant::now();
+            self.tick().await;
+            let last_tick_duration = Instant::now() - tick_start;
+
+            sleep_until(tick_start.add(MAX_TICK_DURATION)).await;
+
+            if last_tick_duration > MAX_TICK_DURATION && self.suppress_overload_warning < Instant::now() {
                 warn!(
                     "Can't keep up! Is the server overloaded? The last tick took {}ms, while max tick time is {}ms!",
-                    last_tick_time.as_millis(),
+                    last_tick_duration.as_millis(),
                     MAX_TICK_DURATION.as_millis()
                 );
-                self.last_overload_warning = Instant::now();
+                self.suppress_overload_warning = Instant::now().add(SERVER_OVERLOAD_WARNING_COOLDOWN);
             }
-            self.next_tick_start = Instant::now().add(MAX_TICK_DURATION);
-
-            self.tick().await;
-
-            sleep_until(self.next_tick_start).await;
         }
     }
 
