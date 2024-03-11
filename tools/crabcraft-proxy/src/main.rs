@@ -1,5 +1,6 @@
 use bytes::BytesMut;
 use clap::Parser;
+use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -19,42 +20,54 @@ struct Args {
     /// IP of server to connect
     #[arg(short, long, default_value = "127.0.0.1:25565")]
     target: String,
+
+    /// Maximum packet size for which content should be printed
+    #[arg(short, long, default_value = "1500")]
+    print_threshold: u32,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
+    let args_arc = Arc::new(args);
     println!("CrabCraft proxy started...");
 
-    let proxy_server = TcpListener::bind(args.listen).await?;
+    let proxy_server = TcpListener::bind(&args_arc.listen).await?;
 
     while let Ok((client, _)) = proxy_server.accept().await {
-        let server_target = args.target.clone();
+        let args_clone = Arc::clone(&args_arc);
         tokio::spawn(async move {
-            handle_client_conn(client, server_target).await.unwrap();
+            handle_client_connection(client, args_clone).await.unwrap();
         });
     }
 
     Ok(())
 }
 
-async fn handle_client_conn(mut client_conn: TcpStream, server: String) -> Result<(), Box<dyn std::error::Error>> {
+async fn handle_client_connection(
+    mut client_conn: TcpStream,
+    args: Arc<Args>,
+) -> Result<(), Box<dyn std::error::Error>> {
     println!("Connection established!");
 
-    let mut main_server_conn = TcpStream::connect(server).await?; // Replace with your target server
+    let mut main_server_conn = TcpStream::connect(&args.target).await?; // Replace with your target server
     let (mut client_recv, mut client_send) = client_conn.split();
     let (mut server_recv, mut server_send) = main_server_conn.split();
 
-    let handle_one = async {
-        transfer_data("C2S", &mut client_recv, &mut server_send).await.unwrap();
+    let handle_c2s = async {
+        transfer_data("C2S", &args, &mut client_recv, &mut server_send)
+            .await
+            .unwrap();
     };
-    let handle_two = async {
-        transfer_data("S2C", &mut server_recv, &mut client_send).await.unwrap();
+    let handle_s2c = async {
+        transfer_data("S2C", &args, &mut server_recv, &mut client_send)
+            .await
+            .unwrap();
     };
 
     select! {
-        _ = handle_one => {},
-        _ = handle_two => {}
+        _ = handle_c2s => {},
+        _ = handle_s2c => {}
     }
 
     println!("Connection closed!");
@@ -63,6 +76,7 @@ async fn handle_client_conn(mut client_conn: TcpStream, server: String) -> Resul
 
 async fn transfer_data(
     direction: &str,
+    args: &Args,
     receiver: &mut (impl AsyncReadExt + Unpin),
     sender: &mut (impl AsyncWriteExt + Unpin),
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -72,13 +86,17 @@ async fn transfer_data(
             break;
         }
 
-        let mut buffer_copy = buffer.as_slice();
-        let id = buffer_copy.get_var_int();
-        let bytes_str = BytesMut::from(&buffer as &[u8]).freeze();
-        println!("[{direction}] {id:X}: {bytes_str:?}");
+        let id = buffer.clone().as_slice().get_var_int();
+
+        if buffer.len() >= args.print_threshold as usize {
+            println!("[{direction}] {id:X}: Packet is too big to be printed!");
+        } else {
+            let buffer_str = BytesMut::from(buffer.as_slice()).freeze();
+            println!("[{direction}] {id:X}: {buffer_str:?}");
+        }
 
         let prefix = to_var_int(len);
-        let full_packet = &[prefix, buffer].concat();
+        let full_packet = &[prefix, buffer.to_vec()].concat();
 
         sender.write_all(full_packet).await?;
     }
