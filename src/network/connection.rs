@@ -6,6 +6,8 @@ use log::info;
 use serde_json::json;
 use tokio::io::{AsyncWriteExt, WriteHalf};
 use tokio::net::TcpStream;
+use tokio::runtime::Handle;
+use tokio::task::block_in_place;
 
 use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::tcp_server::{ProtocolState, TcpServer};
@@ -48,6 +50,10 @@ impl Connection {
         }
         self.write_half.shutdown().await.unwrap();
         info!("Disconnected player!");
+    }
+
+    pub fn disconnect_sync(&mut self, message: &str) {
+        block_in_place(|| Handle::current().block_on(self.disconnect(message)));
     }
 
     pub async fn keep_connection_alive(&mut self) {

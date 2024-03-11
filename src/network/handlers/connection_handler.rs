@@ -1,12 +1,11 @@
+use std::cmp::Ordering;
 use std::fs;
 
-use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
+use base64::prelude::BASE64_STANDARD;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use log::info;
 use serde_json::{json, Value};
-use tokio::runtime::Handle;
-use tokio::task::block_in_place;
 
 use crate::network::connection::Connection;
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
@@ -17,11 +16,14 @@ use crate::utils::fs::get_server_path;
 
 pub struct ConnectionHandler;
 
+const SERVER_PROTOCOL_VERSION: i32 = 765;
+const SERVER_VERSION: &str = "1.20.4";
+
 impl PacketHandler for ConnectionHandler {
     fn handle_packet(&mut self, connection_data: &mut Connection, mut bytes: Bytes, packet_id: i32) {
         // =================== HANDSHAKE
         if packet_id == 0x00 && connection_data.state == ProtocolState::Handshake {
-            let _version = bytes.get_var_int();
+            let version = bytes.get_var_int();
             let _address_ = bytes.get_string();
             let _port = bytes.get_u16();
             let next_state = bytes.get_var_int();
@@ -31,6 +33,16 @@ impl PacketHandler for ConnectionHandler {
                 2 => ProtocolState::Login,
                 _ => panic!("Invalid state!"),
             };
+
+            if connection_data.state == ProtocolState::Login && version != SERVER_PROTOCOL_VERSION {
+                match version.cmp(&SERVER_PROTOCOL_VERSION) {
+                    Ordering::Less => connection_data
+                        .disconnect_sync(&format!("Server is on newer Minecraft version! Use {SERVER_VERSION}")),
+                    Ordering::Greater => connection_data
+                        .disconnect_sync(&format!("Server is on older Minecraft version! Use {SERVER_VERSION}")),
+                    Ordering::Equal => {}
+                }
+            }
 
             return;
         }
@@ -53,8 +65,8 @@ impl PacketHandler for ConnectionHandler {
 
             let mut status_response = json!({
                 "version": {
-                    "name": "1.20.4",
-                    "protocol": 765,
+                    "name": SERVER_VERSION,
+                    "protocol": SERVER_PROTOCOL_VERSION,
                 },
                 "players": {
                     "online": 0,
@@ -198,7 +210,7 @@ impl PacketHandler for ConnectionHandler {
             if connection_data.keepalive_pending && connection_data.last_keepalive_time == keep_alive_challenge {
                 connection_data.keepalive_pending = false
             } else {
-                block_in_place(|| Handle::current().block_on(connection_data.disconnect("Timeout!")));
+                connection_data.disconnect_sync("Timeout!");
             }
         }
     }
