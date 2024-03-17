@@ -22,8 +22,8 @@ async fn main() {
         LevelFilter::Info
     });
 
-    log::set_logger(&Logger).unwrap();
-    Logger::rename_log_file().expect("Failed to prepare logger! Exiting!");
+    log::set_logger(&Logger).expect("Failed to prepare logger! Exiting!");
+    Logger::rename_log_file().expect("Failed to prepare logger file! Exiting!");
 
     let mc_server = McServer::new("127.0.0.1:25565".to_string());
 

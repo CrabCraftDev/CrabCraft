@@ -20,6 +20,6 @@ pub fn get_server_path() -> PathBuf {
         let manifest_str = env::var("CARGO_MANIFEST_DIR").unwrap();
         Path::new(&manifest_str).join("server").to_path_buf()
     } else {
-        env::current_dir().unwrap().to_path_buf()
+        env::current_exe().unwrap().to_path_buf()
     }
 }

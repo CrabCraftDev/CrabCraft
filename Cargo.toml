@@ -19,6 +19,7 @@ uuid = "1.7.0"
 flate2 = "1.0.28"
 base64 = "0.22.0"
 colored = "2.1.0"
+thiserror = "1.0.58"
 
 [dev-dependencies]
 cargo-husky = { version = "1.5.0", features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy"] }

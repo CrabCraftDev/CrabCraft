@@ -1,6 +1,7 @@
 use std::fs::{create_dir_all, metadata, rename, OpenOptions};
-use std::io::{Result, Write};
+use std::io::Write;
 
+use crate::utils::errors::Error;
 use chrono::{DateTime, Local};
 use colored::Colorize;
 use log::{Level, Log, Metadata, Record};
@@ -10,7 +11,7 @@ use crate::utils::fs::{count_files_with_prefix, get_server_path};
 pub struct Logger;
 
 impl Logger {
-    pub fn rename_log_file() -> Result<()> {
+    pub fn rename_log_file() -> Result<(), Error> {
         let logs_path = get_server_path().join("logs");
         let log_path = logs_path.join("latest.log");
 
@@ -51,18 +52,23 @@ impl Log for Logger {
 
             println!("{}", message);
 
-            create_dir_all(get_server_path().join("logs")).expect("Failed to create directories");
-
-            let file = OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(get_server_path().join("logs/latest.log"));
-
-            file.unwrap()
-                .write_all(format!("{uncolored_message}\n").as_bytes())
-                .expect("Couldn't write to file!");
+            if log_to_file(uncolored_message).is_err() {
+                println!("{}", "Failed to save log to file!".red())
+            }
         }
     }
 
     fn flush(&self) {}
+}
+
+fn log_to_file(message: String) -> Result<(), Error> {
+    create_dir_all(get_server_path().join("logs"))?;
+
+    let file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(get_server_path().join("logs/latest.log"));
+
+    file?.write_all(format!("{message}\n").as_bytes())?;
+    Ok(())
 }
