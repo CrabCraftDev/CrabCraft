@@ -1,5 +1,6 @@
 use chrono::Local;
-use log::{info, LevelFilter};
+use log::{error, info, LevelFilter};
+use std::panic;
 
 use utils::logger::Logger;
 
@@ -15,6 +16,13 @@ mod tests;
 
 #[tokio::main]
 async fn main() {
+    panic::set_hook(Box::new(|panic_info| {
+        error!("Server PANICKED!!! (looks like a crash, that wasn't expected)");
+        for line in panic_info.to_string().split('\n') {
+            error!("{}", line);
+        }
+    }));
+
     let startup_begin = Local::now().timestamp_millis();
     log::set_max_level(if cfg!(debug_assertions) {
         LevelFilter::Debug
@@ -22,8 +30,8 @@ async fn main() {
         LevelFilter::Info
     });
 
-    log::set_logger(&Logger).unwrap();
-    Logger::rename_log_file().expect("Failed to prepare logger! Exiting!");
+    log::set_logger(&Logger).expect("Failed to prepare logger! Exiting!");
+    Logger::rename_log_file().expect("Failed to prepare logger file! Exiting!");
 
     let mc_server = McServer::new("127.0.0.1:25565".to_string());
 

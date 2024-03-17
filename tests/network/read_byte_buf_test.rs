@@ -1,7 +1,5 @@
-use std::str::FromStr;
-
 use bytes::Bytes;
-use uuid::Uuid;
+use uuid::uuid;
 
 use crab_craft::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 
@@ -60,7 +58,7 @@ fn test_get_bytes() {
 
 #[test]
 fn test_get_uuid() {
-    let uuid = Uuid::from_str("123e4567-e89b-12d3-a456-426614174000").unwrap();
+    let uuid = uuid!("123e4567-e89b-12d3-a456-426614174000");
     let mut bytes: &[u8] = uuid.as_bytes();
 
     let result = bytes.get_uuid();

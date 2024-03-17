@@ -1,13 +1,13 @@
-use std::error::Error;
 use std::io::{Read, Write};
 
 use bytes::Bytes;
-use flate2::Compression;
 use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
+use flate2::Compression;
 use tokio::io::AsyncReadExt;
 
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
+use crate::utils::errors::Error;
 
 pub const CONTINUE_BIT: i32 = 0x80;
 pub const SEGMENT_BITS: i32 = 0x7F;
@@ -26,15 +26,12 @@ pub fn to_var_int(mut value: i32) -> Vec<u8> {
     }
 }
 
-pub async fn get_var_int_from_stream(stream: &mut (impl AsyncReadExt + Unpin)) -> Result<i32, Box<dyn Error + Send>> {
+pub async fn get_var_int_from_stream(stream: &mut (impl AsyncReadExt + Unpin)) -> Result<i32, Error> {
     let mut value: i32 = 0;
     let mut position: i8 = 0;
 
     loop {
-        let current_byte = match stream.read_u8().await {
-            Ok(byte) => byte,
-            Err(e) => return Err(Box::new(e)),
-        };
+        let current_byte = stream.read_u8().await?;
 
         value |= (current_byte as i32 & SEGMENT_BITS) << position;
         if (current_byte as i32 & CONTINUE_BIT) == 0 {
@@ -42,38 +39,39 @@ pub async fn get_var_int_from_stream(stream: &mut (impl AsyncReadExt + Unpin)) -
         }
 
         position += 7;
-
-        assert!(position < 32, "Varint exceeds 32 bits");
+        if position >= 32 {
+            return Err(Error::VarIntTooBig);
+        }
     }
 
     Ok(value)
 }
 
 #[allow(dead_code)]
-pub async fn decompress_packet(mut bytes: Bytes) -> Bytes {
+pub async fn decompress_packet(mut bytes: Bytes) -> Result<Bytes, Error> {
     let mut new_bytes = Vec::new();
     let data_length = bytes.get_var_int();
     if data_length == 0 {
-        return Bytes::from(bytes.get_bytes(data_length));
+        return Ok(Bytes::from(bytes.get_bytes(data_length)));
     }
 
     let compressed = &*bytes.get_bytes(data_length);
     let mut decoder = ZlibDecoder::new(compressed);
-    decoder.read_to_end(&mut new_bytes).unwrap();
+    decoder.read_to_end(&mut new_bytes)?;
 
-    Bytes::from(new_bytes)
+    Ok(Bytes::from(new_bytes))
 }
 
 #[allow(dead_code)]
-pub async fn compress_packet(bytes: Bytes, compression_threshold: i32) -> Bytes {
+pub async fn compress_packet(bytes: Bytes, compression_threshold: i32) -> Result<Bytes, Error> {
     let should_compress = bytes.len() as i32 > compression_threshold;
     let mut data_length = to_var_int(if should_compress { 0 } else { bytes.len() as i32 });
 
     let mut compressed;
     if should_compress {
         let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
-        encoder.write_all(&bytes).expect("Couldn't compress packet!");
-        compressed = encoder.finish().unwrap();
+        encoder.write_all(&bytes)?;
+        compressed = encoder.finish()?;
     } else {
         compressed = Vec::from(bytes)
     }
@@ -83,5 +81,5 @@ pub async fn compress_packet(bytes: Bytes, compression_threshold: i32) -> Bytes 
     packet.append(&mut data_length);
     packet.append(&mut compressed);
 
-    Bytes::from(packet)
+    Ok(Bytes::from(packet))
 }

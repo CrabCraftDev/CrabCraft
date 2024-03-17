@@ -1,6 +1,4 @@
-use std::str::FromStr;
-
-use uuid::Uuid;
+use uuid::uuid;
 
 use crab_craft::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 
@@ -63,7 +61,7 @@ fn test_put_byte_array() {
 
 #[test]
 fn test_put_uuid() {
-    let uuid = Uuid::from_str("123e4567-e89b-12d3-a456-426614174000").unwrap();
+    let uuid = uuid!("123e4567-e89b-12d3-a456-426614174000");
     let mut buf = Vec::new();
     buf.put_uuid(uuid);
 
