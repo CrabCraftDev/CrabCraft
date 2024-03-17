@@ -9,6 +9,7 @@ use tokio::io::AsyncReadExt;
 
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::utils::errors::Error;
+use crate::utils::errors::Error::VarIntTooBig;
 
 pub const CONTINUE_BIT: i32 = 0x80;
 pub const SEGMENT_BITS: i32 = 0x7F;
@@ -45,8 +46,9 @@ pub async fn get_var_int_from_stream(
         }
 
         position += 7;
-
-        assert!(position < 32, "Varint exceeds 32 bits");
+        if position >= 32 {
+            return Err(Box::new(VarIntTooBig))
+        }
     }
 
     Ok(value)

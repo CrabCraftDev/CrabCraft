@@ -5,4 +5,6 @@ use thiserror::Error;
 pub enum Error {
     #[error(transparent)]
     IOError(#[from] io::Error),
+    #[error("Varint exceeds 32 bits")]
+    VarIntTooBig
 }
