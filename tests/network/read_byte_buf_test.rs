@@ -1,7 +1,5 @@
-use std::str::FromStr;
-
 use bytes::Bytes;
-use uuid::{uuid, Uuid};
+use uuid::uuid;
 
 use crab_craft::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 

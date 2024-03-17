@@ -1,6 +1,4 @@
-use std::str::FromStr;
-
-use uuid::{uuid, Uuid};
+use uuid::uuid;
 
 use crab_craft::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 
