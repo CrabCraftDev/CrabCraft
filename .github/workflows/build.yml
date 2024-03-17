@@ -23,6 +23,7 @@ jobs:
           path: target/release/crab_craft
       - name: Download windows buildtools
         run: rustup target add x86_64-pc-windows-gnu
+      - run: sudo apt-get install -y mingw-w64
       - name: Build for Windows
         run: cargo build --release --target x86_64-pc-windows-gnu
       - uses: actions/upload-artifact@v4
