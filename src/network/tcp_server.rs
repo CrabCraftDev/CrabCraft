@@ -85,9 +85,12 @@ impl TcpServer {
     }
 
     pub async fn send(connection: &mut Connection, bytes: Bytes) {
-        if Self::do_send(&mut connection.write_half, bytes).await.is_err()
-            && connection.write_half.shutdown().await.is_err()
-        {
+        if connection.is_closed {
+            return;
+        }
+        if Self::do_send(&mut connection.write_half, bytes).await.is_err() {
+            connection.write_half.shutdown().await.unwrap_or(());
+            connection.is_closed = true;
             warn!("Player connection closed unexpectedly!")
         }
     }

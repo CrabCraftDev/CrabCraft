@@ -48,9 +48,9 @@ impl Connection {
         if !response.is_empty() {
             TcpServer::send(self, response.freeze()).await;
         }
-        let sresult = self.write_half.shutdown().await;
-        if sresult.is_err() {
-            warn!("{}", sresult.err().unwrap().to_string());
+        let shutdown_result = self.write_half.shutdown().await;
+        if shutdown_result.is_err() {
+            warn!("{}", shutdown_result.err().unwrap().to_string());
         }
         info!("Disconnected player!");
     }
