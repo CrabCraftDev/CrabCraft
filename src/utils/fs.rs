@@ -21,8 +21,10 @@ pub fn get_server_path() -> PathBuf {
             env::var("CARGO_MANIFEST_DIR").expect("Couldn't get server directory path! (Maybe permissions issue?)");
         Path::new(&manifest_str).join("server").to_path_buf()
     } else {
-        env::current_exe()
+        let mut exe_path = env::current_exe()
             .expect("Couldn't get server directory path! (Maybe permissions issue?)")
-            .to_path_buf()
+            .to_path_buf();
+        exe_path.pop();
+        exe_path
     }
 }
