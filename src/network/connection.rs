@@ -2,7 +2,7 @@ use std::net::SocketAddr;
 
 use bytes::{BufMut, BytesMut};
 use chrono::Local;
-use log::info;
+use log::{info, warn};
 use serde_json::json;
 use tokio::io::{AsyncWriteExt, WriteHalf};
 use tokio::net::TcpStream;
@@ -46,9 +46,12 @@ impl Connection {
         }
 
         if !response.is_empty() {
-            TcpServer::send(&mut self.write_half, response.freeze()).await;
+            TcpServer::send(self, response.freeze()).await;
         }
-        self.write_half.shutdown().await.unwrap();
+        let sresult = self.write_half.shutdown().await;
+        if sresult.is_err() {
+            warn!("{}", sresult.err().unwrap().to_string());
+        }
         info!("Disconnected player!");
     }
 
@@ -73,7 +76,7 @@ impl Connection {
                 let mut response = BytesMut::new();
                 response.put_var_int(packet_id);
                 response.put_u64(current_time as u64);
-                TcpServer::send(&mut self.write_half, response.freeze()).await;
+                TcpServer::send(self, response.freeze()).await;
             }
         }
     }

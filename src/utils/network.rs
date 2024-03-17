@@ -1,4 +1,3 @@
-use std::error;
 use std::io::{Read, Write};
 
 use bytes::Bytes;
@@ -9,7 +8,6 @@ use tokio::io::AsyncReadExt;
 
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::utils::errors::Error;
-use crate::utils::errors::Error::VarIntTooBig;
 
 pub const CONTINUE_BIT: i32 = 0x80;
 pub const SEGMENT_BITS: i32 = 0x7F;
@@ -28,17 +26,12 @@ pub fn to_var_int(mut value: i32) -> Vec<u8> {
     }
 }
 
-pub async fn get_var_int_from_stream(
-    stream: &mut (impl AsyncReadExt + Unpin),
-) -> Result<i32, Box<dyn error::Error + Send>> {
+pub async fn get_var_int_from_stream(stream: &mut (impl AsyncReadExt + Unpin)) -> Result<i32, Error> {
     let mut value: i32 = 0;
     let mut position: i8 = 0;
 
     loop {
-        let current_byte = match stream.read_u8().await {
-            Ok(byte) => byte,
-            Err(e) => return Err(Box::new(e)),
-        };
+        let current_byte = stream.read_u8().await?;
 
         value |= (current_byte as i32 & SEGMENT_BITS) << position;
         if (current_byte as i32 & CONTINUE_BIT) == 0 {
@@ -47,7 +40,7 @@ pub async fn get_var_int_from_stream(
 
         position += 7;
         if position >= 32 {
-            return Err(Box::new(VarIntTooBig))
+            return Err(Error::VarIntTooBig);
         }
     }
 

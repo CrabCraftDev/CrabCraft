@@ -1,8 +1,8 @@
 use std::cmp::Ordering;
 use std::fs;
 
-use base64::Engine;
 use base64::prelude::BASE64_STANDARD;
+use base64::Engine;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use log::info;
 use serde_json::{json, Value};
@@ -80,7 +80,7 @@ impl PacketHandler for ConnectionHandler {
 
             let server_icon_path = get_server_path().join("server-icon.png");
             if server_icon_path.exists() {
-                let png_data = fs::read(server_icon_path).unwrap();
+                let png_data = fs::read(server_icon_path).expect("Couldn't read server icon!");
                 let mut buf = "data:image/png;base64,".to_owned();
                 let encoded_png = BASE64_STANDARD.encode(png_data);
                 buf.push_str(&encoded_png);

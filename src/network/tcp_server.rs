@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use bytes::{Bytes, BytesMut};
 use chrono::Local;
-use log::{debug, error};
+use log::{debug, error, warn};
 use tokio::io::ReadHalf;
 use tokio::runtime::Handle;
 use tokio::sync::Mutex;
@@ -16,6 +16,7 @@ use crate::network::connection::Connection;
 use crate::network::handlers::connection_handler::ConnectionHandler;
 use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
+use crate::utils::errors::Error;
 use crate::utils::network::{get_var_int_from_stream, to_var_int};
 
 pub struct TcpServer {
@@ -77,13 +78,22 @@ impl TcpServer {
         }
     }
 
-    pub async fn send(stream: &mut (impl AsyncWriteExt + Unpin), bytes: Bytes) {
-        stream.write_all(&to_var_int(bytes.len() as i32)).await.unwrap();
-        stream.write_all(&bytes).await.unwrap();
+    async fn do_send(stream: &mut (impl AsyncWriteExt + Unpin), bytes: Bytes) -> Result<(), Error> {
+        stream.write_all(&to_var_int(bytes.len() as i32)).await?;
+        stream.write_all(&bytes).await?;
+        Ok(())
+    }
+
+    pub async fn send(connection: &mut Connection, bytes: Bytes) {
+        if Self::do_send(&mut connection.write_half, bytes).await.is_err()
+            && connection.write_half.shutdown().await.is_err()
+        {
+            warn!("Player connection closed unexpectedly!")
+        }
     }
 
     pub fn send_sync(connection: &mut Connection, bytes: Bytes) {
-        block_in_place(|| Handle::current().block_on(TcpServer::send(&mut connection.write_half, bytes)));
+        block_in_place(|| Handle::current().block_on(TcpServer::send(connection, bytes)));
     }
 
     pub async fn tick(&self) {
