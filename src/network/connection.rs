@@ -2,6 +2,7 @@ use std::net::SocketAddr;
 
 use bytes::{BufMut, BytesMut};
 use chrono::Local;
+use crab_nbt::NbtTag;
 use log::{info, warn};
 use serde_json::json;
 use tokio::io::{AsyncWriteExt, WriteHalf};
@@ -26,17 +27,13 @@ const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
 
 impl Connection {
     pub async fn disconnect(&mut self, message: &str) {
-        let payload = message.as_bytes();
         let mut response = BytesMut::new();
 
         match self.state {
             ProtocolState::Configuration | ProtocolState::Play => {
                 let packet_type = if self.state == ProtocolState::Play { 0x1B } else { 0x01 };
                 response.put_var_int(packet_type);
-                // NBT representation of TAG_String
-                response.put_u8(8);
-                response.put_u16(payload.len() as u16);
-                response.put(payload);
+                response.put(NbtTag::String(message.to_string()).serialize_tag());
             }
             ProtocolState::Login => {
                 response.put_var_int(0x00);
