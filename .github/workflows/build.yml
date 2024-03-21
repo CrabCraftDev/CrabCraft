@@ -15,21 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build
-        run: cargo build --verbose
-  release:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        include:
-          - os: windows-latest
-            ext: ".exe"
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
+      - name: Build for linux
         run: cargo build --release
       - uses: actions/upload-artifact@v4
         with:
-          name: crabcraft_build_${{ github.event.head_commit.id }}${{ matrix.ext }}
-          path: target/release/crab_craft${{ matrix.ext }}
+          name: crabcraft_build_${{ github.event.head_commit.id }}
+          path: target/release/crab_craft
+      - name: Download windows buildtools
+        run: rustup target add x86_64-pc-windows-gnu
+      - run: sudo apt-get install -y mingw-w64
+      - name: Build for Windows
+        run: cargo build --release --target x86_64-pc-windows-gnu
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crabcraft_build_${{ github.event.head_commit.id }}.exe
+          path: target/x86_64-pc-windows-gnu/release/crab_craft.exe
