@@ -167,7 +167,7 @@ impl PacketHandler for ConnectionHandler {
             response.put_u64(99887766); // Hashed Seed
             response.put_unsigned_byte(1); // Gamemode (1 - creative)
             response.put_byte(-1); // Previous game mode
-            response.put_boolean(true); // Is Debug
+            response.put_boolean(false); // Is Debug
             response.put_boolean(true); // Is Flat
             response.put_boolean(false); // Has Death Location
             response.put_var_int(20); // Portal Cooldown
