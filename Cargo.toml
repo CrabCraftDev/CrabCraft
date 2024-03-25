@@ -1,12 +1,15 @@
 [package]
 name = "crab_craft"
+description = "A drop-in replacement for Paper Minecraft Server written in Rust."
+keywords = ["minecraft", "game-server", "crabcraft"]
+authors = ["Norbiros", "goteusz-maszyk", "other CrabCraft Contributors"]
+readme = "README.md"
+license = "GPL-3.0-only"
 version = "0.0.3"
 edition = "2021"
 
 [workspace]
 members = ["tools/*"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 bytes = "1.5.0"
