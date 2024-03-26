@@ -6,13 +6,9 @@ use utils::logger::Logger;
 
 use crate::mc_server::McServer;
 
+mod mc_server;
 mod network;
 mod utils;
-
-mod mc_server;
-#[cfg(test)]
-#[path = "../tests/mod.rs"]
-mod tests;
 
 #[tokio::main]
 async fn main() {
