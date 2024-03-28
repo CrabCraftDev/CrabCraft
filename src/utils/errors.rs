@@ -1,3 +1,4 @@
+use crab_protocol::error::ProtocolError;
 use std::io;
 use thiserror::Error;
 
@@ -5,6 +6,6 @@ use thiserror::Error;
 pub enum Error {
     #[error(transparent)]
     IOError(#[from] io::Error),
-    #[error("Varint exceeds 32 bits")]
-    VarIntTooBig,
+    #[error(transparent)]
+    ProtocolError(#[from] ProtocolError),
 }

@@ -9,7 +9,7 @@ version = "0.0.3"
 edition = "2021"
 
 [workspace]
-members = ["tools/*"]
+members = ["tools/*", "crates/*"]
 
 [dependencies]
 bytes = "1.5.0"
@@ -24,6 +24,7 @@ base64 = "0.22.0"
 colored = "2.1.0"
 thiserror = "1.0.58"
 crab_nbt = "0.0.2"
+crab_protocol = { path = "crates/crab_protocol" }
 
 [dev-dependencies]
 cargo-husky = { version = "1.5.0", features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy"] }

@@ -14,10 +14,9 @@ use tokio::{
 
 use crate::network::connection::Connection;
 use crate::network::handlers::connection_handler::ConnectionHandler;
-use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crate::network::packet_handler::PacketHandler;
 use crate::utils::errors::Error;
-use crate::utils::network::{get_var_int_from_stream, to_var_int};
+use crab_protocol::buf::{get_var_int_from_stream, to_var_int, ReadByteBuf};
 
 pub struct TcpServer {
     address: String,
@@ -121,7 +120,7 @@ impl TcpServer {
             let mut_bytes = BytesMut::from(buffer.as_slice());
             let mut byte = mut_bytes.clone().freeze();
 
-            let packet_id = byte.get_var_int();
+            let packet_id = byte.get_var_int().unwrap();
 
             let mut connection = connection.lock().await;
             for handler in &mut handlers {
