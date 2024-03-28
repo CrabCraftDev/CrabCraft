@@ -10,8 +10,8 @@ use tokio::net::TcpStream;
 use tokio::runtime::Handle;
 use tokio::task::block_in_place;
 
-use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::tcp_server::{ProtocolState, TcpServer};
+use crab_protocol::buf::WriteByteBuf;
 
 #[derive(Debug)]
 pub struct Connection {
@@ -37,7 +37,7 @@ impl Connection {
             }
             ProtocolState::Login => {
                 response.put_var_int(0x00);
-                response.put_string(json!({"text": message}).to_string());
+                response.put_string(json!({"text": message}).to_string()).unwrap();
             }
             _ => {}
         }

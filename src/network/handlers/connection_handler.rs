@@ -4,12 +4,11 @@ use std::fs;
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
+use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use log::info;
 use serde_json::{json, Value};
 
 use crate::network::connection::Connection;
-use crate::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
-use crate::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
 use crate::network::packet_handler::PacketHandler;
 use crate::network::tcp_server::{ProtocolState, TcpServer};
 use crate::utils::fs::get_server_path;
@@ -23,10 +22,10 @@ impl PacketHandler for ConnectionHandler {
     fn handle_packet(&mut self, connection_data: &mut Connection, mut bytes: Bytes, packet_id: i32) {
         // =================== HANDSHAKE
         if packet_id == 0x00 && connection_data.state == ProtocolState::Handshake {
-            let version = bytes.get_var_int();
+            let version = bytes.get_var_int().unwrap();
             let _address_ = bytes.get_string();
             let _port = bytes.get_u16();
-            let next_state = bytes.get_var_int();
+            let next_state = bytes.get_var_int().unwrap();
 
             connection_data.state = match next_state {
                 1 => ProtocolState::Status,
@@ -87,7 +86,9 @@ impl PacketHandler for ConnectionHandler {
                 status_response["favicon"] = Value::String(buf);
             }
 
-            response.put_string(serde_json::to_string(&status_response).unwrap());
+            response
+                .put_string(serde_json::to_string(&status_response).unwrap())
+                .unwrap();
 
             TcpServer::send_sync(connection_data, response.freeze());
 
@@ -98,13 +99,13 @@ impl PacketHandler for ConnectionHandler {
         // =================== LOGIN
         // Login start
         if packet_id == 0x00 && connection_data.state == ProtocolState::Login {
-            let username = bytes.get_string();
+            let username = bytes.get_string().unwrap();
             let uuid = bytes.get_uuid();
 
             let mut response = BytesMut::new();
             response.put_var_int(0x02);
             response.put_uuid(uuid);
-            response.put_string(username);
+            response.put_string(username).unwrap();
             response.put_var_int(0);
 
             TcpServer::send_sync(connection_data, response.freeze());
@@ -133,8 +134,8 @@ impl PacketHandler for ConnectionHandler {
             // Server brand packet
             let mut response = BytesMut::new();
             response.put_var_int(0x0);
-            response.put_string("minecraft:brand".to_string());
-            response.put_string("CrabCraft".to_string());
+            response.put_string("minecraft:brand".to_string()).unwrap();
+            response.put_string("CrabCraft".to_string()).unwrap();
             TcpServer::send_sync(connection_data, response.freeze());
 
             let mut response = BytesMut::new();
@@ -162,8 +163,8 @@ impl PacketHandler for ConnectionHandler {
             response.put_boolean(false); // Reduced debug info
             response.put_boolean(true); // Enable respawn screen
             response.put_boolean(true); // Do limited crafting
-            response.put_string("minecraft:overworld".to_string()); // Dimension Type
-            response.put_string("overworld".to_string()); // Dimension Name
+            response.put_string("minecraft:overworld".to_string()).unwrap(); // Dimension Type
+            response.put_string("overworld".to_string()).unwrap(); // Dimension Name
             response.put_u64(99887766); // Hashed Seed
             response.put_unsigned_byte(1); // Gamemode (1 - creative)
             response.put_byte(-1); // Previous game mode

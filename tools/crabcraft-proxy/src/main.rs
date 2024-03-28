@@ -7,8 +7,7 @@ use tokio::{
     select,
 };
 
-use crab_craft::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
-use crab_craft::utils::network::{get_var_int_from_stream, to_var_int};
+use crab_protocol::buf::{get_var_int_from_stream, to_var_int, ReadByteBuf};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -86,7 +85,7 @@ async fn transfer_data(
             break;
         }
 
-        let id = buffer.clone().as_slice().get_var_int();
+        let id = buffer.clone().as_slice().get_var_int().unwrap();
 
         if buffer.len() >= args.print_threshold as usize {
             println!("[{direction}] {id:X}: Packet is too big to be printed!");

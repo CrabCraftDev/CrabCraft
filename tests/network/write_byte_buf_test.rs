@@ -1,6 +1,7 @@
 use uuid::uuid;
 
-use crab_craft::network::packet_byte_buf::write_byte_buf::WriteByteBuf;
+use bytes::Bytes;
+use crab_protocol::buf::WriteByteBuf;
 
 #[test]
 fn test_put_byte() {
@@ -37,7 +38,7 @@ fn test_put_var_long() {
 #[test]
 fn test_put_string() {
     let mut buf = Vec::new();
-    buf.put_string("Hello!".to_string());
+    buf.put_string("Hello!".to_string()).unwrap();
     assert_eq!(buf, vec![0x06, b'H', b'e', b'l', b'l', b'o', b'!']);
 }
 
@@ -55,8 +56,8 @@ fn test_put_boolean() {
 #[test]
 fn test_put_byte_array() {
     let mut buf = Vec::new();
-    buf.put_byte_array(&[0x01, 0x02, 0x03]);
-    assert_eq!(buf, vec![0x01, 0x02, 0x03]);
+    buf.put_byte_array(Bytes::from(vec![0x01, 0x02, 0x03])).unwrap();
+    assert_eq!(buf, vec![0x03, 0x01, 0x02, 0x03]);
 }
 
 #[test]
