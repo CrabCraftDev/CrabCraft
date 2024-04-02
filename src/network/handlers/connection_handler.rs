@@ -18,6 +18,7 @@ pub struct ConnectionHandler;
 const SERVER_PROTOCOL_VERSION: i32 = 765;
 const SERVER_VERSION: &str = "1.20.4";
 
+#[async_trait]
 impl PacketHandler for ConnectionHandler {
     fn handle_packet(&mut self, connection_data: &mut Connection, mut bytes: Bytes, packet_id: i32) {
         // =================== HANDSHAKE
@@ -53,7 +54,7 @@ impl PacketHandler for ConnectionHandler {
             let mut response = BytesMut::new();
             response.put_var_int(0x01);
             response.put_u64(time);
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, x).await;
             return;
         }
 
@@ -90,7 +91,7 @@ impl PacketHandler for ConnectionHandler {
                 .put_string(serde_json::to_string(&status_response).unwrap())
                 .unwrap();
 
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, response.freeze()).await;
 
             info!("Pinged server list!");
             return;
@@ -108,7 +109,7 @@ impl PacketHandler for ConnectionHandler {
             response.put_string(username).unwrap();
             response.put_var_int(0);
 
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, response.freeze()).await;
         }
 
         // Login acknowledged
@@ -129,18 +130,18 @@ impl PacketHandler for ConnectionHandler {
             let _allow_server_listening = bytes.get_boolean();
 
             let packet = include_bytes!("../../../assets/registry-data.nbt");
-            TcpServer::send_sync(connection_data, Bytes::from(packet.to_vec()));
+            TcpServer::send(connection_data, Bytes::from(packet.to_vec())).await;
 
             // Server brand packet
             let mut response = BytesMut::new();
             response.put_var_int(0x0);
             response.put_string("minecraft:brand".to_string()).unwrap();
             response.put_string("CrabCraft".to_string()).unwrap();
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, response.freeze()).await;
 
             let mut response = BytesMut::new();
             response.put_var_int(2);
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, response.freeze()).await;
         }
 
         // Plugin Message
@@ -173,14 +174,14 @@ impl PacketHandler for ConnectionHandler {
             response.put_boolean(false); // Has Death Location
             response.put_var_int(20); // Portal Cooldown
 
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, response.freeze()).await;
 
             // Set Default Spawn Position
             let mut response = BytesMut::new();
             response.put_var_int(0x54);
             response.put_i64(0b0100011000000111011000110010110000010101101101001000001100111111);
             response.put_f32(0.0);
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, response.freeze()).await;
 
             // Synchronize Player Position
             let mut response = BytesMut::new();
@@ -192,7 +193,7 @@ impl PacketHandler for ConnectionHandler {
             response.put_f32(0.0);
             response.put_byte(0); // Flags
             response.put_var_int(2137); // Teleport ID
-            TcpServer::send_sync(connection_data, response.freeze());
+            TcpServer::send(connection_data, response.freeze()).await;
 
             // Game Event - Start waiting for level chunks
             let mut response = BytesMut::new();

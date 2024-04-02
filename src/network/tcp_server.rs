@@ -4,9 +4,7 @@ use bytes::{Bytes, BytesMut};
 use chrono::Local;
 use log::{debug, error, warn};
 use tokio::io::ReadHalf;
-use tokio::runtime::Handle;
 use tokio::sync::Mutex;
-use tokio::task::block_in_place;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
@@ -17,6 +15,7 @@ use crate::network::handlers::connection_handler::ConnectionHandler;
 use crate::network::packet_handler::PacketHandler;
 use crate::utils::errors::Error;
 use crab_protocol::buf::{get_var_int_from_stream, to_var_int, ReadByteBuf};
+use crab_protocol::raw_packet::RawPacket;
 
 pub struct TcpServer {
     address: String,
@@ -94,10 +93,6 @@ impl TcpServer {
         }
     }
 
-    pub fn send_sync(connection: &mut Connection, bytes: Bytes) {
-        block_in_place(|| Handle::current().block_on(TcpServer::send(connection, bytes)));
-    }
-
     pub async fn tick(&self) {
         let connections = self.connections.lock().await;
         for conn in connections.iter() {
@@ -122,9 +117,11 @@ impl TcpServer {
 
             let packet_id = byte.get_var_int().unwrap();
 
+            let _raw_packet = RawPacket::new(packet_id, byte.clone());
+
             let mut connection = connection.lock().await;
             for handler in &mut handlers {
-                handler.handle_packet(&mut connection, byte.clone(), packet_id);
+                handler.handle_packet(&mut connection, byte.clone(), packet_id).await;
             }
         }
 

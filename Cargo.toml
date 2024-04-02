@@ -25,6 +25,7 @@ colored = "2.1.0"
 thiserror = "1.0.58"
 crab_nbt = "0.0.2"
 crab_protocol = { path = "crates/crab_protocol" }
+async-trait = "0.1.79"
 
 [dev-dependencies]
 cargo-husky = { version = "1.5.0", features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy"] }
