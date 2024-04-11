@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+use std::hash::Hash;
 use std::str::from_utf8;
 
 use bytes::{Buf, Bytes};
 use uuid::Uuid;
+
+use crab_protocol::protocol_type::ProtocolType;
 
 use crate::error::ProtocolError;
 
@@ -73,49 +77,47 @@ pub trait ReadByteBuf: Buf + Sized {
         self.get_byte() != 0
     }
 
-    fn get_raw_bytes(&mut self, amount: i32) -> Result<Bytes, ProtocolError> {
-        Ok(self.copy_to_bytes(amount.try_into()?))
+    fn get_raw_bytes(&mut self, amount: i32) -> Bytes {
+        self.copy_to_bytes(amount as usize)
     }
 
     fn get_byte_array(&mut self) -> Result<Bytes, ProtocolError> {
         let length = self.get_var_int()?;
-        let bytes = self.get_raw_bytes(length)?;
+        let bytes = self.get_raw_bytes(length);
         Ok(bytes)
     }
 
-    // fn get_some_array<T: ProtocolType>(&mut self) -> Result<Vec<T>, ProtocolError> {
-    //     let length = self.get_var_int()?;
-    //     let mut items = Vec::with_capacity(length.try_into()?);
-    //
-    //     for _i in 0..length {
-    //         items.push(T::deserialize(self)?);
-    //     }
-    //
-    //     Ok(items)
-    // }
-    //
-    // fn get_optional<T: ProtocolType>(&mut self) -> Result<Option<T>, ProtocolError> {
-    //     let present = self.get_boolean();
-    //     match present {
-    //         true => Ok(Some(T::deserialize(self)?)),
-    //         false => Ok(None),
-    //     }
-    // }
-    //
-    // fn get_hash_map<K: ProtocolType + Hash + Eq, V: ProtocolType>(
-    //     &mut self,
-    // ) -> Result<HashMap<K, V>, ProtocolError> {
-    //     let mut result = HashMap::new();
-    //     let len = self.get_var_int()?;
-    //     for _ in 0..len {
-    //         let key = K::deserialize(self)?;
-    //         if result.contains_key(&key) {
-    //             return Err(ProtocolError::HashMapDuplicateKey);
-    //         }
-    //         result.insert(key, V::deserialize(self)?);
-    //     }
-    //     Ok(result)
-    // }
+    fn get_some_array<T: ProtocolType>(&mut self) -> Result<Vec<T>, ProtocolError> {
+        let length = self.get_var_int()?;
+        let mut items = Vec::with_capacity(length as usize);
+
+        for _i in 0..length {
+            items.push(T::deserialize(self)?);
+        }
+
+        Ok(items)
+    }
+
+    fn get_optional<T: ProtocolType>(&mut self) -> Result<Option<T>, ProtocolError> {
+        let present = self.get_boolean();
+        match present {
+            true => Ok(Some(T::deserialize(self)?)),
+            false => Ok(None),
+        }
+    }
+
+    fn get_hash_map<K: ProtocolType + Hash + Eq, V: ProtocolType>(&mut self) -> Result<HashMap<K, V>, ProtocolError> {
+        let mut result = HashMap::new();
+        let len = self.get_var_int()?;
+        for _ in 0..len {
+            let key = K::deserialize(self)?;
+            if result.contains_key(&key) {
+                return Err(ProtocolError::HashMapDuplicateKey);
+            }
+            result.insert(key, V::deserialize(self)?);
+        }
+        Ok(result)
+    }
 
     fn get_bytes(&mut self, amount: i32) -> Vec<u8> {
         let mut bytes: Vec<u8> = vec![];

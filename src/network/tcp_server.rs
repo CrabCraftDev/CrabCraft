@@ -1,34 +1,26 @@
 use std::sync::Arc;
 
-use bytes::{Bytes, BytesMut};
+use bytes::BytesMut;
 use chrono::Local;
-use log::{debug, error, warn};
+use log::{debug, error};
 use tokio::io::ReadHalf;
 use tokio::sync::Mutex;
 use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
+    io::AsyncReadExt,
     net::{TcpListener, TcpStream},
 };
 
 use crate::network::connection::Connection;
 use crate::network::handlers::connection_handler::ConnectionHandler;
 use crate::network::packet_handler::PacketHandler;
-use crate::utils::errors::Error;
-use crab_protocol::buf::{get_var_int_from_stream, to_var_int, ReadByteBuf};
+
+use crab_protocol::buf::{get_var_int_from_stream, ReadByteBuf};
+use crab_protocol::protocol::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
 
 pub struct TcpServer {
     address: String,
     pub connections: Arc<Mutex<Vec<Arc<Mutex<Connection>>>>>,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum ProtocolState {
-    Handshake,
-    Status,
-    Login,
-    Configuration,
-    Play,
 }
 
 impl TcpServer {
@@ -76,23 +68,6 @@ impl TcpServer {
         }
     }
 
-    async fn do_send(stream: &mut (impl AsyncWriteExt + Unpin), bytes: Bytes) -> Result<(), Error> {
-        stream.write_all(&to_var_int(bytes.len() as i32)).await?;
-        stream.write_all(&bytes).await?;
-        Ok(())
-    }
-
-    pub async fn send(connection: &mut Connection, bytes: Bytes) {
-        if connection.is_closed {
-            return;
-        }
-        if Self::do_send(&mut connection.write_half, bytes).await.is_err() {
-            connection.write_half.shutdown().await.unwrap_or(());
-            connection.is_closed = true;
-            warn!("Player connection closed unexpectedly!")
-        }
-    }
-
     pub async fn tick(&self) {
         let connections = self.connections.lock().await;
         for conn in connections.iter() {
@@ -116,12 +91,17 @@ impl TcpServer {
             let mut byte = mut_bytes.clone().freeze();
 
             let packet_id = byte.get_var_int().unwrap();
-
-            let _raw_packet = RawPacket::new(packet_id, byte.clone());
+            let raw_packet = RawPacket::new(packet_id, byte.clone());
 
             let mut connection = connection.lock().await;
             for handler in &mut handlers {
-                handler.handle_packet(&mut connection, byte.clone(), packet_id).await;
+                match handler.handle_packet(&mut connection, raw_packet.clone()).await {
+                    Ok(_) => {}
+                    Err(_) => {
+                        connection.disconnect("Unexpected error!").await;
+                        return;
+                    }
+                }
             }
         }
 

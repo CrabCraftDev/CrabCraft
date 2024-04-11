@@ -1,9 +1,10 @@
-mod read;
-mod write;
-
 use crate::error::ProtocolError;
-pub use read::*;
 use tokio::io::AsyncReadExt;
+
+pub(crate) mod read;
+pub(crate) mod write;
+
+pub use read::*;
 pub use write::*;
 
 const CONTINUE_BIT: i32 = 0x80;

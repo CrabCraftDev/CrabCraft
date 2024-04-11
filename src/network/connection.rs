@@ -1,17 +1,24 @@
 use std::net::SocketAddr;
 
-use bytes::{BufMut, BytesMut};
+use bytes::Bytes;
 use chrono::Local;
 use crab_nbt::NbtTag;
-use log::{info, warn};
+use log::{error, info, warn};
 use serde_json::json;
 use tokio::io::{AsyncWriteExt, WriteHalf};
 use tokio::net::TcpStream;
-use tokio::runtime::Handle;
-use tokio::task::block_in_place;
 
-use crate::network::tcp_server::{ProtocolState, TcpServer};
-use crab_protocol::buf::WriteByteBuf;
+use crab_protocol::buf::to_var_int;
+use crab_protocol::packet::Packet;
+use crab_protocol::packets::configuration::DisconnectS2CPacket as ConfigurationDisconnectPacket;
+use crab_protocol::packets::configuration::KeepAliveS2CPacket as ConfigurationKeepAlivePacket;
+use crab_protocol::packets::login::DisconnectS2CPacket as LoginDisconnectPacket;
+use crab_protocol::packets::play::DisconnectS2CPacket as PlayDisconnectPacket;
+use crab_protocol::packets::play::KeepAliveS2CPacket as PlayKeepAlivePacket;
+use crab_protocol::protocol::ProtocolState;
+use crab_protocol::types::text::TextComponent;
+
+use crate::utils::errors::Error;
 
 #[derive(Debug)]
 pub struct Connection {
@@ -26,34 +33,69 @@ pub struct Connection {
 const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
 
 impl Connection {
-    pub async fn disconnect(&mut self, message: &str) {
-        let mut response = BytesMut::new();
+    async fn do_send(&mut self, bytes: Bytes) -> Result<(), Error> {
+        let length = bytes.len() as i32;
+        self.write_half.write_all(&to_var_int(length)).await?;
+        self.write_half.write_all(&bytes).await?;
+        Ok(())
+    }
+
+    pub async fn send_packet(&mut self, packet: impl Packet) {
+        match packet.serialize() {
+            Ok(bytes) => self.send(bytes).await,
+            Err(err) => {
+                error!("Serialization error: {}", err);
+                self.close().await;
+            }
+        }
+    }
+
+    pub async fn send(&mut self, bytes: Bytes) {
+        if self.is_closed {
+            return;
+        }
+
+        let send_result = self.do_send(bytes).await;
+        if send_result.is_err() {
+            self.close().await;
+        }
+    }
+
+    pub async fn disconnect(&mut self, reason: &str) {
+        let reason = reason.to_string();
+        let reason_text_component: TextComponent = NbtTag::String(reason.clone()).into();
 
         match self.state {
-            ProtocolState::Configuration | ProtocolState::Play => {
-                let packet_type = if self.state == ProtocolState::Play { 0x1B } else { 0x01 };
-                response.put_var_int(packet_type);
-                response.put(NbtTag::String(message.to_string()).serialize_tag());
+            ProtocolState::Configuration => {
+                self.send_packet(ConfigurationDisconnectPacket {
+                    reason: reason_text_component,
+                })
+                .await;
+            }
+            ProtocolState::Play => {
+                self.send_packet(PlayDisconnectPacket {
+                    reason: reason_text_component,
+                })
+                .await;
             }
             ProtocolState::Login => {
-                response.put_var_int(0x00);
-                response.put_string(json!({"text": message}).to_string()).unwrap();
+                self.send_packet(LoginDisconnectPacket {
+                    reason: json!({"text": reason}).to_string().into(),
+                })
+                .await;
             }
             _ => {}
         }
-
-        if !response.is_empty() {
-            TcpServer::send(self, response.freeze()).await;
-        }
-        let shutdown_result = self.write_half.shutdown().await;
-        if shutdown_result.is_err() {
-            warn!("{}", shutdown_result.err().unwrap().to_string());
-        }
-        info!("Disconnected player!");
+        self.close().await;
     }
 
-    pub fn disconnect_sync(&mut self, message: &str) {
-        block_in_place(|| Handle::current().block_on(self.disconnect(message)));
+    async fn close(&mut self) {
+        let shutdown_result = self.write_half.shutdown().await;
+        if let Err(err) = shutdown_result {
+            warn!("{}", err.to_string());
+        }
+        self.is_closed = true;
+        info!("Disconnected player!");
     }
 
     pub async fn keep_connection_alive(&mut self) {
@@ -62,19 +104,23 @@ impl Connection {
         }
 
         let current_time = Local::now().timestamp_millis();
-        if current_time - self.last_keepalive_time >= KEEPALIVE_INTERVAL_MS {
-            if self.keepalive_pending {
-                self.disconnect("Timeout!").await;
-            } else {
-                self.keepalive_pending = true;
-                self.last_keepalive_time = current_time;
-
-                let packet_id = if self.state == ProtocolState::Play { 0x24 } else { 0x03 };
-                let mut response = BytesMut::new();
-                response.put_var_int(packet_id);
-                response.put_u64(current_time as u64);
-                TcpServer::send(self, response.freeze()).await;
-            }
+        if current_time - self.last_keepalive_time < KEEPALIVE_INTERVAL_MS {
+            return;
         }
+
+        if self.keepalive_pending {
+            self.disconnect("Timeout!").await;
+            return;
+        }
+
+        self.keepalive_pending = true;
+        self.last_keepalive_time = current_time;
+
+        let keep_alive_id = current_time;
+        if self.state == ProtocolState::Play {
+            self.send_packet(PlayKeepAlivePacket { keep_alive_id }).await;
+        } else {
+            self.send_packet(ConfigurationKeepAlivePacket { keep_alive_id }).await;
+        };
     }
 }
