@@ -5,7 +5,9 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum Error {
     #[error(transparent)]
-    IOError(#[from] io::Error),
+    IO(#[from] io::Error),
     #[error(transparent)]
-    ProtocolError(#[from] ProtocolError),
+    InvalidJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    Protocol(#[from] ProtocolError),
 }

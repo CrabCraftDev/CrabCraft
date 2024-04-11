@@ -19,12 +19,14 @@ bytes = "1.6.0"
 thiserror = "1.0.58"
 uuid = { version = "1.7.0", features = ["v4"] }
 tokio = { version = "1.37.0", features = ["full"] }
+crab_nbt = "0.1.0"
 
 [dependencies]
 bytes.workspace = true
 thiserror.workspace = true
 uuid.workspace = true
 tokio.workspace = true
+crab_nbt.workspace = true
 chrono = "0.4.34"
 log = "0.4.21"
 serde_json = { version = "1.0.114", features = [] }
@@ -32,7 +34,6 @@ serde = { version = "1.0.197", features = ["derive"] }
 flate2 = "1.0.28"
 base64 = "0.22.0"
 colored = "2.1.0"
-crab_nbt = "0.0.2"
 crab_protocol = { path = "crates/crab_protocol" }
 async-trait = "0.1.79"
 
