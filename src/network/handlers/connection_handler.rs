@@ -1,16 +1,19 @@
 use std::cmp::Ordering;
 use std::fs;
+use std::io::Read;
 
 use async_trait::async_trait;
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
-use bytes::Bytes;
+use bytes::{Bytes, BytesMut};
+use crab_nbt::Nbt;
 use log::info;
 use serde_json::{json, Value};
 
+use crab_protocol::buf::WriteByteBuf;
 use crab_protocol::packets::configuration::{
     AcknowledgeFinishConfigurationC2SPacket, ClientInformationC2SPacket, FinishConfigurationS2CPacket,
-    PluginMessageS2CPacket,
+    PluginMessageS2CPacket, RegistryDataS2CPacket,
 };
 use crab_protocol::packets::handshake::{HandshakeC2SPacket, NextState};
 use crab_protocol::packets::login::{LoginAcknowledgedC2SPacket, LoginStartC2SPacket, LoginSuccessS2CPacket};
@@ -22,6 +25,7 @@ use crab_protocol::packets::status::{
     PingRequestC2SPacket, PingResponseS2CPacket, StatusRequestC2SPacket, StatusResponseS2CPacket,
 };
 use crab_protocol::protocol::ProtocolState;
+
 use crab_protocol::raw_packet::RawPacket;
 use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
@@ -107,7 +111,7 @@ impl PacketHandler for ConnectionHandler {
                 connection
                     .send_packet(LoginSuccessS2CPacket {
                         uuid: packet.player_uuid,
-                        username: packet.name,
+                        username: packet.username,
                         properties: Vec::new(),
                     })
                     .await;
@@ -121,13 +125,20 @@ impl PacketHandler for ConnectionHandler {
 
         if connection.state == ProtocolState::Configuration {
             if let Some(_packet) = raw_packet.decode::<ClientInformationC2SPacket>() {
-                let packet = include_bytes!("../../../assets/registry-data.nbt");
-                connection.send(Bytes::from(packet.to_vec())).await;
+                let binary_registry_data: &[u8] = include_bytes!("../../../assets/registry-data.nbt");
+                connection
+                    .send_packet(RegistryDataS2CPacket {
+                        registry_data: Nbt::read(&mut Bytes::from(binary_registry_data))?,
+                    })
+                    .await;
+
+                let mut data = BytesMut::new();
+                data.put_string("CrabCraft".to_string());
 
                 connection
                     .send_packet(PluginMessageS2CPacket {
                         channel: Identifier::minecraft("brand")?,
-                        data: "CrabCraft".as_bytes().into(),
+                        data: data.freeze().into(),
                     })
                     .await;
 

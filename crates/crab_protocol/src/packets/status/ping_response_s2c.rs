@@ -1,4 +1,4 @@
-use crate::protocol::ProtocolState::Status;
+use crab_protocol::protocol::ProtocolState::Status;
 use crab_protocol_macros::Packet;
 
 #[derive(Packet, Debug, Clone)]

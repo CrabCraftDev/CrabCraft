@@ -12,3 +12,4 @@ crab_nbt.workspace = true
 derive_more = { version = "1.0.0-beta.6", features = ["into", "from"] }
 crab_protocol_macros = { path = "../crab_protocol_macros" }
 strum = { version = "0.26", features = ["derive"] }
+bitfield-struct = "0.6.0"

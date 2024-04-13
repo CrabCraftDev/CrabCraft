@@ -2,6 +2,8 @@ use bytes::Bytes;
 
 use crab_protocol::error::ProtocolError;
 
+use crate::types::bytes::LastBytes;
+
 /// The `Bounded` trait defines a common interface for types that can be checked against a maximum length.
 /// In Minecraft Protol used only for strings and byte arrays.
 pub trait Bounded {
@@ -24,5 +26,11 @@ impl Bounded for String {
 impl Bounded for Bytes {
     fn get_len(&self) -> usize {
         self.len()
+    }
+}
+
+impl Bounded for LastBytes {
+    fn get_len(&self) -> usize {
+        self.0.len()
     }
 }
