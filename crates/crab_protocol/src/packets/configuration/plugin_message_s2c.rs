@@ -1,7 +1,6 @@
-use crate::protocol::ProtocolState::*;
-use bytes::Bytes;
+use crab_protocol::protocol::ProtocolState::*;
+use crab_protocol::types::bytes::LastBytes;
 use crab_protocol::types::identifier::Identifier;
-
 use crab_protocol_macros::Packet;
 
 #[derive(Packet, Debug, Clone)]
@@ -9,5 +8,5 @@ use crab_protocol_macros::Packet;
 pub struct PluginMessageS2CPacket {
     pub channel: Identifier,
     #[protocol_attribute(bounded = 1048576)]
-    pub data: Bytes,
+    pub data: LastBytes,
 }

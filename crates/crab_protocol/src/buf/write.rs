@@ -86,7 +86,7 @@ pub trait WriteByteBuf: BufMut + Sized {
 
     fn put_hash_map<K: ProtocolType + Eq + Hash, V: ProtocolType>(
         &mut self,
-        value: HashMap<K, V>,
+        value: &HashMap<K, V>,
     ) -> Result<(), ProtocolError> {
         self.put_var_int(value.len() as i32);
         for (key, value) in value {

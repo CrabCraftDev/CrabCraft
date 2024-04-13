@@ -1,11 +1,11 @@
-use crate::protocol::ProtocolState::Handshake;
-use crate::types::varint::VarInt;
 use strum::FromRepr;
 
+use crab_protocol::protocol::ProtocolState::*;
+use crab_protocol::types::varint::VarInt;
 use crab_protocol_macros::{Packet, ProtocolType};
 
 #[derive(Packet, Debug, Clone)]
-#[packet(id = 0, state = Handshake)]
+#[packet(id = 0x00, state = Handshake)]
 pub struct HandshakeC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub protocol_version: i32,
