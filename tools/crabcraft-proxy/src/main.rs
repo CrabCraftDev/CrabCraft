@@ -1,11 +1,12 @@
+use std::sync::Arc;
+
 use bytes::BytesMut;
 use clap::Parser;
-use std::sync::Arc;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::{
     net::{TcpListener, TcpStream},
     select,
 };
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use crab_craft::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crab_craft::utils::network::{get_var_int_from_stream, to_var_int};
@@ -15,15 +16,15 @@ use crab_craft::utils::network::{get_var_int_from_stream, to_var_int};
 struct Args {
     /// IP of proxy
     #[arg(short, long, default_value = "127.0.0.1:25566")]
-    listen: String,
+    listen_ip: String,
 
     /// IP of server to connect
     #[arg(short, long, default_value = "127.0.0.1:25565")]
-    target: String,
+    target_server_ip: String,
 
     /// Maximum packet size for which content should be printed
     #[arg(short, long, default_value = "1500")]
-    print_threshold: u32,
+    maximum_packet_print_size: u32,
 }
 
 #[tokio::main]
@@ -32,7 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args_arc = Arc::new(args);
     println!("CrabCraft proxy started...");
 
-    let proxy_server = TcpListener::bind(&args_arc.listen).await?;
+    let proxy_server = TcpListener::bind(&args_arc.listen_ip).await?;
 
     while let Ok((client, _)) = proxy_server.accept().await {
         let args_clone = Arc::clone(&args_arc);
@@ -50,7 +51,7 @@ async fn handle_client_connection(
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!("Connection established!");
 
-    let mut main_server_conn = TcpStream::connect(&args.target).await?; // Replace with your target server
+    let mut main_server_conn = TcpStream::connect(&args.target_server_ip).await?;
     let (mut client_recv, mut client_send) = client_conn.split();
     let (mut server_recv, mut server_send) = main_server_conn.split();
 
@@ -88,7 +89,7 @@ async fn transfer_data(
 
         let id = buffer.clone().as_slice().get_var_int();
 
-        if buffer.len() >= args.print_threshold as usize {
+        if buffer.len() >= args.maximum_packet_print_size as usize {
             println!("[{direction}] {id:X}: Packet is too big to be printed!");
         } else {
             let buffer_str = BytesMut::from(buffer.as_slice()).freeze();
