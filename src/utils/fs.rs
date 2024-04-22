@@ -1,6 +1,6 @@
+use std::{env, io};
 use std::fs::read_dir;
 use std::path::{Path, PathBuf};
-use std::{env, io};
 
 pub fn count_files_with_prefix(dir: &Path, prefix: &str) -> io::Result<usize> {
     let mut count = 0;
@@ -16,9 +16,7 @@ pub fn count_files_with_prefix(dir: &Path, prefix: &str) -> io::Result<usize> {
 }
 
 pub fn get_server_path() -> PathBuf {
-    if cfg!(debug_assertions) {
-        let manifest_str =
-            env::var("CARGO_MANIFEST_DIR").expect("Couldn't get server directory path! (Maybe permissions issue?)");
+    if let Ok(manifest_str) = env::var("CARGO_MANIFEST_DIR") {
         Path::new(&manifest_str).join("server").to_path_buf()
     } else {
         let mut exe_path = env::current_exe()
