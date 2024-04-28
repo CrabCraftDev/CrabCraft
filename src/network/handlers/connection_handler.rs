@@ -1,6 +1,5 @@
 use std::cmp::Ordering;
 use std::fs;
-use std::io::Read;
 
 use async_trait::async_trait;
 use base64::prelude::BASE64_STANDARD;
@@ -13,13 +12,13 @@ use serde_json::{json, Value};
 use crab_protocol::buf::WriteByteBuf;
 use crab_protocol::packets::configuration::{
     AcknowledgeFinishConfigurationC2SPacket, ClientInformationC2SPacket, FinishConfigurationS2CPacket,
-    PluginMessageS2CPacket, RegistryDataS2CPacket,
+    KeepAliveResponseC2SPacket, PluginMessageS2CPacket, RegistryDataS2CPacket,
 };
 use crab_protocol::packets::handshake::{HandshakeC2SPacket, NextState};
 use crab_protocol::packets::login::{LoginAcknowledgedC2SPacket, LoginStartC2SPacket, LoginSuccessS2CPacket};
 use crab_protocol::packets::play::{
-    GameEventS2CPacket, GameJoinS2CPacket, KeepAliveResponseC2SPacket, SetDefaultSpawnPositionS2CPacket,
-    SynchronizePlayerPositionS2CPacket,
+    GameEventS2CPacket, GameJoinS2CPacket, SetDefaultSpawnPositionS2CPacket, SynchronizePlayerPositionS2CPacket,
+    SynchronizePositionFlags,
 };
 use crab_protocol::packets::status::{
     PingRequestC2SPacket, PingResponseS2CPacket, StatusRequestC2SPacket, StatusResponseS2CPacket,
@@ -30,6 +29,7 @@ use crab_protocol::raw_packet::RawPacket;
 use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
 use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::position::Position;
 
 use crate::network::connection::Connection;
 use crate::network::packet_handler::PacketHandler;
@@ -180,12 +180,10 @@ impl PacketHandler for ConnectionHandler {
 
                 connection
                     .send_packet(SynchronizePlayerPositionS2CPacket {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
+                        position: Position::new(0.0, 0.0, 0.0),
                         yaw: 0.0,
                         pitch: 0.0,
-                        flags: 0,
+                        flags: SynchronizePositionFlags::new(),
                         teleport_id: 2137,
                     })
                     .await;

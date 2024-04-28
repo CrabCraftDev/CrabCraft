@@ -7,6 +7,7 @@ use crab_protocol::protocol::{PacketDirection, ProtocolState};
 use crab_protocol::protocol_type::ProtocolType;
 use crab_protocol::raw_packet::RawPacket;
 
+
 #[derive(Debug, PartialEq)]
 pub struct TestC2S {
     pub name: String,

@@ -34,3 +34,18 @@ impl Bounded for LastBytes {
         self.0.len()
     }
 }
+
+impl<T: Bounded> Bounded for Option<T> {
+    fn get_len(&self) -> usize {
+        match self {
+            Some(value) => value.get_len(),
+            None => 0,
+        }
+    }
+}
+
+impl<T> Bounded for Vec<T> {
+    fn get_len(&self) -> usize {
+        self.len()
+    }
+}

@@ -1,3 +1,4 @@
+use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
 use std::io;
 use thiserror::Error;
@@ -10,4 +11,6 @@ pub enum Error {
     InvalidJson(#[from] serde_json::Error),
     #[error(transparent)]
     Protocol(#[from] ProtocolError),
+    #[error(transparent)]
+    InvalidNbt(#[from] CrabNbtError),
 }
