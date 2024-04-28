@@ -1,0 +1,14 @@
+use crab_protocol_macros::Packet;
+
+use crate::protocol::ProtocolState::*;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, Debug, Clone)]
+#[packet(id = 0x5A, state = Play)]
+pub struct SetExperienceS2CPacket {
+    pub experience_bar: f32,
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub level: i32,
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub total_experience: i32,
+}

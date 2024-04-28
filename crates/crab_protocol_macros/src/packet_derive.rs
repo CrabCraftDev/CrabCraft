@@ -1,6 +1,6 @@
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::{DeriveInput, Error, Expr, parse2, Result};
+use syn::{parse2, DeriveInput, Error, Expr, Result};
 
 use crate::args::parse_packet_args;
 use crate::generate_field_code;

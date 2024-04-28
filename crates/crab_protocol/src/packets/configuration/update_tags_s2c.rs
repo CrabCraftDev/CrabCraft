@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::identifier::Identifier;
-use crab_protocol::types::tag::Tag;
+use crate::protocol::ProtocolState::*;
+use crate::types::identifier::Identifier;
+use crate::types::tag::Tag;
 use crab_protocol_macros::Packet;
 
 #[derive(Packet, Debug, Clone)]

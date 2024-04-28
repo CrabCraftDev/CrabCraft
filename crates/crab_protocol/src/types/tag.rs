@@ -5,5 +5,6 @@ use crab_protocol_macros::ProtocolType;
 #[derive(ProtocolType, Clone, PartialEq, Eq, Hash, Debug)]
 pub struct Tag {
     pub name: Identifier,
-    pub entries: Vec<VarInt>,
+    #[protocol_attribute(protocol_type = Vec<VarInt>)]
+    pub entries: Vec<i32>,
 }

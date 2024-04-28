@@ -44,7 +44,6 @@ pub struct LastBytes(pub Bytes);
 impl ProtocolType for LastBytes {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_raw_bytes(self.0.as_ref());
-
         Ok(())
     }
 

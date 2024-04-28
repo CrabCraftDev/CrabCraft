@@ -1,7 +1,8 @@
 use proc_macro2::{Ident, Span};
+
 use syn::parse::{Parse, ParseStream};
 use syn::spanned::Spanned;
-use syn::{parse2, Attribute, Error, Expr, Meta, Token};
+use syn::{parse2, Attribute, Error, Expr, Meta, Token, Type};
 
 pub(crate) struct RootPacketArgs {
     pub(crate) span: Span,
@@ -41,7 +42,7 @@ pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootP
 
 pub enum ProtocolAttribute {
     Bounded(Option<Expr>),
-    Type(Option<Ident>),
+    Type(Option<Type>),
 }
 
 impl Parse for ProtocolAttribute {

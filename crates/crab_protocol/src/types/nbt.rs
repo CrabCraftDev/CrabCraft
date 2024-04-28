@@ -14,6 +14,7 @@ impl ProtocolType for NbtTag {
     }
 }
 
+// Todo: SUpport tag end
 impl ProtocolType for Nbt {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put(self.write_unnamed());

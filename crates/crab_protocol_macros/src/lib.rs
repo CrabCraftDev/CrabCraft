@@ -6,7 +6,7 @@ use crate::args::{parse_attributes, ProtocolAttribute};
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
-use syn::{Data, Error};
+use syn::{Data, Error, Type};
 
 /// `ProtocolType` is a derive macro that helps in creating common Protocol Types like `VarInt Enum`, `Struct`, etc.
 /// This macro simplifies the process of implementing the `ProtocolType` trait for a type.
@@ -137,14 +137,27 @@ pub(crate) fn generate_field_code(
                 });
             }
             ProtocolAttribute::Type(protocol_type) => {
+                let protocol_type = protocol_type.unwrap();
+
+                let conversion_method = if let Type::Path(type_path) = &protocol_type {
+                    let first_type_name = &type_path.path.segments.first().unwrap().ident;
+                    match first_type_name.to_string().as_str() {
+                        "Option" => quote! { map(Into::into) },
+                        "Vec" => quote! { iter().map(|&value| value.into()).collect() },
+                        _ => quote! { into() },
+                    }
+                } else {
+                    quote! { into() }
+                };
+
                 fields_deserialize.push(quote! {
                     #field_name: {
                         let #field_name: #protocol_type = ::crab_protocol::protocol_type::ProtocolType::deserialize(buf)?;
-                        #field_name.into()
+                        #field_name.#conversion_method
                     }
                 });
                 fields_serialize.push(quote! {
-                    let #field_name: #protocol_type = self.#field_name.into();
+                    let #field_name: #protocol_type = self.#field_name.#conversion_method;
                     ::crab_protocol::protocol_type::ProtocolType::serialize(&#field_name, &mut buf)?;
                 });
             }
