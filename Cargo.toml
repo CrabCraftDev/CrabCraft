@@ -38,4 +38,4 @@ crab_protocol = { path = "crates/crab_protocol" }
 async-trait = "0.1.79"
 
 [dev-dependencies]
-cargo-husky = { version = "1.5.0", features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy"] }
+cargo-husky = { version = "1.5.0", features = ["precommit-hook", "run-for-all", "run-cargo-test", "run-cargo-check", "run-cargo-clippy"] }
