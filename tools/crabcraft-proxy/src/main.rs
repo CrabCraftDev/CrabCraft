@@ -2,11 +2,11 @@ use std::sync::Arc;
 
 use bytes::BytesMut;
 use clap::Parser;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::{
     net::{TcpListener, TcpStream},
     select,
 };
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use crab_craft::network::packet_byte_buf::read_byte_buf::ReadByteBuf;
 use crab_craft::utils::network::{get_var_int_from_stream, to_var_int};
@@ -19,11 +19,11 @@ struct Args {
     listen_ip: String,
 
     /// IP of server to connect
-    #[arg(short, long = "target_ip", default_value = "127.0.0.1:25565")]
+    #[arg(short, long, default_value = "127.0.0.1:25565")]
     target_server_ip: String,
 
     /// Maximum packet size for which content should be printed
-    #[arg(short, long = "max_print_size", default_value = "1500")]
+    #[arg(short, long, default_value = "1500")]
     maximum_packet_print_size: u32,
 }
 
