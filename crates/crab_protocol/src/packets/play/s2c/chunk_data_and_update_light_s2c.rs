@@ -1,15 +1,15 @@
 use bytes::Bytes;
 use crab_nbt::Nbt;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::packets::play::s2c::update_light_s2c::LightData;
+use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 
-#[derive(Debug, Packet, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x25, state = Play)]
 pub struct ChunkDataAndUpdateLightS2CPacket {
     pub chunk_x: i32,
@@ -29,9 +29,9 @@ pub struct BlockEntity {
     pub data: Nbt,
 }
 
-impl ProtocolType for BlockEntity {
+impl ProtocolSerializer for BlockEntity {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_i8(((self.relative_x & 15) << 4) | (self.relative_z & 0x0F));
+        buf.put_byte(((self.relative_x & 15) << 4) | (self.relative_z & 0x0F));
         buf.put_i16(self.y);
         buf.put_i32(self.block_entity_type);
         self.data.serialize(buf)?;

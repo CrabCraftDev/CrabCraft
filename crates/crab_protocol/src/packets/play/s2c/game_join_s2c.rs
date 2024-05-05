@@ -1,12 +1,12 @@
-use crab_protocol::types::block_position::BlockPosition;
-use crab_protocol::types::identifier::Identifier;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::block_position::BlockPosition;
 use crate::types::game_mode::{GameMode, OptionalGameMode};
+use crate::types::identifier::Identifier;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x29, state = Play)]
 pub struct GameJoinS2CPacket {
     pub entity_id: i32,
@@ -33,7 +33,7 @@ pub struct GameJoinS2CPacket {
     pub portal_cooldown: i32,
 }
 
-#[derive(Debug, Clone, PartialEq, ProtocolType)]
+#[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct LastDeathLocation {
     pub dimension_id: Identifier,
     pub location: BlockPosition,

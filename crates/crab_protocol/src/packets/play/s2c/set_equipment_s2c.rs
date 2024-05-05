@@ -3,16 +3,16 @@ use std::collections::HashMap;
 use derive_more::Into;
 use strum::FromRepr;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
+use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::item_stack::ItemStack;
 use crate::types::varint::VarInt;
 
-#[derive(Debug, Packet, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x59, state = Play)]
 pub struct SetEquipmentS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -25,7 +25,7 @@ pub struct Equipment {
     pub slots: HashMap<EquipmentSlot, Option<ItemStack>>,
 }
 
-impl ProtocolType for Equipment {
+impl ProtocolSerializer for Equipment {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         let slots_len = self.slots.len();
         for (index, (slot, item)) in self.slots.iter().enumerate() {
@@ -33,8 +33,8 @@ impl ProtocolType for Equipment {
             if index != slots_len - 1 {
                 slot |= 128;
             }
-            buf.put_u8(slot);
-            ProtocolType::serialize(item, buf)?;
+            buf.put_unsigned_byte(slot);
+            ProtocolSerializer::serialize(item, buf)?;
         }
         Ok(())
     }
@@ -47,7 +47,7 @@ impl ProtocolType for Equipment {
 
             let slot = EquipmentSlot::from_repr(slot_enum_index)
                 .ok_or(ProtocolError::EnumOutOfBounds("Equipment".to_string(), slot_enum_index))?;
-            let item = ProtocolType::deserialize(buf)?;
+            let item = ProtocolSerializer::deserialize(buf)?;
             slots.insert(slot, item);
 
             if slot_byte & 128 == 0 {
@@ -58,7 +58,7 @@ impl ProtocolType for Equipment {
     }
 }
 
-#[derive(ProtocolType, FromRepr, Copy, Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(ProtocolSerializer, FromRepr, Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum EquipmentSlot {
     MainHand,
     OffHand,

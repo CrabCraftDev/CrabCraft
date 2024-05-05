@@ -1,9 +1,9 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::protocol::ProtocolState::*;
 use crate::types::text::TextComponent;
 
-#[derive(Debug, Packet, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x1B, state = Play)]
 pub struct DisconnectS2CPacket {
     pub reason: TextComponent,

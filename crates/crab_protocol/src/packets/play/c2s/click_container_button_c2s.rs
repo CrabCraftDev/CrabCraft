@@ -1,7 +1,8 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x0C, state = Play)]
 pub struct ClickContainerButtonC2SPacket {
     pub window_id: i8,

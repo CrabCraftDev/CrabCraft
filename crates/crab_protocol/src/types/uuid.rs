@@ -1,9 +1,11 @@
-use crate::buf::{ReadByteBuf, WriteByteBuf};
-use crate::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
 use uuid::Uuid;
 
-impl ProtocolType for Uuid {
+use crab_protocol::protocol_serializer::ProtocolSerializer;
+
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
+
+impl ProtocolSerializer for Uuid {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_u128(self.as_u128());
         Ok(())

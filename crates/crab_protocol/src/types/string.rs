@@ -1,12 +1,12 @@
 use crab_protocol::bounded::Bounded;
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 
 const MAX_STRING_LENGTH: usize = 32767;
 
-impl ProtocolType for String {
+impl ProtocolSerializer for String {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         Bounded::check(self, MAX_STRING_LENGTH)?;
         buf.put_string(self.to_string());

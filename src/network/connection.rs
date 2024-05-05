@@ -41,7 +41,7 @@ impl Connection {
     }
 
     pub async fn send_packet(&mut self, packet: impl Packet) {
-        match packet.serialize() {
+        match packet.serialize_packet() {
             Ok(bytes) => self.send(bytes).await,
             Err(err) => {
                 error!("Serialization error: {}", err);

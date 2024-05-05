@@ -1,16 +1,17 @@
 use strum::FromRepr;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::protocol::ProtocolState::*;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x17, state = Play)]
 pub struct ChatSuggestionsS2CPacket {
     pub action: ChatSuggestionAction,
     pub suggestions: Vec<String>,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum ChatSuggestionAction {
     Add,
     Remove,

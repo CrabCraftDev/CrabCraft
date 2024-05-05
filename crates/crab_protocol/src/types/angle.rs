@@ -1,7 +1,8 @@
+use derive_more::{From, Into};
+
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use derive_more::{From, Into};
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, From, Into)]
 pub struct Angle(pub u8);
@@ -16,7 +17,7 @@ impl Angle {
     }
 }
 
-impl ProtocolType for Angle {
+impl ProtocolSerializer for Angle {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_unsigned_byte((*self).into());
         Ok(())

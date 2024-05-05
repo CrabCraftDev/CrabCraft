@@ -1,10 +1,10 @@
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
 use crate::types::item_stack::ItemStack;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x2B, state = Play)]
 pub struct MerchantOffersS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -18,7 +18,7 @@ pub struct MerchantOffersS2CPacket {
     pub can_restock: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, ProtocolType)]
+#[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct Trade {
     pub first_input_item: Option<ItemStack>,
     pub output_item: Option<ItemStack>,

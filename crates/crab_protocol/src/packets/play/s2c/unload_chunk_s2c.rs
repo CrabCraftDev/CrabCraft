@@ -1,7 +1,8 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x1F, state = Play)]
 pub struct UnloadChunkS2CPacket {
     pub chunk_z: i32,

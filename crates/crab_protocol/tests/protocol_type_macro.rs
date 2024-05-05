@@ -1,9 +1,10 @@
 use bytes::{BufMut, BytesMut};
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::ProtocolType;
 use strum::FromRepr;
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+use crab_protocol::protocol_serializer::ProtocolSerializer;
+use crab_protocol_macros::ProtocolSerializer;
+
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum NextState {
     Status = 1,
     Login = 2,

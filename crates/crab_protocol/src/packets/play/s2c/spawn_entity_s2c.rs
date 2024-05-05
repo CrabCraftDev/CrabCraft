@@ -1,12 +1,13 @@
 use uuid::Uuid;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::angle::Angle;
-use crab_protocol::types::position::Position;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::angle::Angle;
+use crate::types::position::Position;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x01, state = Play)]
 pub struct SpawnEntityS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]

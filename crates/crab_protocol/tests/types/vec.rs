@@ -1,5 +1,6 @@
 use bytes::BytesMut;
-use crab_protocol::protocol_type::ProtocolType;
+
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 #[test]
 fn test_vec_protocol_type() {

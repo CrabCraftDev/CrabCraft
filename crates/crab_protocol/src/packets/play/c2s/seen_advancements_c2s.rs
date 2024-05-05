@@ -1,12 +1,12 @@
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::identifier::Identifier;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
+use crate::types::identifier::Identifier;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x29, state = Play)]
 pub struct SeenAdvancementsC2SPacket {
     pub action: SeenAdvancementsAction,
@@ -18,7 +18,7 @@ pub enum SeenAdvancementsAction {
     ClosedScreen,
 }
 
-impl ProtocolType for SeenAdvancementsAction {
+impl ProtocolSerializer for SeenAdvancementsAction {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             SeenAdvancementsAction::OpenedTab(tab_id) => {
@@ -35,7 +35,7 @@ impl ProtocolType for SeenAdvancementsAction {
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
         let action = buf.get_var_int()?;
         match action {
-            0 => Ok(SeenAdvancementsAction::OpenedTab(ProtocolType::deserialize(buf)?)),
+            0 => Ok(SeenAdvancementsAction::OpenedTab(ProtocolSerializer::deserialize(buf)?)),
             1 => Ok(SeenAdvancementsAction::ClosedScreen),
             _ => Err(ProtocolError::EnumOutOfBounds(
                 "UpdateObjectiveMode".to_string(),

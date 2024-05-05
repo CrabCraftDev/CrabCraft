@@ -1,10 +1,11 @@
 use bytes::Bytes;
 use uuid::Uuid;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x06, state = Play)]
 pub struct PlayerSessionC2SPacket {
     pub session_id: Uuid,

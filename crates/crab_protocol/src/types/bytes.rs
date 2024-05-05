@@ -1,12 +1,12 @@
 use bytes::{Buf, Bytes};
 use derive_more::{From, Into};
 
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 
-impl ProtocolType for Bytes {
+impl ProtocolSerializer for Bytes {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_byte_array(self.as_ref());
         Ok(())
@@ -21,7 +21,7 @@ impl ProtocolType for Bytes {
 #[repr(transparent)]
 pub struct FixedBytes<const N: usize>(pub Bytes);
 
-impl<const N: usize> ProtocolType for FixedBytes<N> {
+impl<const N: usize> ProtocolSerializer for FixedBytes<N> {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         if self.0.remaining() != N {
             return Err(ProtocolError::InvalidFixedBytesLength(N, self.0.remaining()));
@@ -41,7 +41,7 @@ impl<const N: usize> ProtocolType for FixedBytes<N> {
 #[repr(transparent)]
 pub struct LastBytes(pub Bytes);
 
-impl ProtocolType for LastBytes {
+impl ProtocolSerializer for LastBytes {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_raw_bytes(self.0.as_ref());
         Ok(())

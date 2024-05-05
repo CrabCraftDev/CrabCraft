@@ -1,13 +1,13 @@
 use strum::FromRepr;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::protocol::ProtocolState::*;
 use crate::types::block_face::BlockFace;
 use crate::types::block_position::BlockPosition;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x21, state = Play)]
 pub struct PlayerActionC2SPacket {
     pub status: PlayerAction,
@@ -18,7 +18,7 @@ pub struct PlayerActionC2SPacket {
     pub sequence_id: i32,
 }
 
-#[derive(ProtocolType, FromRepr, Copy, Clone, Debug)]
+#[derive(ProtocolSerializer, FromRepr, Copy, Clone, Debug)]
 pub enum PlayerAction {
     StartedDigging,
     CancelledDigging,

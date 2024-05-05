@@ -1,11 +1,11 @@
-use crab_protocol::types::block_position::BlockPosition;
-use crab_protocol::types::identifier::Identifier;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::block_position::BlockPosition;
+use crate::types::identifier::Identifier;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x30, state = Play)]
 pub struct ProgramJigsawBlockC2SPacket {
     pub position: BlockPosition,

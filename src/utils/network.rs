@@ -13,10 +13,10 @@ pub async fn decompress_packet(mut bytes: Bytes) -> Result<Bytes, Error> {
     let mut new_bytes = Vec::new();
     let data_length = bytes.get_var_int()?;
     if data_length == 0 {
-        return Ok(Bytes::from(bytes.get_bytes(data_length)));
+        return Ok(bytes.get_raw_bytes(data_length));
     }
 
-    let compressed = &*bytes.get_bytes(data_length);
+    let compressed = &*bytes.get_raw_bytes(data_length);
     let mut decoder = ZlibDecoder::new(compressed);
     decoder.read_to_end(&mut new_bytes)?;
 

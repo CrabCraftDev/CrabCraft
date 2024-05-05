@@ -1,5 +1,4 @@
 use proc_macro2::{Ident, Span};
-
 use syn::parse::{Parse, ParseStream};
 use syn::spanned::Spanned;
 use syn::{parse2, Attribute, Error, Expr, Meta, Token, Type};

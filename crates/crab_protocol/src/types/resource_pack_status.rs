@@ -1,7 +1,8 @@
-use crab_protocol_macros::ProtocolType;
 use strum::FromRepr;
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+use crab_protocol_macros::ProtocolSerializer;
+
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum ResourcePackStatus {
     SuccessfullyDownloaded,
     Declined,

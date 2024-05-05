@@ -1,9 +1,9 @@
-use crab_protocol::types::varlong::VarLong;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::varlong::VarLong;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x4C, state = Play)]
 pub struct SetBorderLerpSizeS2CPacket {
     pub old_diameter: f64,

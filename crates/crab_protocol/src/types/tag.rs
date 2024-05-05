@@ -1,8 +1,8 @@
 use crab_protocol::types::identifier::Identifier;
 use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::ProtocolType;
+use crab_protocol_macros::ProtocolSerializer;
 
-#[derive(ProtocolType, Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(ProtocolSerializer, Clone, PartialEq, Eq, Hash, Debug)]
 pub struct Tag {
     pub name: Identifier,
     #[protocol_attribute(protocol_type = Vec<VarInt>)]

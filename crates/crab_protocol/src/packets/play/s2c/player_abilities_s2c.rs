@@ -1,13 +1,10 @@
 use bitfield_struct::bitfield;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x36, state = Play)]
 pub struct PlayerAbilitiesS2CPacket {
     pub flags: PlayerAbilitiesFlags,
@@ -16,6 +13,7 @@ pub struct PlayerAbilitiesS2CPacket {
 }
 
 #[bitfield(u8)]
+#[derive(ProtocolSerializer)]
 pub struct PlayerAbilitiesFlags {
     pub invulnerable: bool,
     pub flying: bool,
@@ -25,15 +23,4 @@ pub struct PlayerAbilitiesFlags {
     #[bits(3)]
     __: u8,
     pub creative_mode: bool,
-}
-
-impl ProtocolType for PlayerAbilitiesFlags {
-    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_i8(self.0 as i8);
-        Ok(())
-    }
-
-    fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(PlayerAbilitiesFlags(buf.get_i8() as u8))
-    }
 }

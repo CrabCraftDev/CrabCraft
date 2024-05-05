@@ -1,12 +1,12 @@
-use crab_protocol::types::block_position::BlockPosition;
-use crab_protocol::types::hand::Hand;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
 use crate::types::block_face::BlockFace;
+use crate::types::block_position::BlockPosition;
+use crate::types::hand::Hand;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x35, state = Play)]
 pub struct UseItemOnC2SPacket {
     pub hand: Hand,

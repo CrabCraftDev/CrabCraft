@@ -1,11 +1,11 @@
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x55, state = Play)]
 pub struct DisplayObjectiveS2CPacket {
     pub objective_position: ObjectivePosition,
@@ -20,7 +20,7 @@ pub enum ObjectivePosition {
     TeamSpecificSidebar(i32),
 }
 
-impl ProtocolType for ObjectivePosition {
+impl ProtocolSerializer for ObjectivePosition {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_var_int(match self {
             ObjectivePosition::List => 0,

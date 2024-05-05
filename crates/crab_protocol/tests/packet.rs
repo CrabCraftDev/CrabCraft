@@ -4,9 +4,8 @@ use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::packet::Packet;
 use crab_protocol::protocol::{PacketDirection, ProtocolState};
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol::raw_packet::RawPacket;
-
 
 #[derive(Debug, PartialEq)]
 pub struct TestC2S {
@@ -15,18 +14,20 @@ pub struct TestC2S {
 
 impl Packet for TestC2S {
     const ID: i32 = 0;
-    const SIDE: PacketDirection = PacketDirection::Serverbound;
+    const SIDE: PacketDirection = PacketDirection::Clientbound;
     const STATE: ProtocolState = ProtocolState::Handshake;
+}
+
+impl ProtocolSerializer for TestC2S {
+    fn serialize(&self, mut buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
+        self.name.serialize(&mut buf)?;
+        Ok(())
+    }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
         Ok(TestC2S {
             name: buf.get_string()?,
         })
-    }
-
-    fn serialize_content(&self, mut buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        self.name.serialize(&mut buf)?;
-        Ok(())
     }
 }
 
@@ -47,7 +48,7 @@ fn cycle() {
     };
 
     let mut buf = BytesMut::new();
-    packet.serialize_content(&mut buf).unwrap();
+    packet.serialize(&mut buf).unwrap();
     let raw_packet = RawPacket::new(0, buf.freeze());
     let decoded = raw_packet.decode::<TestC2S>().unwrap();
 

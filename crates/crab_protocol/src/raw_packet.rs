@@ -1,6 +1,8 @@
-use crate::packet::Packet;
-use bytes::Bytes;
 use std::fmt::Debug;
+
+use bytes::Bytes;
+
+use crate::packet::Packet;
 
 #[derive(Debug, Clone)]
 pub struct RawPacket {

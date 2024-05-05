@@ -1,11 +1,11 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::protocol::ProtocolState::*;
 use crate::types::bit_set::FixedBitSet;
 use crate::types::bytes::FixedBytes;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x04, state = Play)]
 pub struct ChatCommandC2SPacket {
     #[protocol_attribute(bounded = 256)]
@@ -20,7 +20,7 @@ pub struct ChatCommandC2SPacket {
     pub acknowledged: FixedBitSet<20>,
 }
 
-#[derive(Debug, Clone, PartialEq, ProtocolType)]
+#[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct ArgumentSignature {
     #[protocol_attribute(bounded = 16)]
     pub argument_name: String,

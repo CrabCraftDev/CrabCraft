@@ -1,9 +1,9 @@
-use crab_protocol::types::hand::Hand;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::hand::Hand;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x33, state = Play)]
 pub struct SwingArmC2SPacket {
     pub hand: Hand,
