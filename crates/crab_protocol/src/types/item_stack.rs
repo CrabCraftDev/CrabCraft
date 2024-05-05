@@ -1,8 +1,10 @@
-use crate::error::ProtocolError;
 use crab_nbt::Nbt;
-use crab_protocol_macros::ProtocolType;
 
-#[derive(Clone, PartialEq, Debug, ProtocolType)]
+use crab_protocol_macros::ProtocolSerializer;
+
+use crate::error::ProtocolError;
+
+#[derive(Clone, PartialEq, Debug, ProtocolSerializer)]
 pub struct ItemStack {
     pub id: i32,
     pub amount: u8,

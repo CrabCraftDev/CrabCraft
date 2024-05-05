@@ -1,15 +1,15 @@
 use strum::FromRepr;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::number_format::NumberFormat;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
+use crate::types::number_format::NumberFormat;
 use crate::types::text::TextComponent;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x5C, state = Play)]
 pub struct UpdateObjectivesS2CPacket {
     pub objective_name: String,
@@ -23,7 +23,7 @@ pub enum UpdateObjectiveMode {
     UpdateDisplayText(ObjectiveContent),
 }
 
-impl ProtocolType for UpdateObjectiveMode {
+impl ProtocolSerializer for UpdateObjectiveMode {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             UpdateObjectiveMode::CreateScoreboard(content) | UpdateObjectiveMode::UpdateDisplayText(content) => {
@@ -62,14 +62,14 @@ impl ProtocolType for UpdateObjectiveMode {
     }
 }
 
-#[derive(Clone, PartialEq, Debug, ProtocolType)]
+#[derive(Clone, PartialEq, Debug, ProtocolSerializer)]
 pub struct ObjectiveContent {
     pub objective_value: TextComponent,
     pub objective_type: ObjectiveType,
     pub number_format: Option<NumberFormat>,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum ObjectiveType {
     Integer,
     Hearts,

@@ -1,6 +1,6 @@
-use crab_protocol_macros::ProtocolType;
+use crab_protocol_macros::ProtocolSerializer;
 
-#[derive(Clone, Copy, PartialEq, Debug, ProtocolType)]
+#[derive(Clone, Copy, PartialEq, Debug, ProtocolSerializer)]
 pub struct Position {
     pub x: f64,
     pub y: f64,

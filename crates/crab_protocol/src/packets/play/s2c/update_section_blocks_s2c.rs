@@ -1,10 +1,11 @@
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
+use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x47, state = Play)]
 pub struct UpdateSectionBlocksS2CPacket {
     pub chunk_section_position: ChunkSectionPosition,
@@ -18,7 +19,7 @@ pub struct ChunkSectionPosition {
     pub z: i32,
 }
 
-impl ProtocolType for ChunkSectionPosition {
+impl ProtocolSerializer for ChunkSectionPosition {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         let x = self.x as i64;
         let y = self.y as i64;
@@ -45,7 +46,7 @@ pub struct BlockPositionAndState {
     pub z: u8,
 }
 
-impl ProtocolType for BlockPositionAndState {
+impl ProtocolSerializer for BlockPositionAndState {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         let state_id = self.state_id as i64;
         let x = self.x as i64;

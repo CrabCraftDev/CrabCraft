@@ -1,8 +1,9 @@
+use crab_protocol::protocol_serializer::ProtocolSerializer;
+
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
 
-impl ProtocolType for i8 {
+impl ProtocolSerializer for i8 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_i8(*self);
         Ok(())
@@ -13,7 +14,7 @@ impl ProtocolType for i8 {
     }
 }
 
-impl ProtocolType for i16 {
+impl ProtocolSerializer for i16 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_i16(*self);
         Ok(())
@@ -24,7 +25,7 @@ impl ProtocolType for i16 {
     }
 }
 
-impl ProtocolType for i32 {
+impl ProtocolSerializer for i32 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_i32(*self);
         Ok(())
@@ -35,7 +36,7 @@ impl ProtocolType for i32 {
     }
 }
 
-impl ProtocolType for i64 {
+impl ProtocolSerializer for i64 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_i64(*self);
         Ok(())
@@ -46,7 +47,7 @@ impl ProtocolType for i64 {
     }
 }
 
-impl ProtocolType for u8 {
+impl ProtocolSerializer for u8 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_u8(*self);
         Ok(())
@@ -57,7 +58,7 @@ impl ProtocolType for u8 {
     }
 }
 
-impl ProtocolType for u16 {
+impl ProtocolSerializer for u16 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_u16(*self);
         Ok(())
@@ -68,7 +69,7 @@ impl ProtocolType for u16 {
     }
 }
 
-impl ProtocolType for f32 {
+impl ProtocolSerializer for f32 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_f32(*self);
         Ok(())
@@ -79,7 +80,7 @@ impl ProtocolType for f32 {
     }
 }
 
-impl ProtocolType for f64 {
+impl ProtocolSerializer for f64 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_f64(*self);
         Ok(())
@@ -90,13 +91,13 @@ impl ProtocolType for f64 {
     }
 }
 
-impl ProtocolType for bool {
+impl ProtocolSerializer for bool {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_boolean(*self);
+        buf.put_bool(*self);
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(buf.get_boolean())
+        Ok(buf.get_bool())
     }
 }

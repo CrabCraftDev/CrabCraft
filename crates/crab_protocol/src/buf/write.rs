@@ -3,9 +3,8 @@ use std::hash::Hash;
 
 use bytes::Buf;
 use bytes::BufMut;
-use uuid::Uuid;
 
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 use crate::error::ProtocolError;
 
@@ -52,7 +51,7 @@ pub trait WriteByteBuf: BufMut + Sized {
         self.put_byte_array(bytes)
     }
 
-    fn put_boolean(&mut self, value: bool) {
+    fn put_bool(&mut self, value: bool) {
         self.put_byte(if value { 1 } else { 0 });
     }
 
@@ -65,7 +64,7 @@ pub trait WriteByteBuf: BufMut + Sized {
         self.put(value);
     }
 
-    fn put_some_array<T: ProtocolType>(&mut self, values: &Vec<T>) -> Result<(), ProtocolError> {
+    fn put_some_array<T: ProtocolSerializer>(&mut self, values: &Vec<T>) -> Result<(), ProtocolError> {
         self.put_var_int(values.len() as i32);
         for val in values {
             val.serialize(self)?;
@@ -73,18 +72,18 @@ pub trait WriteByteBuf: BufMut + Sized {
         Ok(())
     }
 
-    fn put_optional<T: ProtocolType>(&mut self, value: &Option<T>) -> Result<(), ProtocolError> {
+    fn put_optional<T: ProtocolSerializer>(&mut self, value: &Option<T>) -> Result<(), ProtocolError> {
         match value {
             Some(value) => {
-                self.put_boolean(true);
+                self.put_bool(true);
                 value.serialize(self)?;
             }
-            None => self.put_boolean(false),
+            None => self.put_bool(false),
         }
         Ok(())
     }
 
-    fn put_hash_map<K: ProtocolType + Eq + Hash, V: ProtocolType>(
+    fn put_hash_map<K: ProtocolSerializer + Eq + Hash, V: ProtocolSerializer>(
         &mut self,
         value: &HashMap<K, V>,
     ) -> Result<(), ProtocolError> {
@@ -94,10 +93,6 @@ pub trait WriteByteBuf: BufMut + Sized {
             value.serialize(self)?;
         }
         Ok(())
-    }
-
-    fn put_uuid(&mut self, value: Uuid) {
-        self.put_u128(value.as_u128());
     }
 }
 

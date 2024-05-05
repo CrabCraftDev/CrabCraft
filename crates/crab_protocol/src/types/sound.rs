@@ -1,11 +1,12 @@
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::identifier::Identifier;
-use crab_protocol_macros::ProtocolType;
 use strum::FromRepr;
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
+use crab_protocol::error::ProtocolError;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
+use crab_protocol::types::identifier::Identifier;
+use crab_protocol_macros::ProtocolSerializer;
+
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum SoundCategory {
     Master,
     Music,
@@ -30,7 +31,7 @@ pub enum SoundEffect {
     },
 }
 
-impl ProtocolType for SoundEffect {
+impl ProtocolSerializer for SoundEffect {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             SoundEffect::Direct { id } => {

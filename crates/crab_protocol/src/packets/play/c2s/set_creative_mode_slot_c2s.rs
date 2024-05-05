@@ -1,9 +1,9 @@
-use crab_protocol::types::item_stack::ItemStack;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::item_stack::ItemStack;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x2F, state = Play)]
 pub struct SetCreativeModeSlotC2SPacket {
     pub slot: i16,

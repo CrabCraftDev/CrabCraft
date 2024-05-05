@@ -1,12 +1,12 @@
 use bytes::Bytes;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::bit_set::BitSet;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::protocol::ProtocolState::*;
+use crate::types::bit_set::BitSet;
 use crate::types::varint::VarInt;
 
-#[derive(Debug, Packet, Clone)]
+#[derive(Debug, Packet, ProtocolSerializer, Clone)]
 #[packet(id = 0x28, state = Play)]
 pub struct UpdateLightS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -16,7 +16,7 @@ pub struct UpdateLightS2CPacket {
     pub light_data: LightData,
 }
 
-#[derive(Debug, Clone, PartialEq, ProtocolType)]
+#[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct LightData {
     pub sky_light_map: BitSet,
     pub block_light_map: BitSet,

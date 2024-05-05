@@ -1,9 +1,10 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::text::TextComponent;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::text::TextComponent;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x1C, state = Play)]
 pub struct DisguisedChatMessageS2CPacket {
     pub message: TextComponent,

@@ -3,11 +3,9 @@ use std::hash::Hash;
 use std::str::from_utf8;
 
 use bytes::{Buf, Bytes};
-use uuid::Uuid;
-
-use crab_protocol::protocol_type::ProtocolType;
 
 use crate::error::ProtocolError;
+use crate::protocol_serializer::ProtocolSerializer;
 
 use super::CONTINUE_BIT;
 use super::SEGMENT_BITS;
@@ -73,12 +71,12 @@ pub trait ReadByteBuf: Buf + Sized {
         Ok(str.to_string())
     }
 
-    fn get_boolean(&mut self) -> bool {
+    fn get_bool(&mut self) -> bool {
         self.get_byte() != 0
     }
 
-    fn get_raw_bytes(&mut self, amount: i32) -> Bytes {
-        self.copy_to_bytes(amount as usize)
+    fn get_raw_bytes(&mut self, length: i32) -> Bytes {
+        self.copy_to_bytes(length as usize)
     }
 
     fn get_byte_array(&mut self) -> Result<Bytes, ProtocolError> {
@@ -87,7 +85,7 @@ pub trait ReadByteBuf: Buf + Sized {
         Ok(bytes)
     }
 
-    fn get_some_array<T: ProtocolType>(&mut self) -> Result<Vec<T>, ProtocolError> {
+    fn get_some_array<T: ProtocolSerializer>(&mut self) -> Result<Vec<T>, ProtocolError> {
         let length = self.get_var_int()?;
         let mut items = Vec::with_capacity(length as usize);
 
@@ -98,15 +96,17 @@ pub trait ReadByteBuf: Buf + Sized {
         Ok(items)
     }
 
-    fn get_optional<T: ProtocolType>(&mut self) -> Result<Option<T>, ProtocolError> {
-        let present = self.get_boolean();
+    fn get_optional<T: ProtocolSerializer>(&mut self) -> Result<Option<T>, ProtocolError> {
+        let present = self.get_bool();
         match present {
             true => Ok(Some(T::deserialize(self)?)),
             false => Ok(None),
         }
     }
 
-    fn get_hash_map<K: ProtocolType + Hash + Eq, V: ProtocolType>(&mut self) -> Result<HashMap<K, V>, ProtocolError> {
+    fn get_hash_map<K: ProtocolSerializer + Hash + Eq, V: ProtocolSerializer>(
+        &mut self,
+    ) -> Result<HashMap<K, V>, ProtocolError> {
         let mut result = HashMap::new();
         let len = self.get_var_int()?;
         for _ in 0..len {
@@ -117,20 +117,6 @@ pub trait ReadByteBuf: Buf + Sized {
             result.insert(key, V::deserialize(self)?);
         }
         Ok(result)
-    }
-
-    fn get_bytes(&mut self, amount: i32) -> Vec<u8> {
-        let mut bytes: Vec<u8> = vec![];
-
-        for _ in 0..amount {
-            bytes.push(self.get_byte() as u8)
-        }
-        bytes
-    }
-
-    fn get_uuid(&mut self) -> Uuid {
-        let uuid = self.get_u128();
-        Uuid::from_u128(uuid)
     }
 }
 

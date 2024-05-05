@@ -1,8 +1,9 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::client_information::{ChatMode, DisplayedSkinParts, MainHand};
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::client_information::{ChatMode, DisplayedSkinParts, MainHand};
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x09, state = Play)]
 pub struct ClientInformationC2SPacket {
     #[protocol_attribute(bounded = 16)]

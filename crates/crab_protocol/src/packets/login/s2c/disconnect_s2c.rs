@@ -1,0 +1,10 @@
+use crab_protocol_macros::{Packet, ProtocolSerializer};
+
+use crate::protocol::ProtocolState::*;
+use crate::types::text::JsonTextComponent;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
+#[packet(id = 0x00, state = Login)]
+pub struct DisconnectS2CPacket {
+    pub reason: JsonTextComponent,
+}

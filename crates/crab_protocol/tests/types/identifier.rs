@@ -1,4 +1,4 @@
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol::types::identifier::Identifier;
 
 #[test]

@@ -1,13 +1,13 @@
 use bytes::BytesMut;
 
 use crab_protocol::buf::WriteByteBuf;
-use crab_protocol::packet::Packet;
 use crab_protocol::protocol::ProtocolState::Handshake;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol::raw_packet::RawPacket;
 use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, PartialEq, Packet)]
+#[derive(Debug, PartialEq, Packet, ProtocolSerializer)]
 #[packet(id = 0, state = Handshake)]
 pub struct TestC2S {
     pub name: String,
@@ -40,7 +40,7 @@ fn cycle_macro() {
     };
 
     let mut buf = BytesMut::new();
-    packet.serialize_content(&mut buf).unwrap();
+    packet.serialize(&mut buf).unwrap();
     let raw_packet = RawPacket::new(0, buf.freeze());
     let decoded = raw_packet.decode::<TestC2S>().unwrap();
 

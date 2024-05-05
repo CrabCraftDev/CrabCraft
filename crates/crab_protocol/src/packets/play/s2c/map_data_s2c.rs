@@ -2,15 +2,16 @@ use bytes::Bytes;
 use derive_more::{From, Into};
 use strum::FromRepr;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::text::TextComponent;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
+use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
+use crate::types::text::TextComponent;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x2A, state = Play)]
 pub struct MapDataS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -21,7 +22,7 @@ pub struct MapDataS2CPacket {
     pub map_patches: OptionalMapPatch,
 }
 
-#[derive(Debug, Clone, PartialEq, ProtocolType)]
+#[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct MapDecoration {
     pub decoration_type: MapDecorationType,
     pub x: i8,
@@ -34,11 +35,11 @@ pub struct MapDecoration {
 #[repr(transparent)]
 pub struct OptionalMapPatch(pub Option<MapPatch>);
 
-impl ProtocolType for OptionalMapPatch {
+impl ProtocolSerializer for OptionalMapPatch {
     fn serialize(&self, mut buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match &self.0 {
-            None => buf.put_u8(0),
-            Some(map_patch) => ProtocolType::serialize(map_patch, &mut buf)?,
+            None => buf.put_unsigned_byte(0),
+            Some(map_patch) => ProtocolSerializer::serialize(map_patch, &mut buf)?,
         }
         Ok(())
     }
@@ -53,7 +54,7 @@ impl ProtocolType for OptionalMapPatch {
     }
 }
 
-#[derive(Debug, Clone, Hash, ProtocolType)]
+#[derive(Debug, Clone, Hash, ProtocolSerializer)]
 pub struct MapPatch {
     pub columns: u8,
     pub rows: u8,
@@ -63,7 +64,7 @@ pub struct MapPatch {
     pub data: Bytes,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum MapDecorationType {
     /// Player
     WhiteArrow,

@@ -1,24 +1,37 @@
 use bitfield_struct::bitfield;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol::{PacketDirection, ProtocolState};
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-use crate::packet::Packet;
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
+use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::identifier::Identifier;
 use crate::types::sound::SoundCategory;
 
-#[derive(Debug, Clone)]
+#[derive(Packet, Debug, Clone)]
+#[packet(id = 0x68, state = Play)]
 pub struct StopSoundS2CPacket {
     pub sound_category: Option<SoundCategory>,
     pub sound_name: Option<Identifier>,
 }
 
-impl Packet for StopSoundS2CPacket {
-    const ID: i32 = 0x68;
-    const SIDE: PacketDirection = PacketDirection::Clientbound;
-    const STATE: ProtocolState = ProtocolState::Play;
+impl ProtocolSerializer for StopSoundS2CPacket {
+    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
+        let mut stop_sound_controls = StopSoundControls::new();
+        stop_sound_controls.set_category(self.sound_category.is_some());
+        stop_sound_controls.set_name(self.sound_name.is_some());
+        buf.put_unsigned_byte(stop_sound_controls.into());
+
+        if let Some(sound_category) = &self.sound_category {
+            sound_category.serialize(buf)?;
+        }
+        if let Some(sound_name) = &self.sound_name {
+            sound_name.serialize(buf)?;
+        }
+
+        Ok(())
+    }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
         let stop_sound_controls = StopSoundControls(buf.get_u8());
@@ -39,25 +52,10 @@ impl Packet for StopSoundS2CPacket {
             sound_name,
         })
     }
-
-    fn serialize_content(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        let mut stop_sound_controls = StopSoundControls::new();
-        stop_sound_controls.set_category(self.sound_category.is_some());
-        stop_sound_controls.set_name(self.sound_name.is_some());
-        buf.put_u8(stop_sound_controls.into());
-
-        if let Some(sound_category) = &self.sound_category {
-            sound_category.serialize(buf)?;
-        }
-        if let Some(sound_name) = &self.sound_name {
-            sound_name.serialize(buf)?;
-        }
-
-        Ok(())
-    }
 }
 
 #[bitfield(u8)]
+#[derive(ProtocolSerializer)]
 pub struct StopSoundControls {
     pub category: bool,
     pub name: bool,

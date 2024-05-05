@@ -1,5 +1,5 @@
-
 use crab_protocol::types::bit_set::BitSet;
+
 #[test]
 fn long_cycle() {
     let bit_set = BitSet::new([true, false].repeat(32));

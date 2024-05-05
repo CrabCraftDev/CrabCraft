@@ -1,9 +1,9 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x0F, state = Play)]
 /// Used only for Crafter block
 pub struct ChangeContainerSlotStateC2SPacket {

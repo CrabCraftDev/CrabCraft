@@ -7,7 +7,7 @@ pub mod client_information;
 pub mod difficulty;
 pub mod game_mode;
 pub mod hand;
-mod hashmap;
+pub mod hashmap;
 pub mod identifier;
 pub mod item_stack;
 pub mod nbt;

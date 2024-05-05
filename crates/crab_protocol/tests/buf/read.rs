@@ -1,6 +1,6 @@
 use bytes::Bytes;
+
 use crab_protocol::buf::ReadByteBuf;
-use uuid::uuid;
 
 #[test]
 fn test_get_byte() {
@@ -40,26 +40,10 @@ fn test_get_string() {
 #[test]
 fn test_get_boolean() {
     let mut buf: &[u8] = &[0x01];
-    let result = buf.get_boolean();
+    let result = buf.get_bool();
     assert!(result);
 
     let mut buf: &[u8] = &[0x00];
-    let result = buf.get_boolean();
+    let result = buf.get_bool();
     assert!(!result);
-}
-
-#[test]
-fn test_get_bytes() {
-    let mut buf: &[u8] = &[0x01, 0x02, 0x03];
-    let result = buf.get_bytes(3);
-    assert_eq!(result, vec![1, 2, 3]);
-}
-
-#[test]
-fn test_get_uuid() {
-    let uuid = uuid!("123e4567-e89b-12d3-a456-426614174000");
-    let mut bytes: &[u8] = uuid.as_bytes();
-
-    let result = bytes.get_uuid();
-    assert_eq!(uuid, result)
 }

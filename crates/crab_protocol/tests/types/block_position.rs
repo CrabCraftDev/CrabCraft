@@ -1,5 +1,6 @@
 use bytes::BufMut;
-use crab_protocol::protocol_type::ProtocolType;
+
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol::types::block_position::BlockPosition;
 
 #[test]

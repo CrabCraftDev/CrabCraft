@@ -1,9 +1,10 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::block_position::BlockPosition;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::block_position::BlockPosition;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x09, state = Play)]
 pub struct BlockUpdateS2CPacket {
     pub position: BlockPosition,

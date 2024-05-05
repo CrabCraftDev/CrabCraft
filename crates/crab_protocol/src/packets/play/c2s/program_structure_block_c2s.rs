@@ -1,16 +1,13 @@
 use bitfield_struct::bitfield;
 use strum::FromRepr;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::block_position::BlockPosition;
-use crab_protocol::types::varlong::VarLong;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::block_position::BlockPosition;
+use crate::types::varlong::VarLong;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x31, state = Play)]
 pub struct ProgramStructureBlockC2SPacket {
     pub position: BlockPosition,
@@ -33,7 +30,7 @@ pub struct ProgramStructureBlockC2SPacket {
     pub flags: StructureBlockFlags,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum StructureBlockAction {
     UpdateData,
     SaveStructure,
@@ -41,7 +38,7 @@ pub enum StructureBlockAction {
     DetectSize,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum StructureBlockMode {
     Save,
     Load,
@@ -49,14 +46,14 @@ pub enum StructureBlockMode {
     Data,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum MirrorMode {
     None,
     LeftRight,
     FrontBack,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum RotationMode {
     None,
     Clockwise90,
@@ -65,21 +62,11 @@ pub enum RotationMode {
 }
 
 #[bitfield(u8)]
+#[derive(ProtocolSerializer)]
 pub struct StructureBlockFlags {
     pub ignore_entities: bool,
     pub show_air: bool,
     pub show_bounding_box: bool,
     #[bits(5)]
     __: u8,
-}
-
-impl ProtocolType for StructureBlockFlags {
-    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_i8(self.0 as i8);
-        Ok(())
-    }
-
-    fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(Self(buf.get_i8() as u8))
-    }
 }

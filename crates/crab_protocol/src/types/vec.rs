@@ -1,8 +1,9 @@
-use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
-impl<T: ProtocolType> ProtocolType for Vec<T> {
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+
+impl<T: ProtocolSerializer> ProtocolSerializer for Vec<T> {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_some_array(self)?;
         Ok(())

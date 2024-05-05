@@ -1,7 +1,8 @@
 use crab_nbt::NbtTag;
+
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol::types::text::TextComponent;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -11,7 +12,7 @@ pub enum NumberFormat {
     Fixed(TextComponent),
 }
 
-impl ProtocolType for NumberFormat {
+impl ProtocolSerializer for NumberFormat {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             NumberFormat::Blank => {
@@ -19,7 +20,7 @@ impl ProtocolType for NumberFormat {
             }
             NumberFormat::Styled(styling) => {
                 buf.put_var_int(1);
-                ProtocolType::serialize(styling, buf)?;
+                ProtocolSerializer::serialize(styling, buf)?;
             }
             NumberFormat::Fixed(text_component) => {
                 buf.put_var_int(2);
@@ -34,7 +35,7 @@ impl ProtocolType for NumberFormat {
         match number_format_type {
             0 => Ok(NumberFormat::Blank),
             1 => {
-                let styling = ProtocolType::deserialize(buf)?;
+                let styling = ProtocolSerializer::deserialize(buf)?;
                 Ok(NumberFormat::Styled(styling))
             }
             2 => {

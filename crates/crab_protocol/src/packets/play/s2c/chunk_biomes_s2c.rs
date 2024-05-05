@@ -1,15 +1,16 @@
 use bytes::Bytes;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::protocol::ProtocolState::*;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x0E, state = Play)]
 pub struct ChunkBiomesS2CPacket {
     pub chunk_biomes_data: Vec<ChunkBiomeData>,
 }
 
-#[derive(Debug, Clone, PartialEq, ProtocolType)]
+#[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct ChunkBiomeData {
     pub chunk_z: i32,
     pub chunk_x: i32,

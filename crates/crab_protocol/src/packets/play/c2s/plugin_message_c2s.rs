@@ -1,9 +1,10 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::bytes::LastBytes;
-use crab_protocol::types::identifier::Identifier;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::bytes::LastBytes;
+use crate::types::identifier::Identifier;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x10, state = Play)]
 pub struct PluginMessageC2SPacket {
     pub channel: Identifier,

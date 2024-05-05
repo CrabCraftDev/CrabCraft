@@ -1,60 +1,16 @@
+extern crate proc_macro;
+
+use proc_macro::TokenStream;
+
 mod args;
 mod packet_derive;
-mod protocol_type_derive;
+mod protocol_serializer_derive;
 
-use crate::args::{parse_attributes, ProtocolAttribute};
-use proc_macro::TokenStream;
-use proc_macro2::Span;
-use quote::quote;
-use syn::{Data, Error, Type};
-
-/// `ProtocolType` is a derive macro that helps in creating common Protocol Types like `VarInt Enum`, `Struct`, etc.
-/// This macro simplifies the process of implementing the `ProtocolType` trait for a type.
+/// `ProtocolSerializer` is a derive macro that helps in creating common Protocol Types like `Enum`, `Struct`, etc.
+/// This macro simplifies the process of implementing the `ProtocolSerializer` trait for a type.
 ///
-/// The `ProtocolType` trait provides methods for serializing and deserializing the type into/from a byte buffer.
-/// The `derive_protocol_type` macro generates an implementation of the `ProtocolType` trait for the type.
-///
-/// # Examples
-///
-/// Here is an example of how to use the `ProtocolType` derive macro with a struct:
-///
-/// ```ignore
-/// #[derive(ProtocolType, Copy, Clone)]
-/// pub struct MyStruct {
-///     pub field1: i32,
-///     pub field2: String,
-/// }
-/// ```
-///
-/// Here is an example of how to use the `ProtocolType` derive macro with an enum:
-///
-/// ```ignore
-/// // `FromRepr` is required for enums!
-/// #[derive(ProtocolType, FromRepr, Copy, Clone)]
-/// pub enum MyEnum {
-///     Variant1 = 1,
-///     Variant2 = 2,
-/// }
-/// ```
-///
-///
-/// Note: The `ProtocolType` derive macro can only be used with structs and enums.
-#[proc_macro_derive(ProtocolType, attributes(protocol_attribute))]
-pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
-    match protocol_type_derive::derive_protocol_type_impl(item.into()) {
-        Ok(tokens) => tokens.into(),
-        Err(e) => e.into_compile_error().into(),
-    }
-}
-
-/// Procedural macro that is used to derive the `Packet` trait for a struct.
-///
-/// The `Packet` trait provides methods for serializing and deserializing the struct into/from a byte buffer.
-/// The `derive_packet` macro generates an implementation of the `Packet` trait for the struct.
-///
-/// The `Packet` trait requires three associated constants: `ID`, `SIDE`, and `STATE`.
-/// These constants are provided through the `#[packet(id = "...", state = "...")]` attribute on the struct.
-/// The `SIDE` constant is determined based on the name of the struct (whether it contains "S2C" or "C2S").
+/// The `ProtocolSerializer` trait provides methods for serializing and deserializing the type into/from a byte buffer.
+/// The `derive_protocol_type` macro generates an implementation of the `ProtocolSerializer` trait for the type.
 ///
 /// # Attributes
 ///
@@ -63,12 +19,58 @@ pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
 ///   The `state` argument should be an expression that evaluates to a `ProtocolState` variant.
 ///
 /// * `#[protocol_attribute(protocol_type = "...")]`: This attribute is optional and can be used on struct fields.
-/// The `protocol_type` argument should be the name of a type that implements the `ProtocolType` trait.
-/// If this attribute is not provided, the default implementation of `ProtocolType` will be used.
+/// The `protocol_type` argument should be the name of a type that implements the `ProtocolSerializer` trait.
+/// If this attribute is not provided, the default implementation of `ProtocolSerializer` will be used.
 ///
 /// * `#[protocol_attribute(bounded = "...")]`: This attribute is optional and can be used on struct fields.
 /// The `bounded` argument should be an integer representing the maximum value allowed for the field.
 /// If the field value exceeds this maximum value, an error will be returned during serialization/deserialization.
+///
+/// # Struct
+///
+/// Here is an example of how to use the `ProtocolSerializer` derive macro with a struct:
+///
+/// ```ignore
+/// #[derive(ProtocolSerializer, Copy, Clone)]
+/// pub struct MyStruct {
+///     pub field1: i32,
+///     pub field2: String,
+/// }
+/// ```
+///
+/// # Enum
+///
+/// Currently only `Byte` and `VarInt` are supported as the underlying type for enums.
+/// You can define enum as `Byte` using `#[repr(u8)]`.
+///
+/// Here is an example of how to use the `ProtocolSerializer` derive macro with an enum:
+///
+/// ```ignore
+/// // `FromRepr` is required for enums!
+/// #[derive(ProtocolSerializer, FromRepr, Copy, Clone)]
+/// pub enum MyEnum {
+///     Variant1 = 1,
+///     Variant2 = 2,
+/// }
+/// ```
+///
+/// Note: The `ProtocolSerializer` derive macro can only be used with structs and enums.
+#[proc_macro_derive(ProtocolSerializer, attributes(protocol_attribute))]
+pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
+    match protocol_serializer_derive::derive_protocol_serializer_impl(item.into()) {
+        Ok(tokens) => tokens.into(),
+        Err(e) => e.into_compile_error().into(),
+    }
+}
+
+/// Procedural macro that is used to derive the `Packet` trait for a struct.
+///
+/// The `Packet` trait requires three associated constants: `ID`, `SIDE`, and `STATE`.
+/// These constants are provided through the `#[packet(id = "...", state = "...")]` attribute on the struct.
+/// The `SIDE` constant is determined based on the name of the struct (whether it contains "S2C" or "C2S").
+///
+/// The `Packet` trait requires method for serialization and deserialization provided by `ProtocolSerializer`.
+/// So consider implementing the `ProtocolSerializer` derive macro for the struct.
 ///
 /// # Examples
 ///
@@ -76,7 +78,7 @@ pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
 /// use crab_protocol::types::varint::VarInt;
 /// use crab_protocol_macros::Packet;
 ///
-/// #[derive(Packet, Debug, Clone)]
+/// #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 /// #[packet(id = 0, state = Handshake)]
 /// pub struct HandshakeC2SPacket {
 ///     pub protocol_version: VarInt,
@@ -92,79 +94,3 @@ pub fn derive_packet(item: TokenStream) -> TokenStream {
         Err(e) => e.into_compile_error().into(),
     }
 }
-
-pub(crate) fn generate_field_code(
-    data: &Data,
-    span: &Span,
-) -> syn::Result<(Vec<proc_macro2::TokenStream>, Vec<proc_macro2::TokenStream>)> {
-    let mut fields_deserialize = Vec::new();
-    let mut fields_serialize = Vec::new();
-
-    let data_struct = match data {
-        Data::Struct(data_struct) => data_struct,
-        _ => return Err(Error::new(*span, "Can be derived only for structs")),
-    };
-
-    let fields = &data_struct.fields;
-    for field in fields.iter() {
-        let field_name = field.ident.as_ref().expect("Unnamed field in struct");
-
-        let protocol_attribute = match parse_attributes(&field.attrs)? {
-            Some(protocol_attribute) => protocol_attribute,
-            None => {
-                fields_deserialize.push(quote! {
-                    #field_name: ::crab_protocol::protocol_type::ProtocolType::deserialize(buf)?
-                });
-                fields_serialize.push(quote! {
-                    ::crab_protocol::protocol_type::ProtocolType::serialize(&self.#field_name, &mut buf)?;
-                });
-                continue;
-            }
-        };
-
-        match protocol_attribute {
-            ProtocolAttribute::Bounded(max_value) => {
-                fields_deserialize.push(quote! {
-                    #field_name: {
-                        let #field_name = ::crab_protocol::protocol_type::ProtocolType::deserialize(buf)?;
-                        ::crab_protocol::bounded::Bounded::check(&#field_name, #max_value)?;
-                        #field_name
-                    }
-                });
-                fields_serialize.push(quote! {
-                    ::crab_protocol::bounded::Bounded::check(&self.#field_name, #max_value)?;
-                    ::crab_protocol::protocol_type::ProtocolType::serialize(&self.#field_name, &mut buf)?;
-                });
-            }
-            ProtocolAttribute::Type(protocol_type) => {
-                let protocol_type = protocol_type.unwrap();
-
-                let conversion_method = if let Type::Path(type_path) = &protocol_type {
-                    let first_type_name = &type_path.path.segments.first().unwrap().ident;
-                    match first_type_name.to_string().as_str() {
-                        "Option" => quote! { map(Into::into) },
-                        "Vec" => quote! { iter().map(|&value| value.into()).collect() },
-                        _ => quote! { into() },
-                    }
-                } else {
-                    quote! { into() }
-                };
-
-                fields_deserialize.push(quote! {
-                    #field_name: {
-                        let #field_name: #protocol_type = ::crab_protocol::protocol_type::ProtocolType::deserialize(buf)?;
-                        #field_name.#conversion_method
-                    }
-                });
-                fields_serialize.push(quote! {
-                    let #field_name: #protocol_type = self.#field_name.#conversion_method;
-                    ::crab_protocol::protocol_type::ProtocolType::serialize(&#field_name, &mut buf)?;
-                });
-            }
-        }
-    }
-
-    Ok((fields_deserialize, fields_serialize))
-}
-
-extern crate proc_macro;

@@ -1,11 +1,11 @@
-use crab_protocol::types::number_format::NumberFormat;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::number_format::NumberFormat;
 use crate::types::text::TextComponent;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x5F, state = Play)]
 pub struct UpdateScoreS2CPacket {
     /// For players, this is their username; for other entities, it is their UUID.

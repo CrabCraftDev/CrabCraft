@@ -1,14 +1,14 @@
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::position::Position;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::hand::Hand;
+use crate::types::position::Position;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x13, state = Play)]
 pub struct InteractC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -24,7 +24,7 @@ pub enum InteractActionType {
     InteractAt { location: Position, hand: Hand },
 }
 
-impl ProtocolType for InteractActionType {
+impl ProtocolSerializer for InteractActionType {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             InteractActionType::Interact { hand } => {

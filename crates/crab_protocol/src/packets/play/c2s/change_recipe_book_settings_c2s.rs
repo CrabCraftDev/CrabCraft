@@ -1,10 +1,10 @@
 use strum::FromRepr;
 
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x25, state = Play)]
 pub struct ChangeRecipeBookSettingsC2SPacket {
     pub book: RecipeBook,
@@ -12,7 +12,7 @@ pub struct ChangeRecipeBookSettingsC2SPacket {
     pub is_filter_active: bool,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum RecipeBook {
     Crafting,
     Furnace,

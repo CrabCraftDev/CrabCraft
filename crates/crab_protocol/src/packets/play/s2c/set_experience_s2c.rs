@@ -1,9 +1,9 @@
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x5A, state = Play)]
 pub struct SetExperienceS2CPacket {
     pub experience_bar: f32,

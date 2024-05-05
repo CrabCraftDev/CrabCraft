@@ -1,9 +1,9 @@
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
 use crate::types::text::TextComponent;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x69, state = Play)]
 pub struct SystemChatMessageS2CPacket {
     pub content: TextComponent,

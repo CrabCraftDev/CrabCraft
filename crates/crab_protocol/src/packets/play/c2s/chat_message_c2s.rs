@@ -1,11 +1,11 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::bit_set::FixedBitSet;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::protocol::ProtocolState::*;
+use crate::types::bit_set::FixedBitSet;
 use crate::types::bytes::FixedBytes;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x05, state = Play)]
 pub struct ChatMessageC2SPacket {
     #[protocol_attribute(bounded = 256)]

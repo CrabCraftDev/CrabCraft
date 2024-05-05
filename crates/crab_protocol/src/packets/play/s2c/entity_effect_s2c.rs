@@ -1,15 +1,12 @@
 use bitfield_struct::bitfield;
 use crab_nbt::Nbt;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x72, state = Play)]
 pub struct EntityEffectS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -24,21 +21,11 @@ pub struct EntityEffectS2CPacket {
 }
 
 #[bitfield(u8)]
+#[derive(ProtocolSerializer)]
 pub struct EntityEffectFlags {
     pub is_ambient: bool,
     pub show_particles: bool,
     pub show_icon: bool,
     #[bits(5)]
     __: u8,
-}
-
-impl ProtocolType for EntityEffectFlags {
-    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_i8(self.0 as i8);
-        Ok(())
-    }
-
-    fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(EntityEffectFlags(buf.get_i8() as u8))
-    }
 }

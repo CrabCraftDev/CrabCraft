@@ -1,9 +1,10 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::item_stack::ItemStack;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::item_stack::ItemStack;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x0D, state = Play)]
 pub struct ClickContainerC2SPacket {
     pub window_id: u8,
@@ -18,7 +19,7 @@ pub struct ClickContainerC2SPacket {
     pub carried_item: Option<ItemStack>,
 }
 
-#[derive(Debug, Clone, PartialEq, ProtocolType)]
+#[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct ChangedSlot {
     pub slot_number: i16,
     pub slot_data: Option<ItemStack>,

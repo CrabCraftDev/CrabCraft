@@ -1,10 +1,11 @@
 use strum::FromRepr;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x22, state = Play)]
 pub struct PlayerMovementActionC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -15,7 +16,7 @@ pub struct PlayerMovementActionC2SPacket {
     pub jump_boost: i32,
 }
 
-#[derive(ProtocolType, FromRepr, Copy, Clone, Debug)]
+#[derive(ProtocolSerializer, FromRepr, Copy, Clone, Debug)]
 pub enum PlayerMovementAction {
     StartSneaking,
     StopSneaking,

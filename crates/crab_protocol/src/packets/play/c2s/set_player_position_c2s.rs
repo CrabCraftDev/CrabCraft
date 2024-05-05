@@ -1,9 +1,9 @@
-use crab_protocol::types::position::Position;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
+use crate::types::position::Position;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x17, state = Play)]
 pub struct SetPlayerPositionC2SPacket {
     /// Y is feet position

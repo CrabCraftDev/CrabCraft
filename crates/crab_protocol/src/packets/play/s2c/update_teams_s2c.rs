@@ -1,15 +1,15 @@
 use bitfield_struct::bitfield;
 use strum::FromRepr;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::text::TextComponent;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x5E, state = Play)]
 pub struct UpdateTeamsS2CPacket {
     pub team_name: String,
@@ -34,30 +34,30 @@ pub enum UpdateTeamsMethod {
     },
 }
 
-impl ProtocolType for UpdateTeamsMethod {
+impl ProtocolSerializer for UpdateTeamsMethod {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             UpdateTeamsMethod::Create {
                 team_information,
                 players,
             } => {
-                buf.put_u8(0);
+                buf.put_unsigned_byte(0);
                 team_information.serialize(buf)?;
                 players.serialize(buf)?;
             }
             UpdateTeamsMethod::Remove => {
-                buf.put_u8(1);
+                buf.put_unsigned_byte(1);
             }
             UpdateTeamsMethod::Update { team_information } => {
-                buf.put_u8(2);
+                buf.put_unsigned_byte(2);
                 team_information.serialize(buf)?;
             }
             UpdateTeamsMethod::AddEntities { added_players_list } => {
-                buf.put_u8(3);
+                buf.put_unsigned_byte(3);
                 added_players_list.serialize(buf)?;
             }
             UpdateTeamsMethod::RemoveEntities { removed_players_list } => {
-                buf.put_u8(4);
+                buf.put_unsigned_byte(4);
                 removed_players_list.serialize(buf)?;
             }
         }
@@ -68,18 +68,18 @@ impl ProtocolType for UpdateTeamsMethod {
         let mode = buf.get_byte();
         match mode {
             0 => Ok(UpdateTeamsMethod::Create {
-                team_information: ProtocolType::deserialize(buf)?,
-                players: ProtocolType::deserialize(buf)?,
+                team_information: ProtocolSerializer::deserialize(buf)?,
+                players: ProtocolSerializer::deserialize(buf)?,
             }),
             1 => Ok(UpdateTeamsMethod::Remove),
             2 => Ok(UpdateTeamsMethod::Update {
-                team_information: ProtocolType::deserialize(buf)?,
+                team_information: ProtocolSerializer::deserialize(buf)?,
             }),
             3 => Ok(UpdateTeamsMethod::AddEntities {
-                added_players_list: ProtocolType::deserialize(buf)?,
+                added_players_list: ProtocolSerializer::deserialize(buf)?,
             }),
             4 => Ok(UpdateTeamsMethod::RemoveEntities {
-                removed_players_list: ProtocolType::deserialize(buf)?,
+                removed_players_list: ProtocolSerializer::deserialize(buf)?,
             }),
             _ => Err(ProtocolError::EnumOutOfBounds(
                 "UpdateTeamsMode".to_string(),
@@ -89,7 +89,7 @@ impl ProtocolType for UpdateTeamsMethod {
     }
 }
 
-#[derive(Clone, Debug, ProtocolType)]
+#[derive(Clone, Debug, ProtocolSerializer)]
 pub struct TeamInformation {
     pub team_display_name: TextComponent,
     pub friendly_flags: FriendlyFlags,
@@ -101,6 +101,7 @@ pub struct TeamInformation {
 }
 
 #[bitfield(u8)]
+#[derive(ProtocolSerializer)]
 pub struct FriendlyFlags {
     pub allow_friendly_fire: bool,
     pub can_see_invisible_entities_on_same_team: bool,
@@ -108,18 +109,7 @@ pub struct FriendlyFlags {
     __: u8,
 }
 
-impl ProtocolType for FriendlyFlags {
-    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_i8(self.0 as i8);
-        Ok(())
-    }
-
-    fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(Self(buf.get_i8() as u8))
-    }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum TextFormatting {
     Black,
     DarkBlue,

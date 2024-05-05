@@ -1,4 +1,4 @@
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
@@ -26,7 +26,7 @@ impl BlockPosition {
 
 /// [Position](https://wiki.vg/Protocol#Position) protocol type
 /// X as a 26-bit integer, followed by z as a 26-bit integer, followed by y as a 12-bit integer (all signed, two's complement).
-impl ProtocolType for BlockPosition {
+impl ProtocolSerializer for BlockPosition {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         let x = (self.x as i64 & 0x3FFFFFF) << (64 - X_BITS);
         let z = (self.z as i64 & 0x3FFFFFF) << (64 - X_BITS - Z_BITS);

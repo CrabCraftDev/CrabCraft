@@ -2,15 +2,15 @@ use bitfield_struct::bitfield;
 use strum::FromRepr;
 use uuid::Uuid;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::text::TextComponent;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x0A, state = Play)]
 pub struct BossBarS2CPacket {
     pub boss_bar_id: Uuid,
@@ -36,7 +36,7 @@ pub enum BossBarMethod {
     UpdateFlags(BossBarFlags),
 }
 
-impl ProtocolType for BossBarMethod {
+impl ProtocolSerializer for BossBarMethod {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             BossBarMethod::Add {
@@ -81,20 +81,20 @@ impl ProtocolType for BossBarMethod {
         let method = buf.get_var_int()?;
         match method {
             0 => Ok(BossBarMethod::Add {
-                title: ProtocolType::deserialize(buf)?,
+                title: ProtocolSerializer::deserialize(buf)?,
                 health: buf.get_f32(),
-                color: ProtocolType::deserialize(buf)?,
-                division: ProtocolType::deserialize(buf)?,
-                flags: ProtocolType::deserialize(buf)?,
+                color: ProtocolSerializer::deserialize(buf)?,
+                division: ProtocolSerializer::deserialize(buf)?,
+                flags: ProtocolSerializer::deserialize(buf)?,
             }),
             1 => Ok(BossBarMethod::Remove),
             2 => Ok(BossBarMethod::UpdateHealth(buf.get_f32())),
-            3 => Ok(BossBarMethod::UpdateTitle(ProtocolType::deserialize(buf)?)),
+            3 => Ok(BossBarMethod::UpdateTitle(ProtocolSerializer::deserialize(buf)?)),
             4 => Ok(BossBarMethod::UpdateStyle {
-                color: ProtocolType::deserialize(buf)?,
-                division: ProtocolType::deserialize(buf)?,
+                color: ProtocolSerializer::deserialize(buf)?,
+                division: ProtocolSerializer::deserialize(buf)?,
             }),
-            5 => Ok(BossBarMethod::UpdateFlags(ProtocolType::deserialize(buf)?)),
+            5 => Ok(BossBarMethod::UpdateFlags(ProtocolSerializer::deserialize(buf)?)),
             _ => Err(ProtocolError::EnumOutOfBounds(
                 "UpdateObjectiveMode".to_string(),
                 method as usize,
@@ -104,6 +104,7 @@ impl ProtocolType for BossBarMethod {
 }
 
 #[bitfield(u8)]
+#[derive(ProtocolSerializer)]
 pub struct BossBarFlags {
     pub should_darken_sky: bool,
     pub is_dragon_bar: bool,
@@ -112,18 +113,7 @@ pub struct BossBarFlags {
     __: u8,
 }
 
-impl ProtocolType for BossBarFlags {
-    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_i8(self.0 as i8);
-        Ok(())
-    }
-
-    fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(Self(buf.get_i8() as u8))
-    }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum BossBarColor {
     Pink,
     Blue,
@@ -134,7 +124,7 @@ pub enum BossBarColor {
     White,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, ProtocolType, FromRepr)]
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum BossBarDivision {
     NoDivision,
     Notched6,

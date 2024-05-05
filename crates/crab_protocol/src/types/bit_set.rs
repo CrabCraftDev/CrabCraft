@@ -1,9 +1,8 @@
+use derive_more::{From, Into};
 
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-
-use derive_more::{From, Into};
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 #[derive(Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, From, Into)]
 pub struct BitSet {
@@ -73,7 +72,7 @@ impl BitSet {
     }
 }
 
-impl ProtocolType for BitSet {
+impl ProtocolSerializer for BitSet {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_some_array(&self.as_long_array())?;
         Ok(())
@@ -88,7 +87,7 @@ impl ProtocolType for BitSet {
 #[repr(transparent)]
 pub struct FixedBitSet<const N: usize>(pub BitSet);
 
-impl<const N: usize> ProtocolType for FixedBitSet<N> {
+impl<const N: usize> ProtocolSerializer for FixedBitSet<N> {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         let bits_len = self.0.bits.len();
         if bits_len != N {

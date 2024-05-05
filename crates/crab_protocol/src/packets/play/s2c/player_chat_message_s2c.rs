@@ -1,18 +1,18 @@
 use strum::FromRepr;
 use uuid::Uuid;
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
 use crate::protocol::ProtocolState::*;
+use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::bit_set::BitSet;
 use crate::types::bytes::FixedBytes;
 use crate::types::text::TextComponent;
+use crate::types::varint::VarInt;
 
-#[derive(Packet, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x37, state = Play)]
 pub struct PlayerChatMessageS2CPacket {
     pub sender: Uuid,
@@ -38,7 +38,7 @@ pub enum MessageFilterType {
     PartiallyFiltered(BitSet),
 }
 
-impl ProtocolType for MessageFilterType {
+impl ProtocolSerializer for MessageFilterType {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             MessageFilterType::PassThrough => {
@@ -72,7 +72,7 @@ impl ProtocolType for MessageFilterType {
     }
 }
 
-#[derive(Debug, ProtocolType, Clone, PartialEq)]
+#[derive(Debug, ProtocolSerializer, Clone, PartialEq)]
 pub struct PreviousMessage {
     #[protocol_attribute(protocol_type = VarInt)]
     pub message_id: i32,
@@ -85,7 +85,7 @@ pub enum MessageSignature {
     Id(i32),
 }
 
-impl ProtocolType for MessageSignature {
+impl ProtocolSerializer for MessageSignature {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self {
             MessageSignature::Signature(signature) => {

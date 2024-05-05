@@ -1,13 +1,15 @@
+use derive_more::{From, Into};
+
+use crab_protocol::protocol_serializer::ProtocolSerializer;
+
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
-use derive_more::{From, Into};
 
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, From, Into)]
 #[repr(transparent)]
 pub struct VarInt(pub i32);
 
-impl ProtocolType for VarInt {
+impl ProtocolSerializer for VarInt {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_var_int((*self).into());
         Ok(())

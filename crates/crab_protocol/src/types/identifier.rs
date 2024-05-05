@@ -1,8 +1,9 @@
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_type::ProtocolType;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
+
+use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
+use crab_protocol::error::ProtocolError;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct Identifier {
@@ -71,14 +72,14 @@ impl Display for Identifier {
     }
 }
 
-impl ProtocolType for Identifier {
+impl ProtocolSerializer for Identifier {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        ProtocolType::serialize(&self.to_string(), buf)?;
+        ProtocolSerializer::serialize(&self.to_string(), buf)?;
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        let value: String = ProtocolType::deserialize(buf)?;
+        let value: String = ProtocolSerializer::deserialize(buf)?;
         value.parse()
     }
 }

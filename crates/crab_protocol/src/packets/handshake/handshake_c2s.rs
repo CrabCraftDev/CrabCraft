@@ -1,10 +1,11 @@
 use strum::FromRepr;
 
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::{Packet, ProtocolType};
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Packet, Debug, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x00, state = Handshake)]
 pub struct HandshakeC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
@@ -15,7 +16,7 @@ pub struct HandshakeC2SPacket {
     pub next_state: NextState,
 }
 
-#[derive(ProtocolType, FromRepr, Copy, Clone, Debug)]
+#[derive(ProtocolSerializer, FromRepr, Copy, Clone, Debug)]
 pub enum NextState {
     Status = 1,
     Login = 2,

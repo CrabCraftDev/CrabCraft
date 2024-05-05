@@ -1,9 +1,10 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::item_stack::ItemStack;
-use crab_protocol::types::varint::VarInt;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::item_stack::ItemStack;
+use crate::types::varint::VarInt;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x15, state = Play)]
 pub struct SetContainerSlotS2CPacket {
     pub window_id: u8,

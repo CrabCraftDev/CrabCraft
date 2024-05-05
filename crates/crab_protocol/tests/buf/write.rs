@@ -1,6 +1,5 @@
-use uuid::uuid;
-
 use bytes::Bytes;
+
 use crab_protocol::buf::WriteByteBuf;
 
 #[test]
@@ -45,11 +44,11 @@ fn test_put_string() {
 #[test]
 fn test_put_boolean() {
     let mut buf = Vec::new();
-    buf.put_boolean(true);
+    buf.put_bool(true);
     assert_eq!(buf, vec![0x01]);
 
     buf.clear();
-    buf.put_boolean(false);
+    buf.put_bool(false);
     assert_eq!(buf, vec![0x00]);
 }
 
@@ -58,13 +57,4 @@ fn test_put_byte_array() {
     let mut buf = Vec::new();
     buf.put_byte_array(Bytes::from(vec![0x01, 0x02, 0x03]));
     assert_eq!(buf, vec![0x03, 0x01, 0x02, 0x03]);
-}
-
-#[test]
-fn test_put_uuid() {
-    let uuid = uuid!("123e4567-e89b-12d3-a456-426614174000");
-    let mut buf = Vec::new();
-    buf.put_uuid(uuid);
-
-    assert_eq!(buf, uuid.as_bytes())
 }

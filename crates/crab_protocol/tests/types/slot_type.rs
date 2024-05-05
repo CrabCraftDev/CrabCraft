@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+
 use bytes::BytesMut;
 use crab_nbt::Nbt;
+
 use crab_protocol::packets::play::{Equipment, EquipmentSlot};
-use crab_protocol::protocol_type::ProtocolType;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol::types::item_stack::ItemStack;
-use std::collections::HashMap;
 
 #[test]
 fn cycle_equipment() {

@@ -1,8 +1,9 @@
-use crab_protocol::protocol::ProtocolState::*;
-use crab_protocol::types::difficulty::Difficulty;
-use crab_protocol_macros::Packet;
+use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-#[derive(Debug, Packet, Clone)]
+use crate::protocol::ProtocolState::*;
+use crate::types::difficulty::Difficulty;
+
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x0B, state = Play)]
 pub struct ChangeDifficultyS2CPacket {
     pub position: Difficulty,
