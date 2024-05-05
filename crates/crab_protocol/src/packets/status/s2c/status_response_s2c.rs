@@ -1,9 +1,55 @@
+use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
+use crab_protocol::error::ProtocolError;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol_macros::{Packet, ProtocolSerializer};
+use serde::{Deserialize, Serialize};
 
 use crate::protocol::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x00, state = Status)]
 pub struct StatusResponseS2CPacket {
-    pub json_response: String,
+    pub server_info: ServerInfo,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ServerInfo {
+    pub version: ServerVersion,
+    pub players: PlayersInfo,
+    pub description: String,
+    pub favicon: String,
+    pub enforces_secure_chat: bool,
+    pub previews_chat: bool,
+}
+
+impl ProtocolSerializer for ServerInfo {
+    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
+        buf.put_string(&serde_json::to_string(&self)?);
+        Ok(())
+    }
+
+    fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
+        let content = buf.get_string()?;
+        Ok(serde_json::from_str(&content)?)
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ServerVersion {
+    pub name: String,
+    #[serde(rename = "protocol")]
+    pub protocol_version: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PlayersInfo {
+    pub max: i32,
+    pub online: i32,
+    pub sample: Vec<PlayerSample>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PlayerSample {
+    pub name: String,
+    pub id: String,
 }

@@ -21,7 +21,7 @@ impl ProtocolSerializer for StopSoundS2CPacket {
         let mut stop_sound_controls = StopSoundControls::new();
         stop_sound_controls.set_category(self.sound_category.is_some());
         stop_sound_controls.set_name(self.sound_name.is_some());
-        buf.put_unsigned_byte(stop_sound_controls.into());
+        buf.put_u8(stop_sound_controls.into());
 
         if let Some(sound_category) = &self.sound_category {
             sound_category.serialize(buf)?;

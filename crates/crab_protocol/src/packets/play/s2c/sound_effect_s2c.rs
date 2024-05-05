@@ -1,14 +1,12 @@
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
-use crate::types::position::Position;
 use crate::types::sound::{SoundCategory, SoundEffect};
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x66, state = Play)]
 pub struct SoundEffectS2CPacket {
     pub sound_effect: SoundEffect,
-    pub position: Position,
     pub sound_category: SoundCategory,
     pub effect_position_x: i32,
     pub effect_position_y: i32,

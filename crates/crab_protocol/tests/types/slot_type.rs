@@ -24,7 +24,7 @@ fn cycle_equipment() {
                 Some(ItemStack::new(3, 1, Nbt::default()).unwrap()),
             ),
             (
-                EquipmentSlot::Legging,
+                EquipmentSlot::Leggings,
                 Some(ItemStack::new(4, 1, Nbt::default()).unwrap()),
             ),
         ]),

@@ -5,11 +5,11 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 
 impl<T: ProtocolSerializer> ProtocolSerializer for Vec<T> {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_some_array(self)?;
+        buf.put_array(self)?;
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        buf.get_some_array()
+        buf.get_array()
     }
 }

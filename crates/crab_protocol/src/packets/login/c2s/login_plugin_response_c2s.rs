@@ -1,7 +1,7 @@
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
-use crate::types::bytes::LastBytes;
+use crate::types::bytes::EndBytes;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
@@ -10,5 +10,5 @@ pub struct LoginPluginResponseC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub message_id: i32,
     #[protocol_attribute(bounded = 1048576)]
-    pub data: LastBytes,
+    pub data: EndBytes,
 }

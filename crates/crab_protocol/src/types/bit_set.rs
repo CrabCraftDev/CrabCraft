@@ -1,3 +1,4 @@
+use bytes::Bytes;
 use derive_more::{From, Into};
 
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
@@ -10,14 +11,11 @@ pub struct BitSet {
 }
 
 impl BitSet {
-    pub fn new(bits: Vec<bool>) -> Self {
+    pub const fn new(bits: Vec<bool>) -> Self {
         Self { bits }
     }
 
     pub fn set(&mut self, index: usize, value: bool) {
-        if index >= self.bits.len() {
-            self.bits.resize(index + 1, false);
-        }
         self.bits[index] = value;
     }
 
@@ -40,7 +38,7 @@ impl BitSet {
         result
     }
 
-    pub fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Bytes {
         // https://docs.oracle.com/javase/8/docs/api/java/util/BitSet.html#toByteArray--
         let mut result = vec![0; self.bits.len().div_ceil(8)];
         for (i, &bit) in self.bits.iter().enumerate() {
@@ -48,7 +46,7 @@ impl BitSet {
                 result[i / 8] |= 1 << (i % 8);
             }
         }
-        result
+        Bytes::from(result)
     }
 
     pub fn from_long_array(longs: &[i64]) -> Self {
@@ -74,12 +72,12 @@ impl BitSet {
 
 impl ProtocolSerializer for BitSet {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_some_array(&self.as_long_array())?;
+        buf.put_array(&self.as_long_array())?;
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(BitSet::from_long_array(&buf.get_some_array()?))
+        Ok(BitSet::from_long_array(&buf.get_array()?))
     }
 }
 
@@ -93,7 +91,7 @@ impl<const N: usize> ProtocolSerializer for FixedBitSet<N> {
         if bits_len != N {
             return Err(ProtocolError::InvalidFixedBitSetLength(N, bits_len));
         }
-        buf.put(self.0.as_bytes().as_slice());
+        buf.put(self.0.as_bytes());
         Ok(())
     }
 

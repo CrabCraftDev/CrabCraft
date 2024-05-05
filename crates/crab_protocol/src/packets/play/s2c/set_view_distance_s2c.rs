@@ -5,7 +5,7 @@ use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x53, state = Play)]
-pub struct SetRenderDistanceS2CPacket {
+pub struct SetViewDistanceS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub view_distance: i32,
 }

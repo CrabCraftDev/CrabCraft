@@ -1,7 +1,7 @@
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;
-use crate::types::bytes::LastBytes;
+use crate::types::bytes::EndBytes;
 use crate::types::identifier::Identifier;
 use crate::types::varint::VarInt;
 
@@ -12,5 +12,5 @@ pub struct LoginPluginRequestS2CPacket {
     pub message_id: i32,
     pub channel: Identifier,
     #[protocol_attribute(bounded = 1048576)]
-    pub data: LastBytes,
+    pub data: EndBytes,
 }

@@ -94,10 +94,10 @@ async fn transfer_data(
             println!("[{direction}] {id:X}: {buffer_str:?}");
         }
 
-        let prefix = to_var_int(len);
-        let full_packet = &[prefix, buffer.to_vec()].concat();
+        let mut full_packet = BytesMut::from_iter(to_var_int(len));
+        full_packet.extend_from_slice(&buffer);
 
-        sender.write_all(full_packet).await?;
+        sender.write_all(&full_packet).await?;
     }
     Ok(())
 }

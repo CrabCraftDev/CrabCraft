@@ -26,8 +26,8 @@ pub struct GameJoinS2CPacket {
     pub hashed_seed: i64,
     pub game_mode: GameMode,
     pub previous_game_mode: OptionalGameMode,
-    pub is_debug: bool,
-    pub is_flat: bool,
+    pub is_debug_world: bool,
+    pub is_flat_world: bool,
     pub last_death_location: Option<LastDeathLocation>,
     #[protocol_attribute(protocol_type = VarInt)]
     pub portal_cooldown: i32,

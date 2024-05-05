@@ -1,7 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
-use syn::{parse2, Data, DataStruct, DeriveInput, Error, Index, Result, Type};
+use syn::{parse2, Attribute, Data, DataStruct, DeriveInput, Error, Index, Result, Type};
 
 use crate::args::{parse_attributes, ProtocolAttribute};
 
@@ -12,46 +12,9 @@ pub(crate) fn derive_protocol_serializer_impl(item: TokenStream) -> Result<Token
     let input_span = input.span();
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
-    let serialize_impl;
-    let deserialize_impl;
-
-    match input.data {
-        Data::Enum(_data_enum) => {
-            let mut enum_type = quote! { i32 };
-            let mut get_method = quote! { get_var_int()? as usize };
-            let mut put_method = quote! { put_var_int };
-            for attr in &input.attrs {
-                if !attr.path().is_ident("repr") {
-                    continue;
-                }
-
-                attr.parse_nested_meta(|meta| {
-                    if meta.path.is_ident("u8") {
-                        enum_type = quote! { u8 };
-                        get_method = quote! { get_unsigned_byte() };
-                        put_method = quote! { put_unsigned_byte };
-                    }
-                    Ok(())
-                })
-                .expect("Unexpected error while parsing repr attribute");
-            }
-
-            serialize_impl = quote! { buf.#put_method(*self as #enum_type); };
-            deserialize_impl = quote! {
-                let value = buf.#get_method;
-                Self::from_repr(value.into()).ok_or(::crab_protocol::error::ProtocolError::EnumOutOfBounds(#input_name_str.to_string(), value as usize))
-            };
-        }
-        Data::Struct(data_struct) => {
-            let (fields_deserialize, fields_serialize) = generate_field_code(&data_struct)?;
-
-            serialize_impl = quote! { #(#fields_serialize)* };
-            deserialize_impl = quote! {
-                Ok(Self {
-                    #(#fields_deserialize,)*
-                })
-            };
-        }
+    let (serialize_impl, deserialize_impl) = match input.data {
+        Data::Enum(_data_enum) => generate_enum(&input.attrs, &input_name_str),
+        Data::Struct(data_struct) => generate_struct(&data_struct)?,
         _ => return Err(Error::new(input_span, "Unexpected type")),
     };
 
@@ -71,7 +34,35 @@ pub(crate) fn derive_protocol_serializer_impl(item: TokenStream) -> Result<Token
     })
 }
 
-fn generate_field_code(data: &DataStruct) -> Result<(Vec<TokenStream>, Vec<TokenStream>)> {
+fn generate_enum(input_attrs: &Vec<Attribute>, input_name_str: &str) -> (TokenStream, TokenStream) {
+    let mut enum_type = quote! { i32 };
+    let mut get_method = quote! { get_var_int()? as usize };
+    let mut put_method = quote! { put_var_int };
+    for attr in input_attrs {
+        if !attr.path().is_ident("repr") {
+            continue;
+        }
+
+        attr.parse_nested_meta(|meta| {
+            if meta.path.is_ident("u8") {
+                enum_type = quote! { u8 };
+                get_method = quote! { get_u8() };
+                put_method = quote! { put_u8 };
+            }
+            Ok(())
+        })
+        .expect("Unexpected error while parsing repr attribute");
+    }
+
+    let serialize_impl = quote! { buf.#put_method(*self as #enum_type); };
+    let deserialize_impl = quote! {
+        let value = buf.#get_method;
+        Self::from_repr(value.into()).ok_or(::crab_protocol::error::ProtocolError::EnumOutOfBounds(#input_name_str.to_string(), value as usize))
+    };
+    (serialize_impl, deserialize_impl)
+}
+
+fn generate_struct(data: &DataStruct) -> Result<(TokenStream, TokenStream)> {
     let mut fields_deserialize = Vec::new();
     let mut fields_serialize = Vec::new();
 
@@ -137,5 +128,12 @@ fn generate_field_code(data: &DataStruct) -> Result<(Vec<TokenStream>, Vec<Token
         }
     }
 
-    Ok((fields_deserialize, fields_serialize))
+    let serialize_impl = quote! { #(#fields_serialize)* };
+    let deserialize_impl = quote! {
+        Ok(Self {
+            #(#fields_deserialize,)*
+        })
+    };
+
+    Ok((serialize_impl, deserialize_impl))
 }

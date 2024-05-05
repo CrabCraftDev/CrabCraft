@@ -18,7 +18,7 @@ pub struct TestC2S {
 #[test]
 fn decoding_macro() {
     let mut buf = BytesMut::new();
-    buf.put_string("hi!".to_string());
+    buf.put_string("hi!");
     buf.put_var_int(2);
     let raw_packet = RawPacket::new(0, buf.freeze());
 

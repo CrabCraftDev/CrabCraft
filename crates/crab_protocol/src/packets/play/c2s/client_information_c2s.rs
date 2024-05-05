@@ -8,7 +8,7 @@ use crate::types::client_information::{ChatMode, DisplayedSkinParts, MainHand};
 pub struct ClientInformationC2SPacket {
     #[protocol_attribute(bounded = 16)]
     pub locale: String,
-    pub view_distance: i8,
+    pub render_distance: i8,
     pub chat_mode: ChatMode,
     pub chat_colors_enabled: bool,
     pub displayed_skin_parts: DisplayedSkinParts,

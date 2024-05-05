@@ -41,23 +41,23 @@ impl ProtocolSerializer for UpdateTeamsMethod {
                 team_information,
                 players,
             } => {
-                buf.put_unsigned_byte(0);
+                buf.put_u8(0);
                 team_information.serialize(buf)?;
                 players.serialize(buf)?;
             }
             UpdateTeamsMethod::Remove => {
-                buf.put_unsigned_byte(1);
+                buf.put_u8(1);
             }
             UpdateTeamsMethod::Update { team_information } => {
-                buf.put_unsigned_byte(2);
+                buf.put_u8(2);
                 team_information.serialize(buf)?;
             }
             UpdateTeamsMethod::AddEntities { added_players_list } => {
-                buf.put_unsigned_byte(3);
+                buf.put_u8(3);
                 added_players_list.serialize(buf)?;
             }
             UpdateTeamsMethod::RemoveEntities { removed_players_list } => {
-                buf.put_unsigned_byte(4);
+                buf.put_u8(4);
                 removed_players_list.serialize(buf)?;
             }
         }
@@ -65,7 +65,7 @@ impl ProtocolSerializer for UpdateTeamsMethod {
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        let mode = buf.get_byte();
+        let mode = buf.get_i8();
         match mode {
             0 => Ok(UpdateTeamsMethod::Create {
                 team_information: ProtocolSerializer::deserialize(buf)?,

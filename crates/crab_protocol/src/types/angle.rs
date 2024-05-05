@@ -19,11 +19,11 @@ impl Angle {
 
 impl ProtocolSerializer for Angle {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_unsigned_byte((*self).into());
+        buf.put_u8((*self).into());
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(Self::from_degrees(buf.get_unsigned_byte() as f32))
+        Ok(Self::from_degrees(buf.get_u8() as f32))
     }
 }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use bytes::BytesMut;
+use bytes::Bytes;
 use chrono::Local;
 use log::{debug, error};
 use tokio::io::ReadHalf;
@@ -11,9 +11,13 @@ use tokio::{
 };
 
 use crate::network::connection::Connection;
-use crate::network::handlers::connection_handler::ConnectionHandler;
+use crate::network::handlers::handshake_handler::HandshakeHandler;
 use crate::network::packet_handler::PacketHandler;
 
+use crate::network::handlers::configuration_handler::ConfigurationHandler;
+use crate::network::handlers::login_handler::LoginHandler;
+use crate::network::handlers::play_handler::PlayHandler;
+use crate::network::handlers::status_handler::StatusHandler;
 use crab_protocol::buf::{get_var_int_from_stream, ReadByteBuf};
 use crab_protocol::protocol::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
@@ -78,7 +82,6 @@ impl TcpServer {
 
     async fn handle_connection(connection: Arc<Mutex<Connection>>, mut read_half: ReadHalf<TcpStream>) {
         let connection = Arc::clone(&connection);
-        let mut handlers: Vec<Box<dyn PacketHandler + Send>> = vec![Box::new(ConnectionHandler)];
 
         while let Ok(len) = get_var_int_from_stream(&mut read_half).await {
             let mut buffer = vec![0; len as usize];
@@ -87,21 +90,24 @@ impl TcpServer {
                 break;
             }
 
-            let mut_bytes = BytesMut::from(buffer.as_slice());
-            let mut byte = mut_bytes.clone().freeze();
+            let mut bytes = Bytes::from(buffer);
 
-            let packet_id = byte.get_var_int().unwrap();
-            let raw_packet = RawPacket::new(packet_id, byte.clone());
+            let packet_id = bytes.get_var_int().unwrap();
+            let raw_packet = RawPacket::new(packet_id, bytes);
 
             let mut connection = connection.lock().await;
-            for handler in &mut handlers {
-                match handler.handle_packet(&mut connection, raw_packet.clone()).await {
-                    Ok(_) => {}
-                    Err(_) => {
-                        connection.disconnect("Unexpected error!").await;
-                        return;
-                    }
-                }
+            let result = match connection.state {
+                ProtocolState::Handshake => HandshakeHandler::handle_packet(&mut connection, raw_packet),
+                ProtocolState::Configuration => ConfigurationHandler::handle_packet(&mut connection, raw_packet),
+                ProtocolState::Login => LoginHandler::handle_packet(&mut connection, raw_packet),
+                ProtocolState::Play => PlayHandler::handle_packet(&mut connection, raw_packet),
+                ProtocolState::Status => StatusHandler::handle_packet(&mut connection, raw_packet),
+            }
+            .await;
+
+            if result.is_err() {
+                connection.disconnect("Unexpected error!").await;
+                break;
             }
         }
 
