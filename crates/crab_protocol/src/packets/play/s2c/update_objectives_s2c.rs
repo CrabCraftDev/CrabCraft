@@ -32,18 +32,18 @@ impl ProtocolSerializer for UpdateObjectiveMode {
                 } else {
                     2
                 };
-                buf.put_byte(mode);
+                buf.put_i8(mode);
                 content.serialize(buf)?;
             }
             UpdateObjectiveMode::RemoveScoreboard => {
-                buf.put_byte(1);
+                buf.put_i8(1);
             }
         }
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        let mode = buf.get_byte();
+        let mode = buf.get_i8();
         match mode {
             0 | 2 => {
                 let content = ObjectiveContent::deserialize(buf)?;

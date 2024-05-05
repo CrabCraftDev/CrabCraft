@@ -34,7 +34,7 @@ impl ProtocolSerializer for TestC2S {
 #[test]
 fn decoding() {
     let mut buf = BytesMut::new();
-    buf.put_string("hi!".to_string());
+    buf.put_string("hi!");
     let raw_packet = RawPacket::new(0, buf.freeze());
 
     let decoded = raw_packet.decode::<TestC2S>().unwrap();

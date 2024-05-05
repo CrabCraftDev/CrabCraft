@@ -7,13 +7,13 @@ pub enum ProtocolError {
     #[error("Encountered invalid string {0:?}")]
     InvalidString(#[from] Utf8Error),
     #[error(transparent)]
-    IoError(#[from] io::Error),
+    Io(#[from] io::Error),
     #[error(transparent)]
-    NbtError(#[from] crab_nbt::error::Error),
-    #[error("Varint exceeds 32 bits (had {0} bits)")]
-    TooBigVarInt(i8),
-    #[error("Varlong exceeds 64 bits (had {0} bits)")]
-    TooBigVarLong(i8),
+    Nbt(#[from] crab_nbt::error::Error),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+    #[error("VarInt exceeds {0} bits (had {1} bits)")]
+    TooBigVarInt(usize, i8),
     #[error("Enum {0} failed to be constructed of ordinal {1}")]
     EnumOutOfBounds(String, usize),
     #[error("A key in a HashMap is already present!")]

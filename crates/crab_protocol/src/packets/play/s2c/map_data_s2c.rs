@@ -38,7 +38,7 @@ pub struct OptionalMapPatch(pub Option<MapPatch>);
 impl ProtocolSerializer for OptionalMapPatch {
     fn serialize(&self, mut buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match &self.0 {
-            None => buf.put_unsigned_byte(0),
+            None => buf.put_u8(0),
             Some(map_patch) => ProtocolSerializer::serialize(map_patch, &mut buf)?,
         }
         Ok(())

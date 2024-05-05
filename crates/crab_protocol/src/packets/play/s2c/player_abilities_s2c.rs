@@ -17,10 +17,8 @@ pub struct PlayerAbilitiesS2CPacket {
 pub struct PlayerAbilitiesFlags {
     pub invulnerable: bool,
     pub flying: bool,
-    #[bits(1)]
-    __: u8,
     pub allow_flying: bool,
-    #[bits(3)]
-    __: u8,
     pub creative_mode: bool,
+    #[bits(4)]
+    __: u8,
 }

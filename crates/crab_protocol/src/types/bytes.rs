@@ -39,9 +39,9 @@ impl<const N: usize> ProtocolSerializer for FixedBytes<N> {
 /// This type can only be used last since it consumes the rest of the buffer
 #[derive(Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, From, Into)]
 #[repr(transparent)]
-pub struct LastBytes(pub Bytes);
+pub struct EndBytes(pub Bytes);
 
-impl ProtocolSerializer for LastBytes {
+impl ProtocolSerializer for EndBytes {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_raw_bytes(self.0.as_ref());
         Ok(())

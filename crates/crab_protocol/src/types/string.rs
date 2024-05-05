@@ -9,7 +9,7 @@ const MAX_STRING_LENGTH: usize = 32767;
 impl ProtocolSerializer for String {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         Bounded::check(self, MAX_STRING_LENGTH)?;
-        buf.put_string(self.to_string());
+        buf.put_string(self);
         Ok(())
     }
 

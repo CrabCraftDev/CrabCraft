@@ -10,6 +10,9 @@ mod mc_server;
 mod network;
 mod utils;
 
+pub const SERVER_PROTOCOL_VERSION: i32 = 765;
+pub const SERVER_VERSION: &str = "1.20.4";
+
 #[tokio::main]
 async fn main() {
     panic::set_hook(Box::new(|panic_info| {

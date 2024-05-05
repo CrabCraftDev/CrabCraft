@@ -7,5 +7,5 @@ use crate::utils::errors::Error;
 
 #[async_trait]
 pub trait PacketHandler {
-    async fn handle_packet(&mut self, connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error>;
+    async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error>;
 }

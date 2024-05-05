@@ -18,8 +18,8 @@ pub struct RespawnS2CPacket {
     pub game_mode: GameMode,
     #[protocol_attribute(protocol_type = OptionalGameMode)]
     pub previous_game_mode: Option<GameMode>,
-    pub is_debug: bool,
-    pub is_flat: bool,
+    pub is_debug_world: bool,
+    pub is_flat_world: bool,
     pub last_death_location: Option<LastDeathLocation>,
     #[protocol_attribute(protocol_type = VarInt)]
     pub portal_cooldown: i32,

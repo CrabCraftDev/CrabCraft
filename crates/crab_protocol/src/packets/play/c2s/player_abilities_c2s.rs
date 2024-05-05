@@ -13,6 +13,7 @@ pub struct PlayerAbilitiesC2SPacket {
 #[bitfield(u8)]
 #[derive(ProtocolSerializer)]
 pub struct ClientPlayerAbilitiesFlags {
+    // Note: First bit is unused. Don't remove this field.
     #[bits(1)]
     __: u8,
     pub is_flying: bool,

@@ -11,7 +11,7 @@ pub struct RawPacket {
 }
 
 impl RawPacket {
-    pub fn new(id: i32, data: Bytes) -> Self {
+    pub const fn new(id: i32, data: Bytes) -> Self {
         RawPacket { id, data }
     }
 }
@@ -19,7 +19,7 @@ impl RawPacket {
 impl RawPacket {
     /// Try to decode the raw packet into a packet
     /// Returns None if the packet can't be converted
-    pub fn decode<P: Packet + Debug>(&self) -> Option<P> {
+    pub fn decode<P: Packet>(&self) -> Option<P> {
         if self.id != P::ID {
             return None;
         }

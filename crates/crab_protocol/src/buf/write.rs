@@ -1,6 +1,3 @@
-use std::collections::HashMap;
-use std::hash::Hash;
-
 use bytes::Buf;
 use bytes::BufMut;
 
@@ -12,22 +9,14 @@ use super::CONTINUE_BIT;
 use super::SEGMENT_BITS;
 
 pub trait WriteByteBuf: BufMut + Sized {
-    fn put_byte(&mut self, value: i8) {
-        self.put_i8(value)
-    }
-
-    fn put_unsigned_byte(&mut self, value: u8) {
-        self.put_u8(value)
-    }
-
     fn put_var_int(&mut self, mut value: i32) {
         loop {
             if (value & !SEGMENT_BITS) == 0 {
-                self.put_byte(value as i8);
+                self.put_i8(value as i8);
                 return;
             }
 
-            self.put_byte(((value & SEGMENT_BITS) | CONTINUE_BIT) as i8);
+            self.put_i8(((value & SEGMENT_BITS) | CONTINUE_BIT) as i8);
 
             value >>= 7;
         }
@@ -36,23 +25,23 @@ pub trait WriteByteBuf: BufMut + Sized {
     fn put_var_long(&mut self, mut value: i64) {
         loop {
             if (value & !(SEGMENT_BITS as i64)) == 0 {
-                self.put_byte(value as i8);
+                self.put_i8(value as i8);
                 return;
             }
 
-            self.put_byte(((value & SEGMENT_BITS as i64) | CONTINUE_BIT as i64) as i8);
+            self.put_i8(((value & SEGMENT_BITS as i64) | CONTINUE_BIT as i64) as i8);
 
             value >>= 7;
         }
     }
 
-    fn put_string(&mut self, data: String) {
+    fn put_string(&mut self, data: &str) {
         let bytes = data.as_bytes();
         self.put_byte_array(bytes)
     }
 
     fn put_bool(&mut self, value: bool) {
-        self.put_byte(if value { 1 } else { 0 });
+        self.put_i8(if value { 1 } else { 0 });
     }
 
     fn put_raw_bytes(&mut self, value: impl Buf) {
@@ -64,7 +53,7 @@ pub trait WriteByteBuf: BufMut + Sized {
         self.put(value);
     }
 
-    fn put_some_array<T: ProtocolSerializer>(&mut self, values: &Vec<T>) -> Result<(), ProtocolError> {
+    fn put_array<T: ProtocolSerializer>(&mut self, values: &Vec<T>) -> Result<(), ProtocolError> {
         self.put_var_int(values.len() as i32);
         for val in values {
             val.serialize(self)?;
@@ -79,18 +68,6 @@ pub trait WriteByteBuf: BufMut + Sized {
                 value.serialize(self)?;
             }
             None => self.put_bool(false),
-        }
-        Ok(())
-    }
-
-    fn put_hash_map<K: ProtocolSerializer + Eq + Hash, V: ProtocolSerializer>(
-        &mut self,
-        value: &HashMap<K, V>,
-    ) -> Result<(), ProtocolError> {
-        self.put_var_int(value.len() as i32);
-        for (key, value) in value {
-            key.serialize(self)?;
-            value.serialize(self)?;
         }
         Ok(())
     }

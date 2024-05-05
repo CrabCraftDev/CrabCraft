@@ -33,7 +33,7 @@ impl ProtocolSerializer for Equipment {
             if index != slots_len - 1 {
                 slot |= 128;
             }
-            buf.put_unsigned_byte(slot);
+            buf.put_u8(slot);
             ProtocolSerializer::serialize(item, buf)?;
         }
         Ok(())
@@ -63,7 +63,7 @@ pub enum EquipmentSlot {
     MainHand,
     OffHand,
     Boots,
-    Legging,
+    Leggings,
     Chestplate,
     Helmet,
 }

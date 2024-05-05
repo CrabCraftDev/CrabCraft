@@ -6,11 +6,10 @@ use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol_macros::ProtocolSerializer;
 
-#[derive(Debug, Copy, Clone, Default, PartialEq, FromRepr, ProtocolSerializer)]
+#[derive(Debug, Copy, Clone, PartialEq, FromRepr, ProtocolSerializer)]
 #[repr(u8)]
 pub enum GameMode {
     Survival = 0,
-    #[default]
     Creative = 1,
     Adventure = 2,
     Spectator = 3,
@@ -22,14 +21,14 @@ pub struct OptionalGameMode(pub Option<GameMode>);
 impl ProtocolSerializer for OptionalGameMode {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         match self.0 {
-            Some(game_mode) => buf.put_byte(game_mode as i8),
-            None => buf.put_byte(-1),
+            Some(game_mode) => buf.put_i8(game_mode as i8),
+            None => buf.put_i8(-1),
         }
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        let value = buf.get_byte();
+        let value = buf.get_i8();
         match value {
             -1 => Ok(None.into()),
             _ => {

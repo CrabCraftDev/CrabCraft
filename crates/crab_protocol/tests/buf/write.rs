@@ -3,24 +3,6 @@ use bytes::Bytes;
 use crab_protocol::buf::WriteByteBuf;
 
 #[test]
-fn test_put_byte() {
-    let mut buf = Vec::new();
-    buf.put_byte(3);
-    buf.put_byte(i8::MAX);
-
-    assert_eq!(buf, vec![0x03, 127]);
-}
-
-#[test]
-fn test_put_unsigned_byte() {
-    let mut buf = Vec::new();
-    buf.put_unsigned_byte(3);
-    buf.put_unsigned_byte(u8::MAX);
-
-    assert_eq!(buf, vec![0x03, 255]);
-}
-
-#[test]
 fn test_put_var_int() {
     let mut buf = Vec::new();
     buf.put_var_int(500);
@@ -37,7 +19,7 @@ fn test_put_var_long() {
 #[test]
 fn test_put_string() {
     let mut buf = Vec::new();
-    buf.put_string("Hello!".to_string());
+    buf.put_string("Hello!");
     assert_eq!(buf, vec![0x06, b'H', b'e', b'l', b'l', b'o', b'!']);
 }
 

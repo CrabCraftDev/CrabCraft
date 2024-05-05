@@ -31,7 +31,7 @@ pub struct BlockEntity {
 
 impl ProtocolSerializer for BlockEntity {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put_byte(((self.relative_x & 15) << 4) | (self.relative_z & 0x0F));
+        buf.put_i8(((self.relative_x & 15) << 4) | (self.relative_z & 0x0F));
         buf.put_i16(self.y);
         buf.put_i32(self.block_entity_type);
         self.data.serialize(buf)?;

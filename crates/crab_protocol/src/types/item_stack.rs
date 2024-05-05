@@ -12,7 +12,7 @@ pub struct ItemStack {
 }
 
 impl ItemStack {
-    pub fn new(id: i32, amount: u8, nbt: Nbt) -> Result<Self, ProtocolError> {
+    pub const fn new(id: i32, amount: u8, nbt: Nbt) -> Result<Self, ProtocolError> {
         Ok(Self { id, amount, nbt })
     }
 }

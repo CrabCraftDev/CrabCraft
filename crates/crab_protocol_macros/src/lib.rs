@@ -70,7 +70,7 @@ pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
 /// The `SIDE` constant is determined based on the name of the struct (whether it contains "S2C" or "C2S").
 ///
 /// The `Packet` trait requires method for serialization and deserialization provided by `ProtocolSerializer`.
-/// So consider implementing the `ProtocolSerializer` derive macro for the struct.
+/// So it is recommended to use the `ProtocolSerializer` derive macro for the struct or implement `ProtocolSerializer` trait.
 ///
 /// # Examples
 ///

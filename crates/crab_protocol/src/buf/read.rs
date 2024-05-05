@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use std::hash::Hash;
 use std::str::from_utf8;
 
 use bytes::{Buf, Bytes};
@@ -11,21 +9,13 @@ use super::CONTINUE_BIT;
 use super::SEGMENT_BITS;
 
 pub trait ReadByteBuf: Buf + Sized {
-    fn get_byte(&mut self) -> i8 {
-        self.get_i8()
-    }
-
-    fn get_unsigned_byte(&mut self) -> u8 {
-        self.get_u8()
-    }
-
     fn get_var_int(&mut self) -> Result<i32, ProtocolError> {
         let mut value: i32 = 0;
         let mut position: i8 = 0;
         let mut current_byte: i8;
 
         loop {
-            current_byte = self.get_byte();
+            current_byte = self.get_i8();
             value |= (current_byte as i32 & SEGMENT_BITS) << position;
 
             if (current_byte as i32 & CONTINUE_BIT) == 0 {
@@ -35,7 +25,7 @@ pub trait ReadByteBuf: Buf + Sized {
             position += 7;
 
             if position > 31 {
-                return Err(ProtocolError::TooBigVarInt(position + 1));
+                return Err(ProtocolError::TooBigVarInt(32, position + 1));
             }
         }
 
@@ -48,7 +38,7 @@ pub trait ReadByteBuf: Buf + Sized {
         let mut current_byte: i8;
 
         loop {
-            current_byte = self.get_byte();
+            current_byte = self.get_i8();
             value |= (current_byte as i64 & SEGMENT_BITS as i64) << position;
 
             if (current_byte as i64 & CONTINUE_BIT as i64) == 0 {
@@ -58,7 +48,7 @@ pub trait ReadByteBuf: Buf + Sized {
             position += 7;
 
             if position > 63 {
-                return Err(ProtocolError::TooBigVarLong(position + 1));
+                return Err(ProtocolError::TooBigVarInt(64, position + 1));
             }
         }
 
@@ -72,7 +62,7 @@ pub trait ReadByteBuf: Buf + Sized {
     }
 
     fn get_bool(&mut self) -> bool {
-        self.get_byte() != 0
+        self.get_i8() != 0
     }
 
     fn get_raw_bytes(&mut self, length: i32) -> Bytes {
@@ -85,7 +75,7 @@ pub trait ReadByteBuf: Buf + Sized {
         Ok(bytes)
     }
 
-    fn get_some_array<T: ProtocolSerializer>(&mut self) -> Result<Vec<T>, ProtocolError> {
+    fn get_array<T: ProtocolSerializer>(&mut self) -> Result<Vec<T>, ProtocolError> {
         let length = self.get_var_int()?;
         let mut items = Vec::with_capacity(length as usize);
 
@@ -97,26 +87,10 @@ pub trait ReadByteBuf: Buf + Sized {
     }
 
     fn get_optional<T: ProtocolSerializer>(&mut self) -> Result<Option<T>, ProtocolError> {
-        let present = self.get_bool();
-        match present {
+        match self.get_bool() {
             true => Ok(Some(T::deserialize(self)?)),
             false => Ok(None),
         }
-    }
-
-    fn get_hash_map<K: ProtocolSerializer + Hash + Eq, V: ProtocolSerializer>(
-        &mut self,
-    ) -> Result<HashMap<K, V>, ProtocolError> {
-        let mut result = HashMap::new();
-        let len = self.get_var_int()?;
-        for _ in 0..len {
-            let key = K::deserialize(self)?;
-            if result.contains_key(&key) {
-                return Err(ProtocolError::HashMapDuplicateKey);
-            }
-            result.insert(key, V::deserialize(self)?);
-        }
-        Ok(result)
     }
 }
 

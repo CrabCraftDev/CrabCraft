@@ -26,5 +26,6 @@ pub struct DisplayedSkinParts {
     pub left_pants_leg_enabled: bool,
     pub right_pants_leg_enabled: bool,
     pub hat_enabled: bool,
-    __: bool,
+    #[bits(1)]
+    __: u8,
 }
