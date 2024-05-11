@@ -7,7 +7,7 @@ use crate::error::ProtocolError;
 
 impl ProtocolSerializer for NbtTag {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put(self.serialize_data());
+        buf.put(self.serialize());
         Ok(())
     }
 

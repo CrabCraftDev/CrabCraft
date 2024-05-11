@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crab_protocol::packets::configuration::KeepAliveResponseC2SPacket;
+use crab_protocol::packets::play::KeepAliveResponseC2SPacket;
 use crab_protocol::raw_packet::RawPacket;
 
 use crate::network::connection::Connection;
