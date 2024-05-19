@@ -4,7 +4,7 @@ description = "A drop-in replacement for Paper Minecraft Server written in Rust.
 keywords = ["minecraft", "game-server", "crabcraft"]
 authors = ["Norbiros", "goteusz-maszyk", "other CrabCraft Contributors"]
 readme = "README.md"
-license = "GPL-3.0-only"
+license = "AGPL-3"
 version.workspace = true
 edition = "2021"
 
