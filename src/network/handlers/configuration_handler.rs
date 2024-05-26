@@ -80,6 +80,8 @@ impl PacketHandler for ConfigurationHandler {
                 })
                 .await;
 
+            // TODO: Temporary implementation of chunk sending
+
             connection
                 .send_packet(SetDefaultSpawnPositionS2CPacket {
                     location: BlockPosition { x: 0, y: 0, z: 0 },
@@ -121,8 +123,8 @@ impl PacketHandler for ConfigurationHandler {
                     };
                     chunk.serialize_to_mc_format(&mut data)?;
 
-                    // ToDo: For now we don't have good block system, so I implemented only world surface
-                    let world_surface_height_map = chunk.encode_world_surface_height_map();
+                    // TODO: For now we don't have good block system, so I implemented only world surface
+                    let world_surface_height_map = chunk.serialize_world_surface_height_map();
                     let heightmap = nbt!("", {
                         "MOTION_BLOCKING": [L;],
                         "WORLD_SURFACE": world_surface_height_map,

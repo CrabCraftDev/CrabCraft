@@ -2,7 +2,9 @@ use crate::utils::errors::Error;
 use bytes::{BufMut, BytesMut};
 use crab_protocol::buf::WriteByteBuf;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use fxhash::FxHashMap;
+use nohash_hasher::NoHashHasher;
+use std::collections::HashMap;
+use std::hash::BuildHasherDefault;
 
 pub const BIOMES_CONTAINER: PalettedContainer = PalettedContainer {
     indirect_from: 1,
@@ -16,6 +18,13 @@ pub const BLOCKS_CONTAINER: PalettedContainer = PalettedContainer {
     direct_size: 15,
 };
 
+/// [Palette](https://en.wikipedia.org/wiki/Palette_(computing)) is a structure optimized for storing data in a limited amount of space.
+/// In Minecraft, palettes are used to store block and biome data within chunks.
+///
+/// Minecraft utilizes three [types of palettes](https://wiki.vg/Chunk_Format#Palette_formats):
+/// - **Direct**: Stores IDs for all elements directly.
+/// - **Indirect**: Maps IDs to unique values in the palette for efficient storage.
+/// - **Single valued**: Stores a single value for all elements in the palette.
 #[derive(Clone, Debug)]
 pub struct PalettedContainer {
     indirect_from: usize,
@@ -24,8 +33,9 @@ pub struct PalettedContainer {
 }
 
 impl PalettedContainer {
-    pub fn get_palette(&self, entries: Vec<i32>, bytes: &mut BytesMut) -> Result<(), Error> {
-        let mut unique_values = FxHashMap::default();
+    pub fn serialize_palette(&self, entries: Vec<i32>, bytes: &mut BytesMut) -> Result<(), Error> {
+        let mut unique_values: HashMap<i32, usize, BuildHasherDefault<NoHashHasher<u8>>> =
+            HashMap::with_hasher(BuildHasherDefault::default());
         let mut insertion_order = Vec::new();
 
         for &value in &entries {
@@ -115,7 +125,9 @@ mod tests {
     #[test]
     fn test_serialize_indirect() {
         let mut bytes = BytesMut::new();
-        BIOMES_CONTAINER.get_palette(TEST_ENTRIES.to_vec(), &mut bytes).unwrap();
+        BIOMES_CONTAINER
+            .serialize_palette(TEST_ENTRIES.to_vec(), &mut bytes)
+            .unwrap();
         assert_eq!(bytes.get_u8(), 2);
         assert_eq!(bytes.get_var_int().unwrap(), 4);
         for value in 1..5 {
