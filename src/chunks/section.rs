@@ -3,6 +3,8 @@ use crate::chunks::paletted_container::{BIOMES_CONTAINER, BLOCKS_CONTAINER};
 use crate::utils::errors::Error;
 use bytes::{BufMut, Bytes, BytesMut};
 
+/// Chunk section is a 16×16×16 collection of blocks.
+/// It stores blocks and biomes in a [paletted](PalettedContainer) format.
 #[derive(Debug, Clone)]
 pub struct ChunkSection {
     pub non_air_block_amount: u16,
@@ -52,8 +54,8 @@ impl ChunkSection {
 
         let mut bytes = BytesMut::new();
         bytes.put_i16(self.non_air_block_amount as i16);
-        BLOCKS_CONTAINER.get_palette(self.blocks.iter().map(|&v| v as i32).collect(), &mut bytes)?;
-        BIOMES_CONTAINER.get_palette(self.biomes.iter().map(|&v| v as i32).collect(), &mut bytes)?;
+        BLOCKS_CONTAINER.serialize_palette(self.blocks.iter().map(|&v| v as i32).collect(), &mut bytes)?;
+        BIOMES_CONTAINER.serialize_palette(self.biomes.iter().map(|&v| v as i32).collect(), &mut bytes)?;
 
         chunk_section.put_slice(&bytes);
         self.cached_bytes = Some(bytes.freeze());
@@ -63,5 +65,15 @@ impl ChunkSection {
 
     fn calculate_index(&self, x: u8, y: u8, z: u8) -> usize {
         (y as usize * 16 * 16) + (z as usize * 16) + x as usize
+    }
+}
+
+impl Default for ChunkSection {
+    fn default() -> Self {
+        const PLAINS_BIOME_ID: u8 = 39;
+        Self::new(
+            [0; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
+            [PLAINS_BIOME_ID; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
+        )
     }
 }
