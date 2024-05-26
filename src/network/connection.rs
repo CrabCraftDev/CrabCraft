@@ -62,6 +62,10 @@ impl Connection {
     }
 
     pub async fn disconnect(&mut self, reason: &str) {
+        if self.is_closed {
+            return;
+        }
+
         let reason = reason.to_string();
         let reason_text_component: TextComponent = NbtTag::String(reason.clone()).into();
 

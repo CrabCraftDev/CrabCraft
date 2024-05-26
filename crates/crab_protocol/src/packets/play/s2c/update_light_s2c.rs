@@ -18,10 +18,10 @@ pub struct UpdateLightS2CPacket {
 
 #[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct LightData {
-    pub sky_light_map: BitSet,
-    pub block_light_map: BitSet,
-    pub empty_sky_light_map: BitSet,
-    pub empty_block_light_map: BitSet,
+    pub sky_light_mask: BitSet,
+    pub block_light_mask: BitSet,
+    pub empty_sky_light_mask: BitSet,
+    pub empty_block_light_mask: BitSet,
     pub sky_light_array: Vec<Bytes>,
     pub block_light_array: Vec<Bytes>,
 }

@@ -1,11 +1,13 @@
 use chrono::Local;
 use log::{error, info, LevelFilter};
 use std::panic;
+use std::process::exit;
 
 use utils::logger::Logger;
 
 use crate::mc_server::McServer;
 
+mod chunks;
 mod mc_server;
 mod network;
 mod utils;
@@ -20,6 +22,7 @@ async fn main() {
         for line in panic_info.to_string().split('\n') {
             error!("{}", line);
         }
+        exit(1)
     }));
 
     let startup_begin = Local::now().timestamp_millis();
