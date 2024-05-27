@@ -1,6 +1,6 @@
-use std::{env, io};
 use std::fs::read_dir;
 use std::path::{Path, PathBuf};
+use std::{env, io};
 
 pub fn count_files_with_prefix(dir: &Path, prefix: &str) -> io::Result<usize> {
     let mut count = 0;
