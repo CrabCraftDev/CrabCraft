@@ -2,11 +2,11 @@ use std::sync::Arc;
 
 use bytes::BytesMut;
 use clap::Parser;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::{
     net::{TcpListener, TcpStream},
     select,
 };
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use crab_protocol::buf::{get_var_int_from_stream, to_var_int, ReadByteBuf};
 
