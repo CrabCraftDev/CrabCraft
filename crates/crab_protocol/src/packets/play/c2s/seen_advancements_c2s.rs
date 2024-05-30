@@ -7,7 +7,7 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::identifier::Identifier;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x29, state = Play)]
+#[packet(id = 0x2C, state = Play)]
 pub struct SeenAdvancementsC2SPacket {
     pub action: SeenAdvancementsAction,
 }

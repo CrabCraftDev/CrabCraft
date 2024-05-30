@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use bytes::Bytes;
 use chrono::Local;
-use log::{debug, error};
+use log::{debug, error, warn};
 use tokio::io::ReadHalf;
 use tokio::sync::Mutex;
 use tokio::{
@@ -106,6 +106,7 @@ impl TcpServer {
             .await;
 
             if result.is_err() {
+                warn!("Error handling packet {:?}!", result.err());
                 connection.disconnect("Unexpected error!").await;
                 break;
             }

@@ -20,4 +20,5 @@ pub struct HandshakeC2SPacket {
 pub enum NextState {
     Status = 1,
     Login = 2,
+    Transfer = 3,
 }

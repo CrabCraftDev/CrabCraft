@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::position::Position;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x18, state = Play)]
+#[packet(id = 0x1B, state = Play)]
 pub struct SetPlayerPositionAndRotationC2SPacket {
     /// Y is feet position
     pub position: Position,

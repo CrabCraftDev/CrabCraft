@@ -7,7 +7,7 @@ use crate::types::position::Position;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x3D, state = Play)]
+#[packet(id = 0x3F, state = Play)]
 pub struct LookAtS2CPacket {
     pub aims_using: AimType,
     pub position: Position,

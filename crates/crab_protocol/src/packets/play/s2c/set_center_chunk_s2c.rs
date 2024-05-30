@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x52, state = Play)]
+#[packet(id = 0x54, state = Play)]
 pub struct SetCenterChunkS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub x: i32,

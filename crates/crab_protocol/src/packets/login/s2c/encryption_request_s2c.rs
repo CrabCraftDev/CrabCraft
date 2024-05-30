@@ -11,4 +11,5 @@ pub struct EncryptionRequestS2CPacket {
     pub server_id: String,
     pub public_key: Bytes,
     pub verify_token: Bytes,
+    pub should_authenticate: bool,
 }

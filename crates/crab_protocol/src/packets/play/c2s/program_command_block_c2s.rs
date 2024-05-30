@@ -7,7 +7,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::block_position::BlockPosition;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2D, state = Play)]
+#[packet(id = 0x30, state = Play)]
 pub struct ProgramCommandBlockC2SPacket {
     pub position: BlockPosition,
     pub command: String,

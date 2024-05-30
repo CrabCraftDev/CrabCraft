@@ -1,5 +1,4 @@
 use bitfield_struct::bitfield;
-use crab_nbt::Nbt;
 
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
@@ -7,7 +6,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x72, state = Play)]
+#[packet(id = 0x76, state = Play)]
 pub struct EntityEffectS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,
@@ -16,8 +15,6 @@ pub struct EntityEffectS2CPacket {
     pub amplifier: i8,
     #[protocol_attribute(protocol_type = VarInt)]
     pub duration: i32,
-    pub has_factor_data: bool,
-    pub factor_data: Nbt,
 }
 
 #[bitfield(u8)]
@@ -26,6 +23,8 @@ pub struct EntityEffectFlags {
     pub is_ambient: bool,
     pub show_particles: bool,
     pub show_icon: bool,
-    #[bits(5)]
+    /// Currently only used in the darkness effect
+    pub blend: bool,
+    #[bits(4)]
     __: u8,
 }

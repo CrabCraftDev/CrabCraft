@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2C, state = Play)]
+#[packet(id = 0x2E, state = Play)]
 pub struct UpdateEntityPositionS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

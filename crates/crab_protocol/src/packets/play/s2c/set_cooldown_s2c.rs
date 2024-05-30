@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x16, state = Play)]
+#[packet(id = 0x17, state = Play)]
 pub struct SetCooldownS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub item_id: i32,

@@ -7,7 +7,7 @@ use crate::types::position::Position;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x3E, state = Play)]
+#[packet(id = 0x40, state = Play)]
 pub struct SynchronizePlayerPositionS2CPacket {
     pub position: Position,
     pub yaw: f32,

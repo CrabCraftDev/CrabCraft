@@ -1,12 +1,12 @@
 use async_trait::async_trait;
 use bytes::{Bytes, BytesMut};
-use crab_nbt::{nbt, Nbt};
+use crab_nbt::nbt;
 use log::info;
 
 use crab_protocol::buf::WriteByteBuf;
 use crab_protocol::packets::configuration::{
     AcknowledgeFinishConfigurationC2SPacket, ClientInformationC2SPacket, FinishConfigurationS2CPacket,
-    PluginMessageS2CPacket, RegistryDataS2CPacket,
+    KnownPacksC2SPacket, KnownPacksS2CPacket, PluginMessageS2CPacket,
 };
 use crab_protocol::packets::play::{
     ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
@@ -22,11 +22,13 @@ use crab_protocol::types::bit_set::BitSet;
 use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
 use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::known_pack::KnownPack;
 use crab_protocol::types::position::Position;
 
 use crate::network::connection::Connection;
 use crate::network::packet_handler::PacketHandler;
 use crate::utils::errors::Error;
+use crate::SERVER_VERSION;
 
 pub struct ConfigurationHandler;
 
@@ -34,12 +36,14 @@ pub struct ConfigurationHandler;
 impl PacketHandler for ConfigurationHandler {
     async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error> {
         if let Some(_packet) = raw_packet.decode::<ClientInformationC2SPacket>() {
-            let binary_registry_data: &[u8] = include_bytes!("../../../assets/registry-data.nbt");
-            connection
-                .send_packet(RegistryDataS2CPacket {
-                    registry_data: Nbt::read(&mut Bytes::from(binary_registry_data))?,
-                })
-                .await;
+            // Minecraft defines all biomes, damage types, and dimension types in code.
+            let registry_dimension_type_packet: &[u8] =
+                include_bytes!("../../../assets/packets/registry_dimension_type.bin");
+            connection.send(Bytes::from(registry_dimension_type_packet)).await;
+            let registry_damage_type_packet: &[u8] = include_bytes!("../../../assets/packets/registry_damage_type.bin");
+            connection.send(Bytes::from(registry_damage_type_packet)).await;
+            let registry_biomes_packet: &[u8] = include_bytes!("../../../assets/packets/registry_biomes.bin");
+            connection.send(Bytes::from(registry_biomes_packet)).await;
 
             let mut data = BytesMut::new();
             data.put_string("CrabCraft");
@@ -51,6 +55,18 @@ impl PacketHandler for ConfigurationHandler {
                 })
                 .await;
 
+            connection
+                .send_packet(KnownPacksS2CPacket {
+                    known_packs: vec![KnownPack {
+                        namespace: "minecraft".to_string(),
+                        id: "core".to_string(),
+                        version: SERVER_VERSION.to_string(),
+                    }],
+                })
+                .await;
+        }
+
+        if let Some(_packet) = raw_packet.decode::<KnownPacksC2SPacket>() {
             connection.send_packet(FinishConfigurationS2CPacket).await;
         }
 
@@ -68,7 +84,7 @@ impl PacketHandler for ConfigurationHandler {
                     reduced_debug_info: false,
                     enable_respawn_screen: true,
                     do_limited_crafting: false,
-                    dimension_type: Identifier::minecraft("overworld")?,
+                    dimension_type: 0,
                     dimension_name: Identifier::minecraft("overworld")?,
                     hashed_seed: 99887766,
                     game_mode: GameMode::Creative,
@@ -77,6 +93,7 @@ impl PacketHandler for ConfigurationHandler {
                     is_flat_world: true,
                     last_death_location: None,
                     portal_cooldown: 20,
+                    enforces_secure_chat: false,
                 })
                 .await;
 

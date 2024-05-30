@@ -19,6 +19,10 @@ impl PacketHandler for HandshakeHandler {
             connection.state = match packet.next_state {
                 NextState::Status => ProtocolState::Status,
                 NextState::Login => ProtocolState::Login,
+                NextState::Transfer => {
+                    connection.disconnect("CrabCraft doesn't support transfers!").await;
+                    return Ok(());
+                }
             };
 
             if connection.state != ProtocolState::Login || packet.protocol_version == SERVER_PROTOCOL_VERSION {

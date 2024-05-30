@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x0A, state = Play)]
+#[packet(id = 0x0B, state = Play)]
 pub struct CommandSuggestionRequestC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub transaction_id: i32,

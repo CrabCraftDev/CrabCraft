@@ -10,9 +10,11 @@ use crate::types::identifier::Identifier;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x45, state = Play)]
+#[packet(id = 0x47, state = Play)]
 pub struct RespawnS2CPacket {
-    pub dimension_type: Identifier,
+    /// The ID of the type of dimension in the minecraft:dimension_type registry, defined by the Registry Data packet.
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub dimension_type: i32,
     pub dimension_name: Identifier,
     pub hashed_seed: i64,
     pub game_mode: GameMode,

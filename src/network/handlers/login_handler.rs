@@ -19,6 +19,7 @@ impl PacketHandler for LoginHandler {
                     uuid: packet.player_uuid,
                     username: packet.username,
                     properties: Vec::new(),
+                    strict_protocol_error_handling: true,
                 })
                 .await;
         }

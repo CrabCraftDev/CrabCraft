@@ -1,0 +1,7 @@
+use crab_protocol_macros::ProtocolSerializer;
+use strum::FromRepr;
+
+#[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
+pub enum SampleType {
+    TickTime,
+}

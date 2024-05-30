@@ -12,4 +12,5 @@ pub struct LoginSuccessS2CPacket {
     #[protocol_attribute(bounded = 16)]
     pub username: String,
     pub properties: Vec<Property>,
+    pub strict_protocol_error_handling: bool,
 }

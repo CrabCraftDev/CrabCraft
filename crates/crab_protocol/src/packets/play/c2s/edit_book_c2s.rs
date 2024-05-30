@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x11, state = Play)]
+#[packet(id = 0x14, state = Play)]
 pub struct EditBookC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub slot: i32,

@@ -7,7 +7,7 @@ use crate::types::bit_set::BitSet;
 use crate::types::varint::VarInt;
 
 #[derive(Debug, Packet, ProtocolSerializer, Clone)]
-#[packet(id = 0x28, state = Play)]
+#[packet(id = 0x2A, state = Play)]
 pub struct UpdateLightS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub chunk_x: i32,
