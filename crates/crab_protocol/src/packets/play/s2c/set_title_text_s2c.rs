@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x63, state = Play)]
+#[packet(id = 0x65, state = Play)]
 pub struct SetTitleTextS2CPacket {
     pub title_text: TextComponent,
 }

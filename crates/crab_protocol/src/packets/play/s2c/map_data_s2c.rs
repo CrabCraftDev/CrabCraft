@@ -12,7 +12,7 @@ use crate::types::text::TextComponent;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2A, state = Play)]
+#[packet(id = 0x2C, state = Play)]
 pub struct MapDataS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub map_id: i32,

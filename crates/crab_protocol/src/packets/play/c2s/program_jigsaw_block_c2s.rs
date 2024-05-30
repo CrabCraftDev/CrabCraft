@@ -6,7 +6,7 @@ use crate::types::identifier::Identifier;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x30, state = Play)]
+#[packet(id = 0x33, state = Play)]
 pub struct ProgramJigsawBlockC2SPacket {
     pub position: BlockPosition,
     pub name: Identifier,

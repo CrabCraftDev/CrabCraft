@@ -5,7 +5,7 @@ use crate::types::item_stack::ItemStack;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x0D, state = Play)]
+#[packet(id = 0x0E, state = Play)]
 pub struct ClickContainerC2SPacket {
     pub window_id: u8,
     #[protocol_attribute(protocol_type = VarInt)]

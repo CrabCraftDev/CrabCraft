@@ -7,7 +7,7 @@ use crate::types::identifier::Identifier;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x29, state = Play)]
+#[packet(id = 0x2B, state = Play)]
 pub struct GameJoinS2CPacket {
     pub entity_id: i32,
     pub is_hardcore: bool,
@@ -21,7 +21,9 @@ pub struct GameJoinS2CPacket {
     pub reduced_debug_info: bool,
     pub enable_respawn_screen: bool,
     pub do_limited_crafting: bool,
-    pub dimension_type: Identifier,
+    /// The ID of the type of dimension in the minecraft:dimension_type registry, defined by the Registry Data packet.
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub dimension_type: i32,
     pub dimension_name: Identifier,
     pub hashed_seed: i64,
     pub game_mode: GameMode,
@@ -31,6 +33,7 @@ pub struct GameJoinS2CPacket {
     pub last_death_location: Option<LastDeathLocation>,
     #[protocol_attribute(protocol_type = VarInt)]
     pub portal_cooldown: i32,
+    pub enforces_secure_chat: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, ProtocolSerializer)]

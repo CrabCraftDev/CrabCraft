@@ -7,7 +7,7 @@ use crate::types::identifier::Identifier;
 use crate::types::tag::Tag;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x74, state = Configuration)]
+#[packet(id = 0x78, state = Configuration)]
 pub struct UpdateTagsS2CPacket {
     pub tags: HashMap<Identifier, Vec<Tag>>,
 }

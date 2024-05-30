@@ -10,7 +10,7 @@ use crate::protocol::ProtocolState::*;
 use crate::protocol_serializer::ProtocolSerializer;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x25, state = Play)]
+#[packet(id = 0x27, state = Play)]
 pub struct ChunkDataAndUpdateLightS2CPacket {
     pub chunk_x: i32,
     pub chunk_z: i32,

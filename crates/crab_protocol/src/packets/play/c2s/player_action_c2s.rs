@@ -8,7 +8,7 @@ use crate::types::block_position::BlockPosition;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x21, state = Play)]
+#[packet(id = 0x24, state = Play)]
 pub struct PlayerActionC2SPacket {
     pub status: PlayerAction,
     pub position: BlockPosition,

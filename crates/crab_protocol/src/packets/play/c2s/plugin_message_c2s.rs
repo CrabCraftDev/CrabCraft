@@ -5,7 +5,7 @@ use crate::types::bytes::EndBytes;
 use crate::types::identifier::Identifier;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x10, state = Play)]
+#[packet(id = 0x12, state = Play)]
 pub struct PluginMessageC2SPacket {
     pub channel: Identifier,
     #[protocol_attribute(bounded = 32767)]

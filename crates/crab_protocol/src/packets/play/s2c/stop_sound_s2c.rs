@@ -10,7 +10,7 @@ use crate::types::identifier::Identifier;
 use crate::types::sound::SoundCategory;
 
 #[derive(Packet, Debug, Clone)]
-#[packet(id = 0x68, state = Play)]
+#[packet(id = 0x6A, state = Play)]
 pub struct StopSoundS2CPacket {
     pub sound_category: Option<SoundCategory>,
     pub sound_name: Option<Identifier>,

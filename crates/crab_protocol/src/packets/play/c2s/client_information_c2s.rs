@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::client_information::{ChatMode, DisplayedSkinParts, MainHand};
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x09, state = Play)]
+#[packet(id = 0x0A, state = Play)]
 pub struct ClientInformationC2SPacket {
     #[protocol_attribute(bounded = 16)]
     pub locale: String,

@@ -6,7 +6,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x07, state = Configuration)]
+#[packet(id = 0x09, state = Configuration)]
 pub struct AddResourcePackS2CPacket {
     pub resource_pack_uuid: Uuid,
     pub url: String,

@@ -10,7 +10,7 @@ use crate::types::identifier::Identifier;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x70, state = Play)]
+#[packet(id = 0x74, state = Play)]
 pub struct UpdateAdvancementsS2CPacket {
     pub should_reset: bool,
     pub advancement_mapping: HashMap<Identifier, Advancement>,

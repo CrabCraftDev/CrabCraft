@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2E, state = Play)]
+#[packet(id = 0x31, state = Play)]
 pub struct ProgramCommandBlockMinecartC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

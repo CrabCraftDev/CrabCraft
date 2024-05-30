@@ -3,7 +3,7 @@ use crab_protocol_macros::{Packet, ProtocolSerializer};
 use crate::protocol::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x1C, state = Play)]
+#[packet(id = 0x1F, state = Play)]
 pub struct PaddleBoatC2SPacket {
     pub left_paddle_turning: bool,
     pub right_paddle_turning: bool,

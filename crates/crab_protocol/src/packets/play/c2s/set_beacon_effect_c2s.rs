@@ -4,7 +4,7 @@ use crate::protocol::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2B, state = Play)]
+#[packet(id = 0x2E, state = Play)]
 pub struct SetBeaconEffectC2SPacket {
     #[protocol_attribute(protocol_type = Option<VarInt>)]
     pub primary_effect: Option<i32>,

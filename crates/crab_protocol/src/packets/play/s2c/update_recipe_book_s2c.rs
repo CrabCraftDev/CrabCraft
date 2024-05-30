@@ -9,7 +9,7 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::types::identifier::Identifier;
 
 #[derive(Packet, Debug, Clone)]
-#[packet(id = 0x3F, state = Play)]
+#[packet(id = 0x41, state = Play)]
 pub struct UpdateRecipeBookS2CPacket {
     pub action: RecipeBookAction,
     pub settings: RecipeBookSettings,
