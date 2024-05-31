@@ -2,12 +2,18 @@ use std::ops::Add;
 use std::sync::Arc;
 use std::time::Duration;
 
+use evenio::world::World;
+use kanal::Receiver;
 use log::{info, warn};
 use tokio::time::{sleep_until, Instant};
 use tokio::{select, signal};
 
-use crate::network::tcp_server::TcpServer;
-use crate::utils::scheduler::ServerScheduler;
+use crate::{
+    entity::player::{network::connection::PlayerConnection, Player},
+    network::tcp_server::TcpServer,
+    world,
+};
+use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
 
 const TPS: u64 = 20;
 const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);
@@ -19,17 +25,23 @@ pub struct McServer {
     scheduler: ServerScheduler,
     tcp_server: Arc<TcpServer>,
     overload_warning_cooldown: Instant,
+    world: World,
+    player_connection_receiver: Receiver<PlayerConnection>,
 }
 
 impl McServer {
     pub fn new(ip_address: String) -> McServer {
-        let tcp_server = TcpServer::new(ip_address);
+        let (player_connection_sender, player_connection_receiver) = kanal::unbounded();
+        let tcp_server = TcpServer::new(ip_address, player_connection_sender);
+
         McServer {
             running: true,
             current_tick: 0,
             tcp_server: Arc::new(tcp_server),
             scheduler: ServerScheduler::default(),
             overload_warning_cooldown: Instant::now(),
+            world: world::new(),
+            player_connection_receiver,
         }
     }
 
@@ -76,6 +88,15 @@ impl McServer {
 
     pub async fn tick(&mut self) {
         self.current_tick += 1;
+
+        while let Some(connection) = self.player_connection_receiver.try_recv().unwrap() {
+            let entity = self.world.spawn();
+            self.world.insert(entity, Player);
+            self.world.insert(entity, connection);
+        }
+
+        self.world.send(WorldTick);
+
         self.scheduler.tick();
 
         self.tcp_server.tick().await;

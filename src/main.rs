@@ -8,9 +8,11 @@ use utils::logger::Logger;
 use crate::mc_server::McServer;
 
 mod chunks;
+mod entity;
 mod mc_server;
 mod network;
 mod utils;
+mod world;
 
 pub const SERVER_PROTOCOL_VERSION: i32 = 766;
 pub const SERVER_VERSION: &str = "1.20.6";
