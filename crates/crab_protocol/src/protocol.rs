@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum PacketDirection {
     /// Server -> Client
     Clientbound,
@@ -6,7 +6,7 @@ pub enum PacketDirection {
     Serverbound,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ProtocolState {
     Handshake,
     Status,

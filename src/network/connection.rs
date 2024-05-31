@@ -1,14 +1,14 @@
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 
 use bytes::Bytes;
 use chrono::Local;
 use crab_nbt::NbtTag;
+use crossbeam::sync::ShardedLock;
 use log::{error, info, warn};
 use serde_json::json;
 use tokio::io::{AsyncWriteExt, WriteHalf};
 use tokio::net::TcpStream;
 
-use crab_protocol::buf::to_var_int;
 use crab_protocol::packet::Packet;
 use crab_protocol::packets::configuration::DisconnectS2CPacket as ConfigurationDisconnectPacket;
 use crab_protocol::packets::configuration::KeepAliveS2CPacket as ConfigurationKeepAlivePacket;
@@ -17,12 +17,13 @@ use crab_protocol::packets::play::DisconnectS2CPacket as PlayDisconnectPacket;
 use crab_protocol::packets::play::KeepAliveS2CPacket as PlayKeepAlivePacket;
 use crab_protocol::protocol::ProtocolState;
 use crab_protocol::types::text::TextComponent;
+use crab_protocol::{buf::to_var_int, raw_packet::RawPacket};
 
 use crate::utils::errors::Error;
 
 #[derive(Debug)]
 pub struct Connection {
-    pub(crate) state: ProtocolState,
+    pub(crate) state: Arc<ShardedLock<ProtocolState>>,
     pub(crate) write_half: WriteHalf<TcpStream>,
     pub(crate) address: SocketAddr,
     pub(crate) is_closed: bool,
@@ -50,6 +51,10 @@ impl Connection {
         }
     }
 
+    pub async fn send_raw_packet(&mut self, packet: RawPacket) {
+        self.send(packet.to_bytes()).await;
+    }
+
     pub async fn send(&mut self, bytes: Bytes) {
         if self.is_closed {
             return;
@@ -69,7 +74,8 @@ impl Connection {
         let reason = reason.to_string();
         let reason_text_component: TextComponent = NbtTag::String(reason.clone()).into();
 
-        match self.state {
+        let state = *self.state.read().unwrap();
+        match state {
             ProtocolState::Configuration => {
                 self.send_packet(ConfigurationDisconnectPacket {
                     reason: reason_text_component,
@@ -103,7 +109,8 @@ impl Connection {
     }
 
     pub async fn keep_connection_alive(&mut self) {
-        if self.state != ProtocolState::Configuration && self.state != ProtocolState::Play {
+        let state = *self.state.read().unwrap();
+        if state != ProtocolState::Configuration && state != ProtocolState::Play {
             return;
         }
 
@@ -121,7 +128,7 @@ impl Connection {
         self.last_keepalive_time = current_time;
 
         let keep_alive_id = current_time;
-        if self.state == ProtocolState::Play {
+        if state == ProtocolState::Play {
             self.send_packet(PlayKeepAlivePacket { keep_alive_id }).await;
         } else {
             self.send_packet(ConfigurationKeepAlivePacket { keep_alive_id }).await;

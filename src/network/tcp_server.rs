@@ -2,6 +2,8 @@ use std::sync::Arc;
 
 use bytes::Bytes;
 use chrono::Local;
+use crossbeam::sync::ShardedLock;
+use kanal::Sender;
 use log::{debug, error, warn};
 use tokio::io::ReadHalf;
 use tokio::sync::Mutex;
@@ -11,27 +13,32 @@ use tokio::{
 };
 
 use crate::network::connection::Connection;
-use crate::network::handlers::handshake_handler::HandshakeHandler;
-use crate::network::packet_handler::PacketHandler;
+use crate::{
+    entity::player::network::connection::PlayerConnection, network::handlers::handshake_handler::HandshakeHandler,
+};
 
-use crate::network::handlers::configuration_handler::ConfigurationHandler;
 use crate::network::handlers::login_handler::LoginHandler;
 use crate::network::handlers::play_handler::PlayHandler;
 use crate::network::handlers::status_handler::StatusHandler;
-use crab_protocol::buf::{get_var_int_from_stream, ReadByteBuf};
-use crab_protocol::protocol::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
+use crab_protocol::{
+    buf::{get_var_int_from_stream, ReadByteBuf},
+    packets::play::KeepAliveResponseC2SPacket,
+};
+use crab_protocol::{packet::Packet, protocol::ProtocolState};
 
 pub struct TcpServer {
     address: String,
     pub connections: Arc<Mutex<Vec<Arc<Mutex<Connection>>>>>,
+    new_player_sender: Sender<PlayerConnection>,
 }
 
 impl TcpServer {
-    pub fn new(address: String) -> TcpServer {
+    pub fn new(address: String, new_player_sender: Sender<PlayerConnection>) -> TcpServer {
         TcpServer {
             address,
             connections: Arc::new(Mutex::new(Vec::new())),
+            new_player_sender,
         }
     }
 
@@ -48,7 +55,7 @@ impl TcpServer {
 
                     let connection = Arc::new(Mutex::new(Connection {
                         write_half,
-                        state: ProtocolState::Handshake,
+                        state: Arc::new(ShardedLock::new(ProtocolState::Handshake)),
                         is_closed: false,
                         address,
                         keepalive_pending: false,
@@ -56,9 +63,9 @@ impl TcpServer {
                     }));
                     self.connections.lock().await.push(connection.clone());
                     let connections_mutex = Arc::clone(&self.connections);
-
+                    let sender = self.new_player_sender.clone();
                     tokio::spawn(async move {
-                        TcpServer::handle_connection(connection, read_half).await;
+                        TcpServer::handle_connection(connection, read_half, sender).await;
                         connections_mutex
                             .lock()
                             .await
@@ -80,8 +87,21 @@ impl TcpServer {
         }
     }
 
-    async fn handle_connection(connection: Arc<Mutex<Connection>>, mut read_half: ReadHalf<TcpStream>) {
-        let connection = Arc::clone(&connection);
+    async fn handle_connection(
+        connection: Arc<Mutex<Connection>>,
+        mut read_half: ReadHalf<TcpStream>,
+        new_player_sender: Sender<PlayerConnection>,
+    ) {
+        let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
+        let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
+
+        let connection_clone = Arc::clone(&connection);
+        tokio::spawn(async move {
+            let receiver = outgoing_packets_receiver.to_async();
+            while let Ok(packet) = receiver.recv().await {
+                connection_clone.lock().await.send_raw_packet(packet).await;
+            }
+        });
 
         while let Ok(len) = get_var_int_from_stream(&mut read_half).await {
             let mut buffer = vec![0; len as usize];
@@ -96,14 +116,37 @@ impl TcpServer {
             let raw_packet = RawPacket::new(packet_id, bytes);
 
             let mut connection = connection.lock().await;
-            let result = match connection.state {
-                ProtocolState::Handshake => HandshakeHandler::handle_packet(&mut connection, raw_packet),
-                ProtocolState::Configuration => ConfigurationHandler::handle_packet(&mut connection, raw_packet),
-                ProtocolState::Login => LoginHandler::handle_packet(&mut connection, raw_packet),
-                ProtocolState::Play => PlayHandler::handle_packet(&mut connection, raw_packet),
-                ProtocolState::Status => StatusHandler::handle_packet(&mut connection, raw_packet),
-            }
-            .await;
+            let state = *connection.state.read().unwrap();
+            let result = match state {
+                ProtocolState::Status => StatusHandler::handle_packet(&mut connection, raw_packet).await,
+                ProtocolState::Handshake => HandshakeHandler::handle_packet(&mut connection, raw_packet).await,
+                ProtocolState::Login => match LoginHandler::handle_packet(&mut connection, raw_packet).await {
+                    Ok(true) => {
+                        new_player_sender
+                            .send(PlayerConnection {
+                                protocol_state: Arc::clone(&connection.state),
+                                packet_receiver: incoming_packets_receiver.clone(),
+                                packet_sender: outgoing_packets_sender.clone(),
+                            })
+                            .unwrap();
+                        Ok(())
+                    }
+                    Ok(false) => Ok(()),
+                    Err(err) => Err(err),
+                },
+                ProtocolState::Configuration => {
+                    incoming_packets_sender.send(raw_packet).unwrap();
+                    Ok(())
+                }
+                ProtocolState::Play => {
+                    if raw_packet.id == KeepAliveResponseC2SPacket::ID {
+                        PlayHandler::handle_packet(&mut connection, raw_packet).await
+                    } else {
+                        incoming_packets_sender.send(raw_packet).unwrap();
+                        Ok(())
+                    }
+                }
+            };
 
             if result.is_err() {
                 warn!("Error handling packet {:?}!", result.err());

@@ -1,6 +1,5 @@
 use std::fs;
 
-use async_trait::async_trait;
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 use log::info;
@@ -12,16 +11,14 @@ use crab_protocol::packets::status::{
 use crab_protocol::raw_packet::RawPacket;
 
 use crate::network::connection::Connection;
-use crate::network::packet_handler::PacketHandler;
 use crate::utils::errors::Error;
 use crate::utils::fs::get_server_path;
 use crate::{SERVER_PROTOCOL_VERSION, SERVER_VERSION};
 
 pub struct StatusHandler;
 
-#[async_trait]
-impl PacketHandler for StatusHandler {
-    async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error> {
+impl StatusHandler {
+    pub async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error> {
         if let Some(packet) = raw_packet.decode::<PingRequestC2SPacket>() {
             connection
                 .send_packet(PingResponseS2CPacket {
