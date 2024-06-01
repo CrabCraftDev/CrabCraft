@@ -15,7 +15,12 @@ use evenio::{
     event::{Receiver, Sender},
 };
 
-use crate::SERVER_VERSION;
+pub const REGISTRY_DIMENSION_TYPE_PACKET: &[u8] =
+    include_bytes!("../../../../assets/packets/registry_dimension_type.bin");
+pub const REGISTRY_DAMAGE_TYPE_PACKET: &[u8] = include_bytes!("../../../../assets/packets/registry_damage_type.bin");
+pub const REGISTRY_BIOMES_PACKET: &[u8] = include_bytes!("../../../../assets/packets/registry_biomes.bin");
+
+use crate::mc_server::SERVER_VERSION;
 
 use super::{
     connection::{PacketEvent, PlayerConnection},
@@ -37,31 +42,20 @@ pub fn configuration_packets(
 
     if let Some(_packet) = packet.decode::<ClientInformationC2SPacket>() {
         // Minecraft defines all biomes, damage types, and dimension types in code.
-        let registry_dimension_type_packet: &[u8] =
-            include_bytes!("../../../../assets/packets/registry_dimension_type.bin");
-        connection
-            .packet_sender
-            .send(RawPacket {
-                id: RegistryDataS2CPacket::ID,
-                data: Bytes::from(registry_dimension_type_packet),
-            })
-            .unwrap();
-        let registry_damage_type_packet: &[u8] = include_bytes!("../../../../assets/packets/registry_damage_type.bin");
-        connection
-            .packet_sender
-            .send(RawPacket {
-                id: RegistryDataS2CPacket::ID,
-                data: Bytes::from(registry_damage_type_packet),
-            })
-            .unwrap();
-        let registry_biomes_packet: &[u8] = include_bytes!("../../../../assets/packets/registry_biomes.bin");
-        connection
-            .packet_sender
-            .send(RawPacket {
-                id: RegistryDataS2CPacket::ID,
-                data: Bytes::from(registry_biomes_packet),
-            })
-            .unwrap();
+
+        for packet_data in [
+            REGISTRY_DIMENSION_TYPE_PACKET,
+            REGISTRY_BIOMES_PACKET,
+            REGISTRY_DAMAGE_TYPE_PACKET,
+        ] {
+            connection
+                .packet_sender
+                .send(RawPacket {
+                    id: RegistryDataS2CPacket::ID,
+                    data: Bytes::from(packet_data),
+                })
+                .unwrap()
+        }
 
         let mut data = BytesMut::new();
         "CrabCraft".to_owned().serialize(&mut data).unwrap();
