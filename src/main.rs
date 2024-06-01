@@ -14,9 +14,6 @@ mod network;
 mod utils;
 mod world;
 
-pub const SERVER_PROTOCOL_VERSION: i32 = 766;
-pub const SERVER_VERSION: &str = "1.20.6";
-
 #[tokio::main]
 async fn main() {
     panic::set_hook(Box::new(|panic_info| {

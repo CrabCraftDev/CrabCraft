@@ -10,10 +10,12 @@ use crab_protocol::packets::status::{
 };
 use crab_protocol::raw_packet::RawPacket;
 
-use crate::network::connection::Connection;
 use crate::utils::errors::Error;
 use crate::utils::fs::get_server_path;
-use crate::{SERVER_PROTOCOL_VERSION, SERVER_VERSION};
+use crate::{
+    mc_server::{SERVER_PROTOCOL_VERSION, SERVER_VERSION},
+    network::connection::Connection,
+};
 
 pub struct StatusHandler;
 

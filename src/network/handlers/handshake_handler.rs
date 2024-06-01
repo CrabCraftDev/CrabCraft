@@ -4,9 +4,8 @@ use crab_protocol::packets::handshake::{HandshakeC2SPacket, NextState};
 use crab_protocol::protocol::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
 
-use crate::network::connection::Connection;
-use crate::utils::errors::Error;
-use crate::{SERVER_PROTOCOL_VERSION, SERVER_VERSION};
+use crate::{mc_server::SERVER_PROTOCOL_VERSION, network::connection::Connection};
+use crate::{mc_server::SERVER_VERSION, utils::errors::Error};
 
 pub struct HandshakeHandler;
 
