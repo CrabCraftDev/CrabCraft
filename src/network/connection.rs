@@ -10,13 +10,9 @@ use tokio::io::{AsyncWriteExt, WriteHalf};
 use tokio::net::TcpStream;
 
 use crab_protocol::packet::Packet;
-use crab_protocol::packets::configuration::DisconnectS2CPacket as ConfigurationDisconnectPacket;
-use crab_protocol::packets::configuration::KeepAliveS2CPacket as ConfigurationKeepAlivePacket;
-use crab_protocol::packets::login::DisconnectS2CPacket as LoginDisconnectPacket;
-use crab_protocol::packets::play::DisconnectS2CPacket as PlayDisconnectPacket;
-use crab_protocol::packets::play::KeepAliveS2CPacket as PlayKeepAlivePacket;
+use crab_protocol::packets::common::{DisconnectS2CPacket, KeepAliveS2CPacket};
+use crab_protocol::packets::login::LoginDisconnectS2CPacket;
 use crab_protocol::protocol::ProtocolState;
-use crab_protocol::types::text::TextComponent;
 use crab_protocol::{buf::to_var_int, raw_packet::RawPacket};
 
 use crate::utils::errors::Error;
@@ -42,7 +38,8 @@ impl Connection {
     }
 
     pub async fn send_packet(&mut self, packet: impl Packet) {
-        match packet.serialize_packet() {
+        let state = *self.state.read().unwrap();
+        match packet.serialize_packet(state) {
             Ok(bytes) => self.send(bytes).await,
             Err(err) => {
                 error!("Serialization error: {}", err);
@@ -72,24 +69,17 @@ impl Connection {
         }
 
         let reason = reason.to_string();
-        let reason_text_component: TextComponent = NbtTag::String(reason.clone()).into();
 
         let state = *self.state.read().unwrap();
         match state {
-            ProtocolState::Configuration => {
-                self.send_packet(ConfigurationDisconnectPacket {
-                    reason: reason_text_component,
-                })
-                .await;
-            }
-            ProtocolState::Play => {
-                self.send_packet(PlayDisconnectPacket {
-                    reason: reason_text_component,
+            ProtocolState::Configuration | ProtocolState::Play => {
+                self.send_packet(DisconnectS2CPacket {
+                    reason: NbtTag::String(reason.clone()).into(),
                 })
                 .await;
             }
             ProtocolState::Login => {
-                self.send_packet(LoginDisconnectPacket {
+                self.send_packet(LoginDisconnectS2CPacket {
                     reason: json!({"text": reason}).to_string().into(),
                 })
                 .await;
@@ -127,11 +117,9 @@ impl Connection {
         self.keepalive_pending = true;
         self.last_keepalive_time = current_time;
 
-        let keep_alive_id = current_time;
-        if state == ProtocolState::Play {
-            self.send_packet(PlayKeepAlivePacket { keep_alive_id }).await;
-        } else {
-            self.send_packet(ConfigurationKeepAlivePacket { keep_alive_id }).await;
-        };
+        self.send_packet(KeepAliveS2CPacket {
+            keep_alive_id: current_time,
+        })
+        .await;
     }
 }

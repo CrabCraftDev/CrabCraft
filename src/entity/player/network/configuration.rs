@@ -1,9 +1,10 @@
 use bytes::{Bytes, BytesMut};
+use crab_protocol::packets::common::{ClientInformationC2SPacket, PluginMessageS2CPacket};
 use crab_protocol::{
     packet::Packet,
     packets::configuration::{
-        AcknowledgeFinishConfigurationC2SPacket, ClientInformationC2SPacket, FinishConfigurationS2CPacket,
-        KnownPacksC2SPacket, KnownPacksS2CPacket, PluginMessageS2CPacket, RegistryDataS2CPacket,
+        AcknowledgeFinishConfigurationC2SPacket, FinishConfigurationS2CPacket, KnownPacksC2SPacket,
+        KnownPacksS2CPacket, RegistryDataS2CPacket,
     },
     protocol::ProtocolState,
     protocol_serializer::ProtocolSerializer,
@@ -40,7 +41,7 @@ pub fn configuration_packets(
         return;
     }
 
-    if let Some(_packet) = packet.decode::<ClientInformationC2SPacket>() {
+    if let Some(_packet) = packet.decode::<ClientInformationC2SPacket>(*state) {
         // Minecraft defines all biomes, damage types, and dimension types in code.
 
         for packet_data in [
@@ -51,7 +52,7 @@ pub fn configuration_packets(
             connection
                 .packet_sender
                 .send(RawPacket {
-                    id: RegistryDataS2CPacket::ID,
+                    id: RegistryDataS2CPacket::get_id_for_state(ProtocolState::Configuration).unwrap(),
                     data: Bytes::from(packet_data),
                 })
                 .unwrap()
@@ -74,11 +75,11 @@ pub fn configuration_packets(
         });
     }
 
-    if let Some(_packet) = packet.decode::<KnownPacksC2SPacket>() {
+    if let Some(_packet) = packet.decode::<KnownPacksC2SPacket>(*state) {
         connection.send_packet(FinishConfigurationS2CPacket);
     }
 
-    if let Some(_packet) = packet.decode::<AcknowledgeFinishConfigurationC2SPacket>() {
+    if let Some(_packet) = packet.decode::<AcknowledgeFinishConfigurationC2SPacket>(*state) {
         *connection.protocol_state.write().unwrap() = ProtocolState::Play;
         world_join_sender.send_to(entity, PlayerJoinWorldEvent);
     }

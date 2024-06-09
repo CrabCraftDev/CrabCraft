@@ -11,7 +11,8 @@ pub struct HandshakeHandler;
 
 impl HandshakeHandler {
     pub async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error> {
-        if let Some(packet) = raw_packet.decode::<HandshakeC2SPacket>() {
+        let state = *connection.state.read().unwrap();
+        if let Some(packet) = raw_packet.decode::<HandshakeC2SPacket>(state) {
             match packet.next_state {
                 NextState::Status => {
                     let mut state = connection.state.write().unwrap();

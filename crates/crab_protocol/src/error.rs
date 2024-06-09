@@ -1,5 +1,6 @@
 use std::{io, str::Utf8Error};
 
+use crate::protocol::ProtocolState;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -28,4 +29,6 @@ pub enum ProtocolError {
     InvalidFixedBitSetLength(usize, usize),
     #[error("The provided length ({0}) exceeds the maximum allowed length ({1})")]
     InvalidBoundedLength(usize, usize),
+    #[error("Packet {0} doesn't support state {1}!")]
+    InvalidState(String, ProtocolState),
 }

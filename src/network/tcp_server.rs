@@ -20,12 +20,10 @@ use crate::{
 use crate::network::handlers::login_handler::LoginHandler;
 use crate::network::handlers::play_handler::PlayHandler;
 use crate::network::handlers::status_handler::StatusHandler;
+use crab_protocol::buf::{get_var_int_from_stream, ReadByteBuf};
+use crab_protocol::packets::common::KeepAliveResponseC2SPacket;
+use crab_protocol::protocol::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
-use crab_protocol::{
-    buf::{get_var_int_from_stream, ReadByteBuf},
-    packets::play::KeepAliveResponseC2SPacket,
-};
-use crab_protocol::{packet::Packet, protocol::ProtocolState};
 
 pub struct TcpServer {
     address: String,
@@ -139,8 +137,8 @@ impl TcpServer {
                     Ok(())
                 }
                 ProtocolState::Play => {
-                    if raw_packet.id == KeepAliveResponseC2SPacket::ID {
-                        PlayHandler::handle_packet(&mut connection, raw_packet).await
+                    if let Some(packet) = raw_packet.decode::<KeepAliveResponseC2SPacket>(state) {
+                        PlayHandler::handle_keep_alive(&mut connection, packet).await
                     } else {
                         incoming_packets_sender.send(raw_packet).unwrap();
                         Ok(())

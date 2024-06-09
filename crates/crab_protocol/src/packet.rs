@@ -2,21 +2,32 @@ use std::fmt::Debug;
 
 use bytes::{Bytes, BytesMut};
 
-use crab_protocol::buf::WriteByteBuf;
-use crab_protocol::protocol::{PacketDirection, ProtocolState};
-
+use crate::buf::WriteByteBuf;
 use crate::error::ProtocolError;
+use crate::protocol::{PacketDirection, ProtocolState};
 use crate::protocol_serializer::ProtocolSerializer;
 
 pub trait Packet: Sized + Debug + ProtocolSerializer {
-    const ID: i32;
     const SIDE: PacketDirection;
-    const STATE: ProtocolState;
+    const STATE_IDS: &'static [(ProtocolState, i32)];
 
-    fn serialize_packet(&self) -> Result<Bytes, ProtocolError> {
+    fn get_id_for_state(check_state: ProtocolState) -> Option<i32> {
+        Self::STATE_IDS
+            .iter()
+            .find_map(|(state, id)| if *state == check_state { Some(*id) } else { None })
+    }
+
+    fn serialize_packet(&self, state: ProtocolState) -> Result<Bytes, ProtocolError> {
         let mut data = BytesMut::new();
-        data.put_var_int(Self::ID);
-        self.serialize(&mut data)?;
-        Ok(data.freeze())
+        if let Some(id) = Self::get_id_for_state(state) {
+            data.put_var_int(id);
+            self.serialize(&mut data)?;
+            Ok(data.freeze())
+        } else {
+            Err(ProtocolError::InvalidState(
+                std::any::type_name::<Self>().to_string(),
+                state,
+            ))
+        }
     }
 }
