@@ -1,0 +1,15 @@
+use crate::packet::Packet;
+use crate::protocol::{PacketDirection, ProtocolState};
+use crab_protocol_macros::ProtocolSerializer;
+
+use crate::protocol::ProtocolState::*;
+
+#[derive(ProtocolSerializer, Debug, Clone)]
+pub struct PingRequestC2SPacket {
+    pub id: i64,
+}
+
+impl Packet for PingRequestC2SPacket {
+    const SIDE: PacketDirection = PacketDirection::Serverbound;
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x21), (Status, 0x01)];
+}

@@ -9,7 +9,8 @@ pub struct LoginHandler;
 
 impl LoginHandler {
     pub async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<bool, Error> {
-        if let Some(packet) = raw_packet.decode::<LoginStartC2SPacket>() {
+        let state = *connection.state.read().unwrap();
+        if let Some(packet) = raw_packet.decode::<LoginStartC2SPacket>(state) {
             connection
                 .send_packet(LoginSuccessS2CPacket {
                     uuid: packet.player_uuid,
@@ -20,7 +21,7 @@ impl LoginHandler {
                 .await;
         }
 
-        if let Some(_packet) = raw_packet.decode::<LoginAcknowledgedC2SPacket>() {
+        if let Some(_packet) = raw_packet.decode::<LoginAcknowledgedC2SPacket>(state) {
             let mut state = connection.state.write().unwrap();
             *state = ProtocolState::Configuration;
             return Ok(true);

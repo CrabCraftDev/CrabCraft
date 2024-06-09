@@ -1,3 +1,5 @@
+use strum::Display;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum PacketDirection {
     /// Server -> Client
@@ -6,7 +8,7 @@ pub enum PacketDirection {
     Serverbound,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Display)]
 pub enum ProtocolState {
     Handshake,
     Status,

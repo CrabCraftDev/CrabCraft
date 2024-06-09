@@ -1,4 +1,4 @@
-use bytes::BytesMut;
+use bytes::{Bytes, BytesMut};
 
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
@@ -13,9 +13,8 @@ pub struct TestC2S {
 }
 
 impl Packet for TestC2S {
-    const ID: i32 = 0;
     const SIDE: PacketDirection = PacketDirection::Clientbound;
-    const STATE: ProtocolState = ProtocolState::Handshake;
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(ProtocolState::Handshake, 0)];
 }
 
 impl ProtocolSerializer for TestC2S {
@@ -32,13 +31,18 @@ impl ProtocolSerializer for TestC2S {
 }
 
 #[test]
-fn decoding() {
+fn decoding_correct_state() {
     let mut buf = BytesMut::new();
     buf.put_string("hi!");
     let raw_packet = RawPacket::new(0, buf.freeze());
 
-    let decoded = raw_packet.decode::<TestC2S>().unwrap();
-    println!("{:?}", decoded);
+    raw_packet.decode::<TestC2S>(ProtocolState::Handshake).unwrap();
+}
+
+#[test]
+fn decoding_invalid_state() {
+    let raw_packet = RawPacket::new(0, Bytes::from("\0x03hi!"));
+    assert!(raw_packet.decode::<TestC2S>(ProtocolState::Status).is_none());
 }
 
 #[test]
@@ -50,7 +54,7 @@ fn cycle() {
     let mut buf = BytesMut::new();
     packet.serialize(&mut buf).unwrap();
     let raw_packet = RawPacket::new(0, buf.freeze());
-    let decoded = raw_packet.decode::<TestC2S>().unwrap();
+    let decoded = raw_packet.decode::<TestC2S>(ProtocolState::Handshake).unwrap();
 
     assert_eq!(packet, decoded);
 }

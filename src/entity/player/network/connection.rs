@@ -21,7 +21,7 @@ pub struct PlayerConnection {
 
 impl PlayerConnection {
     pub fn send_packet<P: Packet>(&self, packet: P) {
-        match RawPacket::from_packet(packet) {
+        match RawPacket::from_packet(packet, *self.protocol_state.read().unwrap()) {
             Ok(raw_packet) => self
                 .packet_sender
                 .send(raw_packet)

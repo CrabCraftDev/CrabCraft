@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
-use crab_protocol::error::ProtocolError;
-use crab_protocol::protocol_serializer::ProtocolSerializer;
+use crate::buf::{ReadByteBuf, WriteByteBuf};
+use crate::error::ProtocolError;
+use crate::protocol_serializer::ProtocolSerializer;
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;

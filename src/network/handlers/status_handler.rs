@@ -2,11 +2,11 @@ use std::fs;
 
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
+use crab_protocol::packets::common::{PingRequestC2SPacket, PingResponseS2CPacket};
 use log::info;
 
 use crab_protocol::packets::status::{
-    PingRequestC2SPacket, PingResponseS2CPacket, PlayersInfo, ServerInfo, ServerVersion, StatusRequestC2SPacket,
-    StatusResponseS2CPacket,
+    PlayersInfo, ServerInfo, ServerVersion, StatusRequestC2SPacket, StatusResponseS2CPacket,
 };
 use crab_protocol::raw_packet::RawPacket;
 
@@ -21,15 +21,12 @@ pub struct StatusHandler;
 
 impl StatusHandler {
     pub async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error> {
-        if let Some(packet) = raw_packet.decode::<PingRequestC2SPacket>() {
-            connection
-                .send_packet(PingResponseS2CPacket {
-                    payload: packet.payload,
-                })
-                .await;
+        let state = *connection.state.read().unwrap();
+        if let Some(packet) = raw_packet.decode::<PingRequestC2SPacket>(state) {
+            connection.send_packet(PingResponseS2CPacket { id: packet.id }).await;
         }
 
-        if let Some(_packet) = raw_packet.decode::<StatusRequestC2SPacket>() {
+        if let Some(_packet) = raw_packet.decode::<StatusRequestC2SPacket>(state) {
             let server_icon_path = get_server_path().join("server-icon.png");
             let mut favicon = String::new();
             if server_icon_path.exists() {

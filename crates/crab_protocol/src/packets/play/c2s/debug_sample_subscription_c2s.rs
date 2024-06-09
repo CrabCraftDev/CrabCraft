@@ -1,4 +1,4 @@
-use crab_protocol::types::sample_type::SampleType;
+use crate::types::sample_type::SampleType;
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol::ProtocolState::*;

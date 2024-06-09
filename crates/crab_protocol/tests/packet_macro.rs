@@ -22,7 +22,7 @@ fn decoding_macro() {
     buf.put_var_int(2);
     let raw_packet = RawPacket::new(0, buf.freeze());
 
-    let decoded = raw_packet.decode::<TestC2S>().unwrap();
+    let decoded = raw_packet.decode::<TestC2S>(Handshake).unwrap();
     assert_eq!(
         decoded,
         TestC2S {
@@ -42,7 +42,7 @@ fn cycle_macro() {
     let mut buf = BytesMut::new();
     packet.serialize(&mut buf).unwrap();
     let raw_packet = RawPacket::new(0, buf.freeze());
-    let decoded = raw_packet.decode::<TestC2S>().unwrap();
+    let decoded = raw_packet.decode::<TestC2S>(Handshake).unwrap();
 
     assert_eq!(packet, decoded);
 }

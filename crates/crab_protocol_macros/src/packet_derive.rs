@@ -21,9 +21,8 @@ pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
         impl #impl_generics ::crab_protocol::packet::Packet for #name #ty_generics
         #where_clause
         {
-            const ID: i32 = #packet_id;
             const SIDE: ::crab_protocol::protocol::PacketDirection = #side;
-            const STATE: ::crab_protocol::protocol::ProtocolState = #state;
+            const STATE_IDS: &'static [(::crab_protocol::protocol::ProtocolState, i32)] = &[(#state, #packet_id)];
         }
     })
 }

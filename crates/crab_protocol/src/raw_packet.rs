@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 use bytes::{BufMut, Bytes, BytesMut};
 
+use crate::protocol::ProtocolState;
 use crate::{buf::WriteByteBuf, error::ProtocolError, packet::Packet};
 
 #[derive(Debug, Clone)]
@@ -17,8 +18,8 @@ impl RawPacket {
 
     /// Try to decode the raw packet into a packet
     /// Returns None if the packet can't be converted
-    pub fn decode<P: Packet>(&self) -> Option<P> {
-        if self.id != P::ID {
+    pub fn decode<P: Packet>(&self, state: ProtocolState) -> Option<P> {
+        if self.id != P::get_id_for_state(state)? {
             return None;
         }
 
@@ -39,12 +40,12 @@ impl RawPacket {
         data.freeze()
     }
 
-    pub fn from_packet<T: Packet>(value: T) -> Result<Self, ProtocolError> {
+    pub fn from_packet<T: Packet>(value: T, state: ProtocolState) -> Result<Self, ProtocolError> {
         let mut data = BytesMut::new();
         value.serialize(&mut data)?;
         Ok(RawPacket {
             data: data.freeze(),
-            id: T::ID,
+            id: T::get_id_for_state(state).unwrap(),
         })
     }
 }
