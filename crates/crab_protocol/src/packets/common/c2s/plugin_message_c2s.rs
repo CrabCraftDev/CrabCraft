@@ -1,9 +1,8 @@
-use crate::packet::Packet;
-use crate::protocol::PacketDirection;
-use crate::protocol::ProtocolState;
-use crab_protocol_macros::{ProtocolSerializer};
+use crab_protocol_macros::ProtocolSerializer;
 
-use crate::protocol::ProtocolState::*;
+use crate::packet::Packet;
+use crate::protocol_state::ProtocolState;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::bytes::EndBytes;
 use crate::types::identifier::Identifier;
 
@@ -15,6 +14,5 @@ pub struct PluginMessageC2SPacket {
 }
 
 impl Packet for PluginMessageC2SPacket {
-    const SIDE: PacketDirection = PacketDirection::Serverbound;
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x02), (Play, 0x12)];
 }

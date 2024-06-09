@@ -12,7 +12,7 @@ use tokio::net::TcpStream;
 use crab_protocol::packet::Packet;
 use crab_protocol::packets::common::{DisconnectS2CPacket, KeepAliveS2CPacket};
 use crab_protocol::packets::login::LoginDisconnectS2CPacket;
-use crab_protocol::protocol::ProtocolState;
+use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::{buf::to_var_int, raw_packet::RawPacket};
 
 use crate::utils::errors::Error;

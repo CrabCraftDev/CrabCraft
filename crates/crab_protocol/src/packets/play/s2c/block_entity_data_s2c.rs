@@ -2,7 +2,7 @@ use crab_nbt::Nbt;
 
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-use crate::protocol::ProtocolState::*;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::block_position::BlockPosition;
 use crate::types::varint::VarInt;
 

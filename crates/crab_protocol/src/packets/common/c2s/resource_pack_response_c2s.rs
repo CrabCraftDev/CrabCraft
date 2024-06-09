@@ -1,11 +1,11 @@
-use crate::packet::Packet;
-use crate::protocol::{PacketDirection, ProtocolState};
 use strum::FromRepr;
 use uuid::Uuid;
 
 use crab_protocol_macros::ProtocolSerializer;
 
-use crate::protocol::ProtocolState::*;
+use crate::packet::Packet;
+use crate::protocol_state::ProtocolState;
+use crate::protocol_state::ProtocolState::*;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct ResourcePackResponseC2SPacket {
@@ -26,6 +26,5 @@ pub enum ResourcePackStatus {
 }
 
 impl Packet for ResourcePackResponseC2SPacket {
-    const SIDE: PacketDirection = PacketDirection::Serverbound;
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x06), (Play, 0x2B)];
 }

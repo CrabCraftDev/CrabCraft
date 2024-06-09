@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
+use crab_protocol_macros::{Packet, ProtocolSerializer};
+
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
-use crab_protocol_macros::{Packet, ProtocolSerializer};
-
-use crate::protocol::ProtocolState::*;
+use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x00, state = Status)]

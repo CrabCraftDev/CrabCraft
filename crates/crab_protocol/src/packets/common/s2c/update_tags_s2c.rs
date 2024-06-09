@@ -1,12 +1,12 @@
-use crate::packet::Packet;
-use crate::protocol::{PacketDirection, ProtocolState};
-use crate::types::varint::VarInt;
 use std::collections::HashMap;
 
 use crab_protocol_macros::ProtocolSerializer;
 
-use crate::protocol::ProtocolState::*;
+use crate::packet::Packet;
+use crate::protocol_state::ProtocolState;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::identifier::Identifier;
+use crate::types::varint::VarInt;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct UpdateTagsS2CPacket {
@@ -21,6 +21,5 @@ pub struct Tag {
 }
 
 impl Packet for UpdateTagsS2CPacket {
-    const SIDE: PacketDirection = PacketDirection::Clientbound;
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x78), (Configuration, 0x0D)];
 }

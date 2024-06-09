@@ -1,10 +1,11 @@
-use crate::packet::Packet;
-use crate::protocol::{PacketDirection, ProtocolState};
 use bitfield_struct::bitfield;
-use crab_protocol_macros::ProtocolSerializer;
 use strum::FromRepr;
 
-use crate::protocol::ProtocolState::*;
+use crab_protocol_macros::ProtocolSerializer;
+
+use crate::packet::Packet;
+use crate::protocol_state::ProtocolState;
+use crate::protocol_state::ProtocolState::*;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct ClientInformationC2SPacket {
@@ -47,6 +48,5 @@ pub struct DisplayedSkinParts {
 }
 
 impl Packet for ClientInformationC2SPacket {
-    const SIDE: PacketDirection = PacketDirection::Serverbound;
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x0A), (Configuration, 0x00)];
 }

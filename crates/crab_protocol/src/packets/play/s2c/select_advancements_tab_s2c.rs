@@ -1,6 +1,6 @@
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-use crate::protocol::ProtocolState::*;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::identifier::Identifier;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]

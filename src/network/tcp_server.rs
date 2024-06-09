@@ -22,7 +22,7 @@ use crate::network::handlers::play_handler::PlayHandler;
 use crate::network::handlers::status_handler::StatusHandler;
 use crab_protocol::buf::{get_var_int_from_stream, ReadByteBuf};
 use crab_protocol::packets::common::KeepAliveResponseC2SPacket;
-use crab_protocol::protocol::ProtocolState;
+use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
 
 pub struct TcpServer {

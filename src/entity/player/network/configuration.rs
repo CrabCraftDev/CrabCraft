@@ -6,7 +6,7 @@ use crab_protocol::{
         AcknowledgeFinishConfigurationC2SPacket, FinishConfigurationS2CPacket, KnownPacksC2SPacket,
         KnownPacksS2CPacket, RegistryDataS2CPacket,
     },
-    protocol::ProtocolState,
+    protocol_state::ProtocolState,
     protocol_serializer::ProtocolSerializer,
     raw_packet::RawPacket,
     types::{identifier::Identifier, known_pack::KnownPack},

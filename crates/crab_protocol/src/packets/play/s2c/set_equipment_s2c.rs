@@ -7,8 +7,8 @@ use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
-use crate::protocol::ProtocolState::*;
 use crate::protocol_serializer::ProtocolSerializer;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::item_stack::ItemStack;
 use crate::types::varint::VarInt;
 

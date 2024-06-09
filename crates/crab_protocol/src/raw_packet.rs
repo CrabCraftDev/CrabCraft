@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use bytes::{BufMut, Bytes, BytesMut};
 
-use crate::protocol::ProtocolState;
+use crate::protocol_state::ProtocolState;
 use crate::{buf::WriteByteBuf, error::ProtocolError, packet::Packet};
 
 #[derive(Debug, Clone)]

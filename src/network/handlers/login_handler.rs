@@ -1,5 +1,5 @@
 use crab_protocol::packets::login::{LoginAcknowledgedC2SPacket, LoginStartC2SPacket, LoginSuccessS2CPacket};
-use crab_protocol::protocol::ProtocolState;
+use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
 
 use crate::network::connection::Connection;
