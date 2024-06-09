@@ -1,8 +1,8 @@
-use crate::packet::Packet;
-use crate::protocol::{PacketDirection, ProtocolState};
 use crab_protocol_macros::ProtocolSerializer;
 
-use crate::protocol::ProtocolState::*;
+use crate::packet::Packet;
+use crate::protocol_state::ProtocolState;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::bytes::EndBytes;
 use crate::types::identifier::Identifier;
 
@@ -14,6 +14,5 @@ pub struct PluginMessageS2CPacket {
 }
 
 impl Packet for PluginMessageS2CPacket {
-    const SIDE: PacketDirection = PacketDirection::Clientbound;
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x01), (Play, 0x19)];
 }

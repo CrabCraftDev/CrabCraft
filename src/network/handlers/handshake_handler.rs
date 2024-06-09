@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 
 use crab_protocol::packets::handshake::{HandshakeC2SPacket, NextState};
-use crab_protocol::protocol::ProtocolState;
+use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
 
 use crate::{mc_server::SERVER_PROTOCOL_VERSION, network::connection::Connection};

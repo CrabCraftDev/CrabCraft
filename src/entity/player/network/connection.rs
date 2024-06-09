@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crab_protocol::{packet::Packet, protocol::ProtocolState, raw_packet::RawPacket};
+use crab_protocol::{packet::Packet, protocol_state::ProtocolState, raw_packet::RawPacket};
 use crossbeam::sync::ShardedLock;
 use evenio::{
     component::Component,

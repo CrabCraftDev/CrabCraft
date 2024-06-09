@@ -3,8 +3,8 @@ use bytes::{Bytes, BytesMut};
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::packet::Packet;
-use crab_protocol::protocol::{PacketDirection, ProtocolState};
 use crab_protocol::protocol_serializer::ProtocolSerializer;
+use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
 
 #[derive(Debug, PartialEq)]
@@ -13,7 +13,6 @@ pub struct TestC2S {
 }
 
 impl Packet for TestC2S {
-    const SIDE: PacketDirection = PacketDirection::Clientbound;
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(ProtocolState::Handshake, 0)];
 }
 

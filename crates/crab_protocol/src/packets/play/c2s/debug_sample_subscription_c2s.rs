@@ -1,7 +1,7 @@
-use crate::types::sample_type::SampleType;
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-use crate::protocol::ProtocolState::*;
+use crate::protocol_state::ProtocolState::*;
+use crate::types::sample_type::SampleType;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x13, state = Configuration)]

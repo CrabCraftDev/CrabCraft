@@ -5,7 +5,7 @@ use strum::FromRepr;
 
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
-use crate::protocol::ProtocolState::*;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::identifier::Identifier;
 use crate::types::text::TextComponent;
 

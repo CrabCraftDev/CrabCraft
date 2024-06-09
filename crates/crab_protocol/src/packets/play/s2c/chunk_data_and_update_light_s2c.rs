@@ -6,8 +6,8 @@ use crab_protocol_macros::{Packet, ProtocolSerializer};
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::packets::play::s2c::update_light_s2c::LightData;
-use crate::protocol::ProtocolState::*;
 use crate::protocol_serializer::ProtocolSerializer;
+use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x27, state = Play)]

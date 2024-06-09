@@ -1,6 +1,6 @@
 use std::{io, str::Utf8Error};
 
-use crate::protocol::ProtocolState;
+use crate::protocol_state::ProtocolState;
 use thiserror::Error;
 
 #[derive(Debug, Error)]

@@ -1,4 +1,4 @@
-use proc_macro2::{Span, TokenStream};
+use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{parse2, DeriveInput, Error, Expr, Result};
 
@@ -10,7 +10,6 @@ pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
     let name = input.ident;
 
     let packet_id: Expr = packet_args.id.unwrap();
-    let side = determine_side(&name.to_string(), &packet_args.span)?;
     let state = packet_args
         .state
         .ok_or_else(|| Error::new(packet_args.span, "State not provided for packet"))?;
@@ -21,18 +20,7 @@ pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
         impl #impl_generics ::crab_protocol::packet::Packet for #name #ty_generics
         #where_clause
         {
-            const SIDE: ::crab_protocol::protocol::PacketDirection = #side;
-            const STATE_IDS: &'static [(::crab_protocol::protocol::ProtocolState, i32)] = &[(#state, #packet_id)];
+            const STATE_IDS: &'static [(::crab_protocol::protocol_state::ProtocolState, i32)] = &[(#state, #packet_id)];
         }
     })
-}
-
-fn determine_side(name: &str, span: &Span) -> Result<TokenStream> {
-    if name.contains("S2C") {
-        Ok(quote!(::crab_protocol::protocol::PacketDirection::Clientbound))
-    } else if name.contains("C2S") {
-        Ok(quote!(::crab_protocol::protocol::PacketDirection::Serverbound))
-    } else {
-        Err(Error::new(*span, "Packet name doesn't contain S2C or C2S"))
-    }
 }

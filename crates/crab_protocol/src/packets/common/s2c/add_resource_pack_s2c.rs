@@ -1,10 +1,10 @@
-use crate::packet::Packet;
-use crate::protocol::{PacketDirection, ProtocolState};
 use uuid::Uuid;
 
 use crab_protocol_macros::ProtocolSerializer;
 
-use crate::protocol::ProtocolState::*;
+use crate::packet::Packet;
+use crate::protocol_state::ProtocolState;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::text::TextComponent;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
@@ -19,6 +19,5 @@ pub struct AddResourcePackS2CPacket {
 }
 
 impl Packet for AddResourcePackS2CPacket {
-    const SIDE: PacketDirection = PacketDirection::Clientbound;
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x09), (Play, 0x46)];
 }

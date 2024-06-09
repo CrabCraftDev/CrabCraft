@@ -3,7 +3,7 @@ use bitfield_struct::bitfield;
 use crab_protocol_macros::{Packet, ProtocolSerializer};
 
 use crate::packets::play::LastDeathLocation;
-use crate::protocol::ProtocolState::*;
+use crate::protocol_state::ProtocolState::*;
 use crate::types::game_mode::GameMode;
 use crate::types::game_mode::OptionalGameMode;
 use crate::types::identifier::Identifier;
