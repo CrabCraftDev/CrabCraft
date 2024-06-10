@@ -1,8 +1,8 @@
 use bytes::BytesMut;
 
 use crab_protocol::buf::WriteByteBuf;
-use crab_protocol::protocol_state::ProtocolState::Handshake;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
+use crab_protocol::protocol_state::ProtocolState::Handshake;
 use crab_protocol::raw_packet::RawPacket;
 use crab_protocol::types::varint::VarInt;
 use crab_protocol_macros::{Packet, ProtocolSerializer};
