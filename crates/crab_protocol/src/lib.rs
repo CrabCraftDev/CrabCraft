@@ -5,7 +5,7 @@ pub mod buf;
 pub mod error;
 pub mod packet;
 pub mod packets;
-pub mod protocol_state;
 pub mod protocol_serializer;
+pub mod protocol_state;
 pub mod raw_packet;
 pub mod types;
