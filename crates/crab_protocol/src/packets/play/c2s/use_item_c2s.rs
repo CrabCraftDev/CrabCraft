@@ -10,4 +10,6 @@ pub struct UseItemC2SPacket {
     pub hand: Hand,
     #[protocol_attribute(protocol_type = VarInt)]
     pub sequence: i32,
+    pub yaw: f32,
+    pub pitch: f32,
 }
