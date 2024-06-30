@@ -1,3 +1,4 @@
+use crate::chunks::chunk::{Chunk, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::{
@@ -10,10 +11,10 @@ use crab_protocol::{
         bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, identifier::Identifier, position::Position,
     },
 };
+use crab_registry::blocks::{Bedrock, Dirt, GrassBlock, RedstoneWire};
+use crab_registry::Block;
 use evenio::event::{Receiver, TargetedEvent};
 use log::info;
-
-use crate::chunks::chunk::{Chunk, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 
 use super::connection::PlayerConnection;
 
@@ -64,11 +65,12 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
     let grass_section = &mut normal_chunk.sections[0];
     for i in 0..16 {
         for j in 0..16 {
-            grass_section.set(i, 4, j, 9);
-            grass_section.set(i, 3, j, 10);
-            grass_section.set(i, 2, j, 10);
-            grass_section.set(i, 1, j, 10);
-            grass_section.set(i, 0, j, 79);
+            grass_section.set(i, 5, j, RedstoneWire::default().get_state() as u16);
+            grass_section.set(i, 4, j, GrassBlock::default().get_state() as u16);
+            grass_section.set(i, 3, j, Dirt.get_state() as u16);
+            grass_section.set(i, 2, j, Dirt.get_state() as u16);
+            grass_section.set(i, 1, j, Dirt.get_state() as u16);
+            grass_section.set(i, 0, j, Bedrock.get_state() as u16);
         }
     }
 

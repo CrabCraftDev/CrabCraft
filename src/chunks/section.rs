@@ -2,6 +2,8 @@ use crate::chunks::chunk::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_I
 use crate::chunks::paletted_container::{BIOMES_CONTAINER, BLOCKS_CONTAINER};
 use crate::utils::errors::Error;
 use bytes::{BufMut, Bytes, BytesMut};
+use crab_registry::blocks::Air;
+use crab_registry::Block;
 
 /// Chunk section is a 16×16×16 collection of blocks.
 /// It stores blocks and biomes in a [paletted](PalettedContainer) format.
@@ -72,7 +74,7 @@ impl Default for ChunkSection {
     fn default() -> Self {
         const PLAINS_BIOME_ID: u8 = 39;
         Self::new(
-            [0; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
+            [Air.get_state() as u16; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
             [PLAINS_BIOME_ID; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
         )
     }
