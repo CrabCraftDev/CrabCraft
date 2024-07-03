@@ -1,9 +1,10 @@
 use crate::chunks::chunk::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
 use crate::chunks::paletted_container::{BIOMES_CONTAINER, BLOCKS_CONTAINER};
 use crate::utils::errors::Error;
+use crate::REGISTRY;
 use bytes::{BufMut, Bytes, BytesMut};
-use crab_registry::blocks::Air;
-use crab_registry::Block;
+use crab_protocol::types::identifier::Identifier;
+use crab_registry::blocks::{Air, Block};
 
 /// Chunk section is a 16×16×16 collection of blocks.
 /// It stores blocks and biomes in a [paletted](PalettedContainer) format.
@@ -72,10 +73,16 @@ impl ChunkSection {
 
 impl Default for ChunkSection {
     fn default() -> Self {
-        const PLAINS_BIOME_ID: u8 = 39;
+        let registry = &REGISTRY.read().unwrap();
+        let biome_registry_identifier = Identifier::minecraft("worldgen/biome").unwrap();
+        let plains_biome_namespace = Identifier::minecraft("plains").unwrap();
+
+        let plains_biome_id = registry
+            .get_numeric_id(&biome_registry_identifier, &plains_biome_namespace)
+            .unwrap() as u8;
         Self::new(
             [Air.get_state() as u16; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
-            [PLAINS_BIOME_ID; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
+            [plains_biome_id; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
         )
     }
 }

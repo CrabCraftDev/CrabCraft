@@ -16,7 +16,7 @@ struct Property {
     values: Vec<String>,
 }
 
-const BLOCKS: &str = include_str!("../../../assets/registry/blocks.json");
+const BLOCKS: &str = include_str!("../../../assets/blocks.json");
 
 pub fn generate() -> TokenStream {
     println!("cargo::rerun-if-changed=assets/registry/blocks.json");
@@ -101,8 +101,6 @@ pub fn generate() -> TokenStream {
     }
 
     quote! {
-        use crate::Block;
-
         /// Returns a block with correct properties by state id.
         pub fn get_block(state_id: u32) -> Option<Box<dyn Block>> {
             #[allow(clippy::identity_op)]
@@ -160,7 +158,7 @@ fn process_states(
         properties_names.push(format_ident!("{}", property_name));
 
         if property.values == ["true", "false"] {
-            used_property_enums.push(quote!(crate::BooleanProperty));
+            used_property_enums.push(quote!(crate::blocks::BooleanProperty));
             continue;
         }
 

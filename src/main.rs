@@ -1,11 +1,12 @@
+use crate::mc_server::McServer;
 use chrono::Local;
+use crab_registry::RegistryLoader;
+use crossbeam::sync::ShardedLock;
+use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
 use std::panic;
 use std::process::exit;
-
 use utils::logger::Logger;
-
-use crate::mc_server::McServer;
 
 mod chunks;
 mod entity;
@@ -13,6 +14,10 @@ mod mc_server;
 mod network;
 mod utils;
 mod world;
+
+lazy_static! {
+    static ref REGISTRY: ShardedLock<RegistryLoader> = ShardedLock::new(RegistryLoader::default());
+}
 
 #[tokio::main]
 async fn main() {

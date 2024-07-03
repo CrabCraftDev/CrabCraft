@@ -11,8 +11,7 @@ use crab_protocol::{
         bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, identifier::Identifier, position::Position,
     },
 };
-use crab_registry::blocks::{Bedrock, Dirt, GrassBlock, RedstoneWire};
-use crab_registry::Block;
+use crab_registry::blocks::{Bedrock, Block, Dirt, GrassBlock, RedstoneWire};
 use evenio::event::{Receiver, TargetedEvent};
 use log::info;
 

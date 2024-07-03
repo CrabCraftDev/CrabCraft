@@ -1,34 +1,56 @@
-use std::fmt::Debug;
+use crab_protocol::types::identifier::Identifier;
+use include_dir::{include_dir, Dir};
+use std::collections::HashMap;
+use std::path::Path;
 
-use strum::FromRepr;
+pub mod blocks;
 
-pub mod blocks {
-    include!(concat!(env!("OUT_DIR"), "/blocks.rs"));
+/// RegistryLoader is a struct that holds all dynamic registries like biomes.
+/// Default data is obtained from the assets/datapack directory.
+#[derive(Debug)]
+pub struct RegistryLoader {
+    pub data: HashMap<Identifier, Vec<Identifier>>,
 }
 
-pub trait Block: Debug {
-    /// Gets current Block state based on set fields. Used mostly in protocol
-    fn get_state(&self) -> u32;
+impl RegistryLoader {
+    pub fn new(data: HashMap<Identifier, Vec<Identifier>>) -> Self {
+        Self { data }
+    }
 
-    /// Returns a block with correct properties by local state id.
-    /// Probably you should use `get_block` function instead.
-    fn from_local_state(state: u32) -> Option<Self>
-    where
-        Self: Sized;
-}
+    pub fn get_numeric_id(&self, namespace: &Identifier, entry: &Identifier) -> Option<usize> {
+        let entries = self.data.get(namespace)?;
+        entries.iter().position(|x| x == entry)
+    }
 
-#[derive(Debug, Clone, Copy, PartialEq, Hash, FromRepr)]
-pub enum BooleanProperty {
-    True,
-    False,
-}
+    fn find_registry_files(root_dir: &Dir) -> HashMap<Identifier, Vec<Identifier>> {
+        let mut result = HashMap::new();
 
-impl From<bool> for BooleanProperty {
-    fn from(value: bool) -> Self {
-        if value {
-            BooleanProperty::True
-        } else {
-            BooleanProperty::False
+        for dir in root_dir.dirs() {
+            let mut names = Vec::new();
+            for file in dir.files() {
+                let path = Path::new(file.path());
+                if let Some(stem) = path.file_stem() {
+                    names.push(Identifier::minecraft(&stem.to_string_lossy()).unwrap());
+                }
+            }
+
+            for (key, value) in Self::find_registry_files(dir) {
+                result.insert(key, value);
+            }
+
+            let dir_identifier = Identifier::minecraft(&dir.path().to_string_lossy()).unwrap();
+            result.insert(dir_identifier, names);
         }
+
+        result.retain(|_, v| !v.is_empty());
+        result
+    }
+}
+
+impl Default for RegistryLoader {
+    fn default() -> Self {
+        let root_dir = include_dir!("$CARGO_MANIFEST_DIR/../../assets/datapack");
+        let data = Self::find_registry_files(&root_dir);
+        Self::new(data)
     }
 }
