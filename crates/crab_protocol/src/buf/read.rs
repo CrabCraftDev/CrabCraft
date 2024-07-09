@@ -8,51 +8,43 @@ use crate::protocol_serializer::ProtocolSerializer;
 use super::CONTINUE_BIT;
 use super::SEGMENT_BITS;
 
-pub trait ReadByteBuf: Buf + Sized {
-    fn get_var_int(&mut self) -> Result<i32, ProtocolError> {
-        let mut value: i32 = 0;
+/// Function-like macro for reading varints and varlongs from various sources.  
+///  
+/// # Arguments
+/// - `i32` or `i64`: For varint and varlong respectively  
+/// - Expression that returns the next byte when called each time  
+///  
+/// # Returns  
+/// - `Result<i32/i64, ProtocolError>`
+macro_rules! get_var_num {
+    ($num_type:ty, $getter:expr) => {{
+        let mut value: $num_type = 0;
         let mut position: i8 = 0;
-        let mut current_byte: i8;
-
         loop {
-            current_byte = self.get_i8();
-            value |= (current_byte as i32 & SEGMENT_BITS) << position;
+            let current_byte = $getter;
 
-            if (current_byte as i32 & CONTINUE_BIT) == 0 {
-                break;
+            value |= (current_byte as $num_type & SEGMENT_BITS as $num_type) << position;
+            if (current_byte as $num_type & CONTINUE_BIT as $num_type) == 0 {
+                break Result::<$num_type, ProtocolError>::Ok(value);
             }
 
             position += 7;
-
-            if position > 31 {
-                return Err(ProtocolError::TooBigVarInt(32, position + 1));
+            if position >= <$num_type>::BITS as i8 {
+                break Result::<$num_type, ProtocolError>::Err(ProtocolError::TooBigVarInt(32, position + 1).into());
             }
         }
+    }};
+}
 
-        Ok(value)
+pub(crate) use get_var_num;
+
+pub trait ReadByteBuf: Buf + Sized {
+    fn get_var_int(&mut self) -> Result<i32, ProtocolError> {
+        get_var_num!(i32, self.get_i8())
     }
 
     fn get_var_long(&mut self) -> Result<i64, ProtocolError> {
-        let mut value: i64 = 0;
-        let mut position: i8 = 0;
-        let mut current_byte: i8;
-
-        loop {
-            current_byte = self.get_i8();
-            value |= (current_byte as i64 & SEGMENT_BITS as i64) << position;
-
-            if (current_byte as i64 & CONTINUE_BIT as i64) == 0 {
-                break;
-            }
-
-            position += 7;
-
-            if position > 63 {
-                return Err(ProtocolError::TooBigVarInt(64, position + 1));
-            }
-        }
-
-        Ok(value)
+        get_var_num!(i64, self.get_i8())
     }
 
     fn get_string(&mut self) -> Result<String, ProtocolError> {

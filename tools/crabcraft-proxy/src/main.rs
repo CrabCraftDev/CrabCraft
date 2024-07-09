@@ -8,7 +8,7 @@ use tokio::{
     select,
 };
 
-use crab_protocol::buf::{get_var_int_from_stream, to_var_int, ReadByteBuf};
+use crab_protocol::buf::{packet_from_stream, ReadByteBuf, WriteByteBuf};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -80,22 +80,17 @@ async fn transfer_data(
     receiver: &mut (impl AsyncReadExt + Unpin),
     sender: &mut (impl AsyncWriteExt + Unpin),
 ) -> Result<(), Box<dyn std::error::Error>> {
-    while let Ok(len) = get_var_int_from_stream(receiver).await {
-        let mut buffer = vec![0; len as usize];
-        if let Ok(0) = receiver.read_exact(&mut buffer).await {
-            break;
-        }
-
-        let id = buffer.clone().as_slice().get_var_int().unwrap();
+    while let Ok(Some(mut buffer)) = packet_from_stream(receiver).await {
+        let id = buffer.get_var_int().unwrap();
 
         if buffer.len() >= args.maximum_packet_print_size as usize {
             println!("[{direction}] {id:X}: Packet is too big to be printed!");
         } else {
-            let buffer_str = BytesMut::from(buffer.as_slice()).freeze();
-            println!("[{direction}] {id:X}: {buffer_str:?}");
+            println!("[{direction}] {id:X}: {buffer:?}");
         }
 
-        let mut full_packet = BytesMut::from_iter(to_var_int(len));
+        let mut full_packet = BytesMut::new();
+        full_packet.put_var_int(buffer.len().try_into().unwrap());
         full_packet.extend_from_slice(&buffer);
 
         sender.write_all(&full_packet).await?;

@@ -9,9 +9,9 @@ use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
 
 use crate::{
-    entity::player::{network::connection::PlayerConnection, Player},
-    network::tcp_server::TcpServer,
-    world,
+    entity::player::Player,
+    network::{connection::NetworkConnection, tcp_server::TcpServer},
+    world::{self, ServerShutdown},
 };
 use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
 
@@ -30,13 +30,13 @@ pub struct McServer {
     tcp_server: Arc<TcpServer>,
     overload_warning_cooldown: Instant,
     world: World,
-    player_connection_receiver: Receiver<PlayerConnection>,
+    new_connection_receiver: Receiver<NetworkConnection>,
 }
 
 impl McServer {
     pub fn new(ip_address: String) -> McServer {
-        let (player_connection_sender, player_connection_receiver) = kanal::unbounded();
-        let tcp_server = TcpServer::new(ip_address, player_connection_sender);
+        let (new_connection_sender, new_connection_receiver) = kanal::unbounded();
+        let tcp_server = TcpServer::new(ip_address, new_connection_sender);
 
         McServer {
             running: true,
@@ -45,7 +45,7 @@ impl McServer {
             scheduler: ServerScheduler::default(),
             overload_warning_cooldown: Instant::now(),
             world: world::new(),
-            player_connection_receiver,
+            new_connection_receiver,
         }
     }
 
@@ -96,17 +96,13 @@ impl McServer {
     pub async fn tick(&mut self) {
         self.current_tick += 1;
 
-        while let Some(connection) = self.player_connection_receiver.try_recv().unwrap() {
-            let entity = self.world.spawn();
-            self.world.insert(entity, Player);
-            self.world.insert(entity, connection);
+        while let Some(connection) = self.new_connection_receiver.try_recv().unwrap() {
+            Player::spawn(&mut self.world, connection);
         }
 
         self.world.send(WorldTick);
 
         self.scheduler.tick();
-
-        self.tcp_server.tick().await;
     }
 
     pub fn shutdown(&mut self) {
@@ -121,11 +117,7 @@ impl McServer {
             return;
         }
 
-        let connections = &self.tcp_server.connections.lock().await;
-        for connection in connections.iter() {
-            let mut connection = connection.lock().await;
-            connection.disconnect("Server shutting down!").await;
-        }
+        self.world.send(ServerShutdown);
 
         info!("CrabCraft stopped! Bye!")
     }
