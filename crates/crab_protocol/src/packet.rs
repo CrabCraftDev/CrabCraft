@@ -1,32 +1,21 @@
 use std::fmt::Debug;
 
-use bytes::{Bytes, BytesMut};
-
-use crate::buf::WriteByteBuf;
-use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState;
 
 pub trait Packet: Sized + Debug + ProtocolSerializer {
     const STATE_IDS: &'static [(ProtocolState, i32)];
+}
 
-    fn get_id_for_state(check_state: ProtocolState) -> Option<i32> {
-        Self::STATE_IDS
-            .iter()
-            .find_map(|(state, id)| if *state == check_state { Some(*id) } else { None })
-    }
-
-    fn serialize_packet(&self, state: ProtocolState) -> Result<Bytes, ProtocolError> {
-        let mut data = BytesMut::new();
-        if let Some(id) = Self::get_id_for_state(state) {
-            data.put_var_int(id);
-            self.serialize(&mut data)?;
-            Ok(data.freeze())
-        } else {
-            Err(ProtocolError::InvalidState(
-                std::any::type_name::<Self>().to_string(),
-                state,
-            ))
+pub const fn get_id_for_state<P: Packet>(check_state: ProtocolState) -> Option<i32> {
+    let length = P::STATE_IDS.len();
+    let mut index = 0;
+    while index < length {
+        let (state, id) = P::STATE_IDS[index];
+        if state as isize == check_state as isize {
+            return Some(id);
         }
+        index += 1;
     }
+    None
 }

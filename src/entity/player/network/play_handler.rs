@@ -1,4 +1,4 @@
-use super::connection::PlayerConnection;
+use crate::network::connection::NetworkConnection;
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::{
@@ -22,7 +22,7 @@ use log::info;
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
 
-pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>) {
+pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &NetworkConnection>) {
     let connection = receiver.query;
 
     connection.send_packet(GameJoinS2CPacket {

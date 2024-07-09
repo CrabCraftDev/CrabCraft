@@ -10,29 +10,19 @@ use super::SEGMENT_BITS;
 
 pub trait WriteByteBuf: BufMut + Sized {
     fn put_var_int(&mut self, mut value: i32) {
-        loop {
-            if (value & !SEGMENT_BITS) == 0 {
-                self.put_i8(value as i8);
-                return;
-            }
-
+        while (value & !SEGMENT_BITS) != 0 {
             self.put_i8(((value & SEGMENT_BITS) | CONTINUE_BIT) as i8);
-
             value >>= 7;
         }
+        self.put_i8(value as i8);
     }
 
     fn put_var_long(&mut self, mut value: i64) {
-        loop {
-            if (value & !(SEGMENT_BITS as i64)) == 0 {
-                self.put_i8(value as i8);
-                return;
-            }
-
+        while (value & !SEGMENT_BITS as i64) != 0 {
             self.put_i8(((value & SEGMENT_BITS as i64) | CONTINUE_BIT as i64) as i8);
-
             value >>= 7;
         }
+        self.put_i8(value as i8);
     }
 
     fn put_string(&mut self, data: &str) {

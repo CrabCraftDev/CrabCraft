@@ -4,45 +4,35 @@ use crab_protocol::packets::handshake::{HandshakeC2SPacket, NextState};
 use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::raw_packet::RawPacket;
 
-use crate::{mc_server::SERVER_PROTOCOL_VERSION, network::connection::Connection};
-use crate::{mc_server::SERVER_VERSION, utils::errors::Error};
+use crate::mc_server::SERVER_VERSION;
+use crate::{mc_server::SERVER_PROTOCOL_VERSION, network::connection::NetworkConnection};
 
-pub struct HandshakeHandler;
+pub fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) {
+    let state = connection.get_state();
+    let Some(packet) = raw_packet.decode::<HandshakeC2SPacket>(state) else {
+        return;
+    };
 
-impl HandshakeHandler {
-    pub async fn handle_packet(connection: &mut Connection, raw_packet: RawPacket) -> Result<(), Error> {
-        let state = *connection.state.read().unwrap();
-        if let Some(packet) = raw_packet.decode::<HandshakeC2SPacket>(state) {
-            match packet.next_state {
-                NextState::Status => {
-                    let mut state = connection.state.write().unwrap();
-                    *state = ProtocolState::Status;
-                }
-                NextState::Login => {
-                    let mut state = connection.state.write().unwrap();
-                    *state = ProtocolState::Login;
-                }
-                NextState::Transfer => {
-                    connection.disconnect("CrabCraft doesn't support transfers!").await;
-                    return Ok(());
-                }
-            };
-
-            if *connection.state.read().unwrap() != ProtocolState::Login
-                || packet.protocol_version == SERVER_PROTOCOL_VERSION
-            {
-                return Ok(());
-            }
-
-            let message = match packet.protocol_version.cmp(&SERVER_PROTOCOL_VERSION) {
-                Ordering::Less => format!("Server is on newer Minecraft version! Use {SERVER_VERSION}"),
-                Ordering::Greater => format!("Server is on older Minecraft version! Use {SERVER_VERSION}"),
-                Ordering::Equal => "".to_string(),
-            };
-            connection.disconnect(&message).await;
-            return Ok(());
+    let next_state = match packet.next_state {
+        NextState::Status => ProtocolState::Status,
+        NextState::Login => ProtocolState::Login,
+        NextState::Transfer => {
+            connection.disconnect("CrabCraft doesn't support transfers!".to_owned());
+            return;
         }
+    };
 
-        Ok(())
+    connection.set_state(next_state);
+
+    if next_state != ProtocolState::Login {
+        return;
     }
+
+    let message = match packet.protocol_version.cmp(&SERVER_PROTOCOL_VERSION) {
+        Ordering::Less => format!("Server is on newer Minecraft version! Use {SERVER_VERSION}"),
+        Ordering::Greater => format!("Server is on older Minecraft version! Use {SERVER_VERSION}"),
+        Ordering::Equal => return,
+    };
+
+    connection.disconnect(message);
 }

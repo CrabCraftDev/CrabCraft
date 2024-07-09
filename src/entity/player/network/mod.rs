@@ -1,3 +1,3 @@
-pub mod configuration;
+pub mod configuration_handler;
 pub mod connection;
-pub mod play;
+pub mod play_handler;
