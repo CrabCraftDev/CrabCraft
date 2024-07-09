@@ -8,7 +8,10 @@ use tokio::{
     select,
 };
 
-use crab_protocol::buf::{get_var_int_from_stream, to_var_int, ReadByteBuf};
+use crab_protocol::{
+    buf::{to_var_int, ReadByteBuf, CONTINUE_BIT, SEGMENT_BITS},
+    error::ProtocolError,
+};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -101,4 +104,25 @@ async fn transfer_data(
         sender.write_all(&full_packet).await?;
     }
     Ok(())
+}
+
+pub async fn get_var_int_from_stream(stream: &mut (impl AsyncReadExt + Unpin)) -> Result<i32, ProtocolError> {
+    let mut value: i32 = 0;
+    let mut position: i8 = 0;
+
+    loop {
+        let current_byte = stream.read_i8().await?;
+
+        value |= (current_byte as i32 & SEGMENT_BITS) << position;
+        if (current_byte as i32 & CONTINUE_BIT) == 0 {
+            break;
+        }
+
+        position += 7;
+        if position >= 32 {
+            return Err(ProtocolError::TooBigVarInt(32, position + 1));
+        }
+    }
+
+    Ok(value)
 }
