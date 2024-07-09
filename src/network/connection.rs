@@ -1,125 +1,177 @@
-use std::{net::SocketAddr, sync::Arc};
+use std::sync::{Arc, Mutex};
 
-use bytes::Bytes;
 use chrono::Local;
 use crab_nbt::NbtTag;
+use crab_protocol::{
+    packet::Packet,
+    packets::{
+        common::{DisconnectS2CPacket, KeepAliveS2CPacket},
+        login::LoginDisconnectS2CPacket,
+    },
+    protocol_state::ProtocolState,
+    raw_packet::RawPacket,
+};
 use crossbeam::sync::ShardedLock;
-use log::{error, info, warn};
+use evenio::component::Component;
+use kanal::{Receiver, Sender};
+use log::{error, warn};
 use serde_json::json;
-use tokio::io::{AsyncWriteExt, WriteHalf};
-use tokio::net::TcpStream;
+use tokio::{io::AsyncWriteExt, net::TcpStream};
 
-use crab_protocol::packet::Packet;
-use crab_protocol::packets::common::{DisconnectS2CPacket, KeepAliveS2CPacket};
-use crab_protocol::packets::login::LoginDisconnectS2CPacket;
-use crab_protocol::protocol_state::ProtocolState;
-use crab_protocol::{buf::to_var_int, raw_packet::RawPacket};
+use crate::network::packet_receiver::PacketReceiver;
 
-use crate::utils::errors::Error;
-
-#[derive(Debug)]
-pub struct Connection {
-    pub(crate) state: Arc<ShardedLock<ProtocolState>>,
-    pub(crate) write_half: WriteHalf<TcpStream>,
-    pub(crate) address: SocketAddr,
-    pub(crate) is_closed: bool,
-    pub(crate) keepalive_pending: bool,
-    pub(crate) last_keepalive_time: i64,
-}
+use super::{keepalive_state::KeepAliveState, packet_transformer::PacketTransformer};
 
 const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
 
-impl Connection {
-    async fn do_send(&mut self, bytes: Bytes) -> Result<(), Error> {
-        let length = bytes.len() as i32;
-        self.write_half.write_all(&to_var_int(length)).await?;
-        self.write_half.write_all(&bytes).await?;
-        Ok(())
+#[derive(Debug, Component, Clone)]
+pub struct NetworkConnection {
+    pub state: Arc<ShardedLock<ProtocolState>>,
+    pub keepalive_state: Arc<Mutex<KeepAliveState>>,
+    pub transformer: PacketTransformer,
+    pub new_player_sender: Sender<NetworkConnection>,
+    pub outgoing_packets_sender: Sender<RawPacket>,
+    pub outgoing_packets_receiver: Receiver<RawPacket>,
+    pub incoming_packets_sender: Sender<RawPacket>,
+    pub incoming_packets_receiver: Receiver<RawPacket>,
+}
+
+impl NetworkConnection {
+    pub fn new(new_player_sender: Sender<NetworkConnection>) -> Self {
+        let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
+        let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
+
+        NetworkConnection {
+            state: Arc::new(ShardedLock::new(ProtocolState::Handshake)),
+            keepalive_state: Arc::new(Mutex::new(KeepAliveState::new())),
+            transformer: PacketTransformer::new(),
+            new_player_sender,
+            outgoing_packets_sender,
+            outgoing_packets_receiver,
+            incoming_packets_sender,
+            incoming_packets_receiver,
+        }
     }
 
-    pub async fn send_packet(&mut self, packet: impl Packet) {
-        let state = *self.state.read().unwrap();
-        match packet.serialize_packet(state) {
-            Ok(bytes) => self.send(bytes).await,
+    pub async fn accept(&self, stream: TcpStream) {
+        let (read_half, mut write_half) = stream.into_split();
+        let mut receiver = PacketReceiver::new(read_half, self.transformer.clone(), self.clone());
+
+        let outgoing_packets_receiver = self.outgoing_packets_receiver.clone();
+
+        let writer_transformer = self.transformer.clone();
+        let writer_connection = self.clone();
+
+        let writer = tokio::spawn(async move {
+            let receiver = outgoing_packets_receiver.to_async();
+            while let Ok(packet) = receiver.recv().await {
+                let bytes = match writer_transformer.encode(packet) {
+                    Ok(bytes) => bytes,
+                    Err(err) => {
+                        error!("Serialization error: {}", err);
+                        writer_connection.close();
+                        break;
+                    }
+                };
+                if (write_half.write_all(&bytes).await).is_err() {
+                    writer_connection.close();
+                }
+            }
+        });
+
+        let reader = tokio::spawn(async move {
+            loop {
+                let packets = match receiver.receive_packets().await {
+                    Ok(packets) => packets,
+                    Err(err) => {
+                        warn!("Error handling packet {:?}!", err);
+                        break;
+                    }
+                };
+                let Some(packets) = packets else {
+                    break;
+                };
+
+                for packet in packets {
+                    receiver.process_packet(packet).await;
+                }
+            }
+            receiver.connection.close()
+        });
+
+        tokio::select! {_ = writer => () , _ = reader => ()};
+    }
+
+    pub fn send_packet<P: Packet>(&self, packet: P) {
+        match RawPacket::try_from_packet(packet, self.get_state()) {
+            Ok(raw_packet) => self
+                .outgoing_packets_sender
+                .send(raw_packet)
+                .expect("Tried to send packet while connection closed"),
             Err(err) => {
                 error!("Serialization error: {}", err);
-                self.close().await;
             }
-        }
+        };
     }
 
-    pub async fn send_raw_packet(&mut self, packet: RawPacket) {
-        self.send(packet.to_bytes()).await;
-    }
-
-    pub async fn send(&mut self, bytes: Bytes) {
-        if self.is_closed {
-            return;
-        }
-
-        let send_result = self.do_send(bytes).await;
-        if send_result.is_err() {
-            self.close().await;
-        }
-    }
-
-    pub async fn disconnect(&mut self, reason: &str) {
-        if self.is_closed {
-            return;
-        }
-
-        let reason = reason.to_string();
-
-        let state = *self.state.read().unwrap();
+    pub fn disconnect(&self, reason: String) {
+        let state = self.get_state();
         match state {
             ProtocolState::Configuration | ProtocolState::Play => {
                 self.send_packet(DisconnectS2CPacket {
                     reason: NbtTag::String(reason.clone()).into(),
-                })
-                .await;
+                });
             }
             ProtocolState::Login => {
                 self.send_packet(LoginDisconnectS2CPacket {
                     reason: json!({"text": reason}).to_string().into(),
-                })
-                .await;
+                });
             }
             _ => {}
         }
-        self.close().await;
+        self.close();
     }
 
-    async fn close(&mut self) {
-        let shutdown_result = self.write_half.shutdown().await;
-        if let Err(err) = shutdown_result {
-            warn!("{}", err.to_string());
-        }
-        self.is_closed = true;
-        info!("Disconnected player!");
+    pub fn close(&self) {
+        self.incoming_packets_sender.close();
+        self.outgoing_packets_sender.close();
     }
 
-    pub async fn keep_connection_alive(&mut self) {
-        let state = *self.state.read().unwrap();
+    pub fn get_state(&self) -> ProtocolState {
+        *self.state.read().unwrap()
+    }
+
+    pub fn set_state(&self, new_state: ProtocolState) {
+        *self.state.write().unwrap() = new_state;
+    }
+
+    pub fn tick(&self) {
+        self.keep_connection_alive();
+    }
+
+    pub fn keep_connection_alive(&self) {
+        let state = self.get_state();
         if state != ProtocolState::Configuration && state != ProtocolState::Play {
             return;
         }
 
+        let mut keepalive_state = self.keepalive_state.lock().unwrap();
+
         let current_time = Local::now().timestamp_millis();
-        if current_time - self.last_keepalive_time < KEEPALIVE_INTERVAL_MS {
+        if current_time - keepalive_state.last_keepalive_time < KEEPALIVE_INTERVAL_MS {
             return;
         }
 
-        if self.keepalive_pending {
-            self.disconnect("Timeout!").await;
+        if keepalive_state.keepalive_pending {
+            self.disconnect("Timeout!".to_owned());
             return;
         }
 
-        self.keepalive_pending = true;
-        self.last_keepalive_time = current_time;
+        keepalive_state.keepalive_pending = true;
+        keepalive_state.last_keepalive_time = current_time;
 
         self.send_packet(KeepAliveS2CPacket {
             keep_alive_id: current_time,
-        })
-        .await;
+        });
     }
 }

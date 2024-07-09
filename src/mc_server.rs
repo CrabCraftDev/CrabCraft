@@ -9,8 +9,8 @@ use tokio::time::{sleep_until, Instant};
 use tokio::{select, signal};
 
 use crate::{
-    entity::player::{network::connection::PlayerConnection, Player},
-    network::tcp_server::TcpServer,
+    entity::player::Player,
+    network::{connection::NetworkConnection, tcp_server::TcpServer},
     world,
 };
 use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
@@ -28,7 +28,7 @@ pub struct McServer {
     tcp_server: Arc<TcpServer>,
     overload_warning_cooldown: Instant,
     world: World,
-    player_connection_receiver: Receiver<PlayerConnection>,
+    player_connection_receiver: Receiver<NetworkConnection>,
 }
 
 impl McServer {
@@ -116,10 +116,9 @@ impl McServer {
             return;
         }
 
-        let connections = &self.tcp_server.connections.lock().await;
+        let connections = &self.tcp_server.connections.lock().unwrap();
         for connection in connections.iter() {
-            let mut connection = connection.lock().await;
-            connection.disconnect("Server shutting down!").await;
+            connection.disconnect("Server shutting down!".to_owned());
         }
 
         info!("CrabCraft stopped! Bye!")

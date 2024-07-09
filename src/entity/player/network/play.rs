@@ -1,4 +1,7 @@
-use crate::chunks::chunk::{Chunk, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
+use crate::{
+    chunks::chunk::{Chunk, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, CHUNK_SECTIONS_PER_WORLD_HEIGHT},
+    network::connection::NetworkConnection,
+};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::{
@@ -15,12 +18,10 @@ use crab_registry::blocks::{Bedrock, Dirt, GrassBlock};
 use evenio::event::{Receiver, TargetedEvent};
 use log::info;
 
-use super::connection::PlayerConnection;
-
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
 
-pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>) {
+pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &NetworkConnection>) {
     let connection = receiver.query;
 
     connection.send_packet(GameJoinS2CPacket {

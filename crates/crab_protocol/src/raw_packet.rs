@@ -40,12 +40,19 @@ impl RawPacket {
         data.freeze()
     }
 
-    pub fn from_packet<T: Packet>(value: T, state: ProtocolState) -> Result<Self, ProtocolError> {
+    pub fn try_from_packet<P: Packet>(value: P, state: ProtocolState) -> Result<Self, ProtocolError> {
         let mut data = BytesMut::new();
         value.serialize(&mut data)?;
+        let Some(id) = P::get_id_for_state(state) else {
+            return Err(ProtocolError::InvalidState(
+                std::any::type_name::<Self>().to_string(),
+                state,
+            ));
+        };
+
         Ok(RawPacket {
             data: data.freeze(),
-            id: T::get_id_for_state(state).unwrap(),
+            id,
         })
     }
 }

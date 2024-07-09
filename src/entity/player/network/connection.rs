@@ -1,37 +1,12 @@
-use std::sync::Arc;
-
-use crab_protocol::{packet::Packet, protocol_state::ProtocolState, raw_packet::RawPacket};
-use crossbeam::sync::ShardedLock;
+use crab_protocol::{protocol_state::ProtocolState, raw_packet::RawPacket};
 use evenio::{
-    component::Component,
     entity::EntityId,
     event::{Despawn, Receiver, Sender, TargetedEvent},
     fetch::Fetcher,
 };
-use log::{error, info};
+use log::info;
 
-use crate::world::WorldTick;
-
-#[derive(Component)]
-pub struct PlayerConnection {
-    pub protocol_state: Arc<ShardedLock<ProtocolState>>,
-    pub packet_receiver: kanal::Receiver<RawPacket>,
-    pub packet_sender: kanal::Sender<RawPacket>,
-}
-
-impl PlayerConnection {
-    pub fn send_packet<P: Packet>(&self, packet: P) {
-        match RawPacket::from_packet(packet, *self.protocol_state.read().unwrap()) {
-            Ok(raw_packet) => self
-                .packet_sender
-                .send(raw_packet)
-                .expect("Packet to be sent to network thread"),
-            Err(err) => {
-                error!("Serialization error: {}", err);
-            }
-        };
-    }
-}
+use crate::{network::connection::NetworkConnection, world::WorldTick};
 
 #[derive(TargetedEvent)]
 pub struct PacketEvent {
@@ -42,13 +17,13 @@ pub struct PacketEvent {
 pub fn receive_packets(
     _: Receiver<WorldTick>,
     mut event_sender: Sender<(PacketEvent, PlayerDisconnectedEvent)>,
-    players: Fetcher<(EntityId, &PlayerConnection)>,
+    players: Fetcher<(EntityId, &NetworkConnection)>,
 ) {
     for (entity, player_connection) in players {
         loop {
-            match player_connection.packet_receiver.try_recv() {
+            match player_connection.incoming_packets_receiver.try_recv() {
                 Ok(Some(packet)) => {
-                    let protcol_state = *player_connection.protocol_state.read().unwrap();
+                    let protcol_state = player_connection.get_state();
                     event_sender.send_to(entity, PacketEvent { packet, protcol_state });
                 }
                 Ok(None) => break,

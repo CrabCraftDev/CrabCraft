@@ -1,9 +1,5 @@
-use super::{
-    connection::{PacketEvent, PlayerConnection},
-    play::PlayerJoinWorldEvent,
-};
-use crate::mc_server::SERVER_VERSION;
-use crate::REGISTRY;
+use super::{connection::PacketEvent, play::PlayerJoinWorldEvent};
+use crate::{mc_server::SERVER_VERSION, network::connection::NetworkConnection, REGISTRY};
 use bytes::BytesMut;
 use crab_protocol::packets::common::{
     ClientInformationC2SPacket, KnownServerLinkType, PluginMessageS2CPacket, ReportDetail, ReportDetailsS2CPacket,
@@ -25,7 +21,7 @@ use evenio::{
 };
 
 pub fn configuration_packets(
-    receiver: Receiver<PacketEvent, (EntityId, &PlayerConnection)>,
+    receiver: Receiver<PacketEvent, (EntityId, &NetworkConnection)>,
     mut world_join_sender: Sender<PlayerJoinWorldEvent>,
 ) {
     let (entity, connection) = receiver.query;
@@ -91,7 +87,7 @@ pub fn configuration_packets(
     }
 
     if let Some(_packet) = packet.decode::<AcknowledgeFinishConfigurationC2SPacket>(*state) {
-        *connection.protocol_state.write().unwrap() = ProtocolState::Play;
+        connection.set_state(ProtocolState::Play);
         world_join_sender.send_to(entity, PlayerJoinWorldEvent);
     }
 }
