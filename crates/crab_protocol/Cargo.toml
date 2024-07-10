@@ -13,5 +13,5 @@ serde.workspace = true
 serde_json.workspace = true
 derive_more = { version = "1.0.0-beta.6", features = ["into", "from"] }
 crab_protocol_macros = { path = "../crab_protocol_macros" }
-strum = { version = "0.26", features = ["derive"] }
-bitfield-struct = "0.6.0"
+strum = { version = "0.26.3", features = ["derive"] }
+bitfield-struct = "0.8.0"
