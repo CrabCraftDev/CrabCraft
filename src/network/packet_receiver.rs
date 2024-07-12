@@ -1,6 +1,9 @@
 use bytes::BytesMut;
 use crab_protocol::{
-    error::ProtocolError, packet::Packet, packets::common::KeepAliveResponseC2SPacket, protocol_state::ProtocolState,
+    error::ProtocolError,
+    packet::{self},
+    packets::common::KeepAliveResponseC2SPacket,
+    protocol_state::ProtocolState,
     raw_packet::RawPacket,
 };
 use tokio::{io::AsyncReadExt, net::tcp::OwnedReadHalf};
@@ -68,7 +71,8 @@ impl PacketReceiver {
             ProtocolState::Login => self.login_handler.handle_packet(raw_packet),
             ProtocolState::Configuration => self.connection.incoming_packets_sender.send(raw_packet).unwrap(),
             ProtocolState::Play => {
-                if raw_packet.id == KeepAliveResponseC2SPacket::get_id_for_state(ProtocolState::Play).unwrap() {
+                if raw_packet.id == packet::get_id_for_state::<KeepAliveResponseC2SPacket>(ProtocolState::Play).unwrap()
+                {
                     self.play_handler.handle_packet(raw_packet);
                 } else {
                     self.connection.incoming_packets_sender.send(raw_packet).unwrap();
