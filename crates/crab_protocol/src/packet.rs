@@ -5,10 +5,17 @@ use crate::protocol_state::ProtocolState;
 
 pub trait Packet: Sized + Debug + ProtocolSerializer {
     const STATE_IDS: &'static [(ProtocolState, i32)];
+}
 
-    fn get_id_for_state(check_state: ProtocolState) -> Option<i32> {
-        Self::STATE_IDS
-            .iter()
-            .find_map(|(state, id)| if *state == check_state { Some(*id) } else { None })
+pub const fn get_id_for_state<P: Packet>(check_state: ProtocolState) -> Option<i32> {
+    let len = P::STATE_IDS.len();
+    let mut i = 0;
+    while i < len {
+        let (state, id) = P::STATE_IDS[i];
+        if state as isize == check_state as isize {
+            return Some(id);
+        }
+        i += 1;
     }
+    None
 }
