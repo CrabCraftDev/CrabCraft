@@ -57,8 +57,10 @@ impl ChunkSection {
         BLOCKS_CONTAINER.serialize_palette(self.blocks.iter().map(|&v| v as i32).collect(), &mut bytes)?;
         BIOMES_CONTAINER.serialize_palette(self.biomes.iter().map(|&v| v as i32).collect(), &mut bytes)?;
 
-        chunk_section.put_slice(&bytes);
-        self.cached_bytes = Some(bytes.freeze());
+        let bytes = bytes.freeze();
+
+        chunk_section.put(bytes.clone());
+        self.cached_bytes = Some(bytes);
 
         Ok(())
     }
