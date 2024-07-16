@@ -11,7 +11,7 @@ use crab_protocol::{
         bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, identifier::Identifier, position::Position,
     },
 };
-use crab_registry::blocks::{Bedrock, Block, Dirt, GrassBlock, RedstoneWire};
+use crab_registry::blocks::{Bedrock, Dirt, GrassBlock};
 use evenio::event::{Receiver, TargetedEvent};
 use log::info;
 
@@ -64,12 +64,11 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
     let grass_section = &mut normal_chunk.sections[0];
     for i in 0..16 {
         for j in 0..16 {
-            grass_section.set(i, 5, j, RedstoneWire::default().get_state() as u16);
-            grass_section.set(i, 4, j, GrassBlock::default().get_state() as u16);
-            grass_section.set(i, 3, j, Dirt.get_state() as u16);
-            grass_section.set(i, 2, j, Dirt.get_state() as u16);
-            grass_section.set(i, 1, j, Dirt.get_state() as u16);
-            grass_section.set(i, 0, j, Bedrock.get_state() as u16);
+            grass_section.set_block(i, 4, j, &GrassBlock::default());
+            grass_section.set_block(i, 3, j, &Dirt);
+            grass_section.set_block(i, 2, j, &Dirt);
+            grass_section.set_block(i, 1, j, &Dirt);
+            grass_section.set_block(i, 0, j, &Bedrock);
         }
     }
 
