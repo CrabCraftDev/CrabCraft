@@ -12,6 +12,7 @@ pub trait Block: Debug + Any {
 
     /// Returns a block with properties based on the local state id.
     /// Probably you want to use `get_block` function instead.
+    /// This function retrieves a block using a local state ID (from_local_state). In most cases, you want to use the global state to obtain the block instead.
     fn from_local_state(state: u16) -> Option<Self>
     where
         Self: Sized;
