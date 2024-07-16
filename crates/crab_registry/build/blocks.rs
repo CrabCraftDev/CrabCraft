@@ -25,7 +25,7 @@ pub fn generate() -> TokenStream {
 
     let mut blocks = Vec::new();
     let mut blocks_properties = Vec::new();
-    let mut get_block_by_id_arms = Vec::new();
+    let mut state_id_match_arms = Vec::new();
 
     let mut state_id: u16 = 0;
     for block in content.iter() {
@@ -36,7 +36,7 @@ pub fn generate() -> TokenStream {
 
         let states_amount = states_combinations_amount.iter().product::<u16>();
         let to_state_id = state_id + states_amount - 1;
-        get_block_by_id_arms.push(quote! {
+        state_id_match_arms.push(quote! {
             #state_id..=#to_state_id => {
                 Some(Box::new(#name::from_local_state(state_id - #default_state)?))
             }
@@ -101,11 +101,11 @@ pub fn generate() -> TokenStream {
     }
 
     quote! {
-        /// Returns a block with correct properties by state id.
+        /// Returns a block with properties based on the state id.
         pub fn get_block(state_id: u16) -> Option<Box<dyn Block>> {
             #[allow(clippy::identity_op)]
             match state_id {
-                #(#get_block_by_id_arms)*
+                #(#state_id_match_arms)*
                 _ => None,
             }
         }

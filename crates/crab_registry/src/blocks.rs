@@ -10,8 +10,8 @@ pub trait Block: Debug + Any {
     /// Gets current Block state based on set fields. Used mostly in protocol
     fn get_state(&self) -> u16;
 
-    /// Returns a block with correct properties by local state id.
-    /// Probably you should use `get_block` function instead.
+    /// Returns a block with properties based on the local state id.
+    /// Probably you want to use `get_block` function instead.
     fn from_local_state(state: u16) -> Option<Self>
     where
         Self: Sized;
