@@ -1,6 +1,12 @@
 use bytes::{Buf, BufMut, Bytes, BytesMut};
+use crab_protocol::{
+    buf::{CONTINUE_BIT, SEGMENT_BITS},
+    error::ProtocolError,
+};
+use SplitterState::*;
 
 // Accepts bytes continuously, and splits them into individual packets
+#[derive(Default)]
 pub struct PacketSplitter {
     buffer: BytesMut,
     state: SplitterState,
@@ -11,17 +17,11 @@ enum SplitterState {
     Collecting { needs: i32 },
 }
 
-use crab_protocol::{
-    buf::{CONTINUE_BIT, SEGMENT_BITS},
-    error::ProtocolError,
-};
-use SplitterState::*;
-
 impl PacketSplitter {
     pub fn new() -> Self {
         Self {
             buffer: BytesMut::new(),
-            state: SplitterState::ReadingVarInt { value: 0, position: 0 },
+            state: ReadingVarInt { value: 0, position: 0 },
         }
     }
 
@@ -72,8 +72,8 @@ impl PacketSplitter {
     }
 }
 
-impl Default for PacketSplitter {
+impl Default for SplitterState {
     fn default() -> Self {
-        Self::new()
+        SplitterState::ReadingVarInt { value: 0, position: 0 }
     }
 }
