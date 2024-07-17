@@ -11,7 +11,7 @@ use crate::{network::connection::NetworkConnection, world::WorldTick};
 #[derive(TargetedEvent)]
 pub struct PacketEvent {
     pub packet: RawPacket,
-    pub protcol_state: ProtocolState,
+    pub protocol_state: ProtocolState,
 }
 
 pub fn receive_packets(
@@ -23,8 +23,8 @@ pub fn receive_packets(
         loop {
             match player_connection.incoming_packets_receiver.try_recv() {
                 Ok(Some(packet)) => {
-                    let protcol_state = player_connection.get_state();
-                    event_sender.send_to(entity, PacketEvent { packet, protcol_state });
+                    let protocol_state = player_connection.get_state();
+                    event_sender.send_to(entity, PacketEvent { packet, protocol_state });
                 }
                 Ok(None) => break,
                 Err(_) => {

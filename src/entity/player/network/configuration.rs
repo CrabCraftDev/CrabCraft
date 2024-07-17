@@ -27,7 +27,7 @@ pub fn configuration_packets(
     let (entity, connection) = receiver.query;
     let PacketEvent {
         packet,
-        protcol_state: state,
+        protocol_state: state,
     } = receiver.event;
     if *state != ProtocolState::Configuration {
         return;

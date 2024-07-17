@@ -76,7 +76,7 @@ impl TcpServer {
         debug!("Connection closed {}!", address);
 
         let mut connections = self.connections.lock().unwrap();
-        connections.retain(|c| !c.incoming_packets_sender.is_closed());
+        connections.retain(|connection| !connection.incoming_packets_sender.is_closed());
     }
 
     pub async fn tick(&self) {

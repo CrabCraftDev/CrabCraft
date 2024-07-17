@@ -53,7 +53,7 @@ impl PacketReceiver {
             return Ok(None);
         }
 
-        let bytes_vec = self.splitter.split(buffer)?;
+        let bytes_vec = self.splitter.split_bytes(buffer)?;
 
         let packets_vec = bytes_vec
             .into_iter()

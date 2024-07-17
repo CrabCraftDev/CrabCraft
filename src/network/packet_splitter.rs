@@ -5,7 +5,7 @@ use crab_protocol::{
 };
 use SplitterState::*;
 
-// Accepts bytes continuously, and splits them into individual packets
+/// Accepts bytes continuously, and splits them into individual packets
 #[derive(Default)]
 pub struct PacketSplitter {
     buffer: BytesMut,
@@ -19,13 +19,10 @@ enum SplitterState {
 
 impl PacketSplitter {
     pub fn new() -> Self {
-        Self {
-            buffer: BytesMut::new(),
-            state: ReadingVarInt { value: 0, position: 0 },
-        }
+        Self::default()
     }
 
-    pub fn split(&mut self, buffer: impl Buf) -> Result<Vec<Bytes>, ProtocolError> {
+    pub fn split_bytes(&mut self, buffer: impl Buf) -> Result<Vec<Bytes>, ProtocolError> {
         self.buffer.put(buffer);
 
         let mut packets = Vec::new();
@@ -74,6 +71,6 @@ impl PacketSplitter {
 
 impl Default for SplitterState {
     fn default() -> Self {
-        SplitterState::ReadingVarInt { value: 0, position: 0 }
+        ReadingVarInt { value: 0, position: 0 }
     }
 }
