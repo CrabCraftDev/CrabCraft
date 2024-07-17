@@ -73,7 +73,7 @@ impl NetworkConnection {
                         break;
                     }
                 };
-                if (write_half.write_all(&bytes).await).is_err() {
+                if write_half.write_all(&bytes).await.is_err() {
                     writer_connection.close();
                 }
             }
@@ -132,7 +132,7 @@ impl NetworkConnection {
         self.close();
     }
 
-    pub fn close(&self) {
+    fn close(&self) {
         self.incoming_packets_sender.close();
         self.outgoing_packets_sender.close();
     }
@@ -151,7 +151,9 @@ impl NetworkConnection {
             return;
         }
 
-        let mut keep_alive_state = self.keep_alive_state.lock().unwrap();
+        let Ok(mut keep_alive_state) = self.keep_alive_state.lock() else {
+            return;
+        };
 
         let current_time = Local::now().timestamp_millis();
         if current_time - keep_alive_state.last_keepalive_time < KEEPALIVE_INTERVAL_MS {

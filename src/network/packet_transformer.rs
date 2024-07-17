@@ -1,5 +1,5 @@
 use std::sync::{
-    atomic::{AtomicI32, Ordering},
+    atomic::{AtomicBool, Ordering},
     Arc,
 };
 
@@ -12,18 +12,14 @@ use crab_protocol::{
 
 #[derive(Debug, Clone)]
 pub struct PacketTransformer {
-    compression_threshold: Arc<AtomicI32>,
+    compression_enabled: Arc<AtomicBool>,
     // Note: Until we have encryption support this doesn't need to be thread safe because it's always false
-    #[allow(dead_code)]
-    encryption: bool,
+    encryption_enabled: bool,
 }
 
 impl PacketTransformer {
     pub fn new() -> Self {
-        Self {
-            compression_threshold: Arc::new(AtomicI32::new(-1)),
-            encryption: false,
-        }
+        Self::default()
     }
 
     pub fn decode(&self, mut buffer: Bytes) -> Result<RawPacket, ProtocolError> {
@@ -47,28 +43,28 @@ impl PacketTransformer {
     }
 
     fn compress(&self, buffer: Bytes) -> Bytes {
-        if self.compression_threshold.load(Ordering::SeqCst) < 0 {
+        if !self.compression_enabled.load(Ordering::SeqCst) {
             return buffer;
         }
         todo!()
     }
 
     fn decompress(&self, buffer: Bytes) -> Result<Bytes, ProtocolError> {
-        if self.compression_threshold.load(Ordering::SeqCst) < 0 {
+        if !self.compression_enabled.load(Ordering::SeqCst) {
             return Ok(buffer);
         }
         todo!()
     }
 
     fn decrypt(&self, buffer: Bytes) -> Bytes {
-        if !self.encryption {
+        if !self.encryption_enabled {
             return buffer;
         }
         todo!()
     }
 
     fn encrypt(&self, buffer: Bytes) -> Bytes {
-        if !self.encryption {
+        if !self.encryption_enabled {
             return buffer;
         }
         todo!()
@@ -77,6 +73,9 @@ impl PacketTransformer {
 
 impl Default for PacketTransformer {
     fn default() -> Self {
-        Self::new()
+        Self {
+            compression_enabled: Arc::new(AtomicBool::new(false)),
+            encryption_enabled: false,
+        }
     }
 }
