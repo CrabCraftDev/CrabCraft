@@ -26,7 +26,10 @@ impl LoginHandler {
 
         if let Some(_packet) = raw_packet.decode::<LoginAcknowledgedC2SPacket>(state) {
             self.connection.set_state(ProtocolState::Configuration);
-            self.connection.new_player_sender.send(self.connection.clone()).unwrap();
+            self.connection
+                .new_player_connection_sender
+                .send(self.connection.clone())
+                .unwrap();
         }
     }
 }
