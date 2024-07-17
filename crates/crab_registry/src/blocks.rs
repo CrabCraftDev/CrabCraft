@@ -8,7 +8,7 @@ include!(concat!(env!("OUT_DIR"), "/blocks.rs"));
 
 pub trait Block: Debug + Any {
     /// Gets current Block state based on set fields. Used mostly in protocol
-    fn get_state(&self) -> u16;
+    fn get_state_id(&self) -> u16;
 
     /// Returns a block with properties based on the local state id.
     /// Probably you want to use `get_block` function instead.

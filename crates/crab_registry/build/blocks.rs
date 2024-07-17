@@ -64,7 +64,7 @@ pub fn generate() -> TokenStream {
 
             impl Block for #name {
                 #[allow(unused_mut, unused)]
-                fn get_state(&self) -> u16 {
+                fn get_state_id(&self) -> u16 {
                     let mut state = #state_id;
                     let mut multiplier = 1;
                     #(

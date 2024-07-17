@@ -41,7 +41,7 @@ impl ChunkSection {
             self.non_air_block_amount -= 1;
         }
 
-        self.blocks[index] = block.get_state();
+        self.blocks[index] = block.get_state_id();
     }
 
     #[allow(dead_code)]
@@ -81,7 +81,7 @@ impl Default for ChunkSection {
             .get_numeric_id(&biome_registry_identifier, &plains_biome_namespace)
             .unwrap() as u8;
         Self::new(
-            [Air.get_state(); AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
+            [Air.get_state_id(); AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
             [plains_biome_id; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
         )
     }

@@ -1,6 +1,6 @@
 use crate::mc_server::McServer;
 use chrono::Local;
-use crab_registry::RegistryLoader;
+use crab_registry::RegistryManager;
 use crossbeam::sync::ShardedLock;
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
@@ -16,7 +16,7 @@ mod utils;
 mod world;
 
 lazy_static! {
-    static ref REGISTRY: ShardedLock<RegistryLoader> = ShardedLock::new(RegistryLoader::default());
+    static ref REGISTRY: ShardedLock<RegistryManager> = ShardedLock::new(RegistryManager::default());
 }
 
 #[tokio::main]

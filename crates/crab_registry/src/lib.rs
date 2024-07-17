@@ -8,11 +8,11 @@ pub mod blocks;
 /// RegistryLoader is a struct that holds all dynamic registries like biomes.
 /// Default data is obtained from the assets/datapack directory.
 #[derive(Debug)]
-pub struct RegistryLoader {
+pub struct RegistryManager {
     pub data: HashMap<Identifier, Vec<Identifier>>,
 }
 
-impl RegistryLoader {
+impl RegistryManager {
     pub fn new(data: HashMap<Identifier, Vec<Identifier>>) -> Self {
         Self { data }
     }
@@ -47,7 +47,7 @@ impl RegistryLoader {
     }
 }
 
-impl Default for RegistryLoader {
+impl Default for RegistryManager {
     fn default() -> Self {
         let root_dir = include_dir!("$CARGO_MANIFEST_DIR/../../assets/datapack");
         let data = Self::find_registry_files(&root_dir);
