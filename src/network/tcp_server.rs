@@ -4,6 +4,7 @@ use std::{
     time::Duration,
 };
 
+use futures::{stream::FuturesUnordered, StreamExt};
 use kanal::Sender;
 use log::{debug, error};
 
@@ -38,13 +39,15 @@ impl TcpServer {
         let mut interval = time::interval(Duration::from_millis(1000 / TPS));
         interval.set_missed_tick_behavior(MissedTickBehavior::Delay);
 
+        let mut connections = FuturesUnordered::new();
+
         loop {
             select! {
                 result = listener.accept() => {
                     match result {
                         Ok((stream, address)) => {
                             stream.set_nodelay(true).unwrap();
-                            self.accept_connection(stream, address).await;
+                            connections.push(self.accept_connection(stream, address));
                         }
                         Err(err) => {
                             error!("Error accepting connection: {err}");
@@ -53,7 +56,8 @@ impl TcpServer {
                 },
                 _ = interval.tick() => {
                     self.tick().await;
-                }
+                },
+                Some(()) = connections.next(), if !connections.is_empty() => {},
             }
         }
     }
