@@ -25,8 +25,8 @@ impl PacketSplitter {
         }
     }
 
-    pub fn split(&mut self, buf: impl Buf) -> Result<Vec<Bytes>, ProtocolError> {
-        self.buffer.put(buf);
+    pub fn split(&mut self, buffer: impl Buf) -> Result<Vec<Bytes>, ProtocolError> {
+        self.buffer.put(buffer);
 
         let mut packets = Vec::new();
 

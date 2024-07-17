@@ -15,25 +15,27 @@ use tokio::{
 
 use crate::network::connection::NetworkConnection;
 
+const TPS: u64 = 1;
+
 pub struct TcpServer {
     address: String,
     pub connections: Arc<Mutex<Vec<NetworkConnection>>>,
-    new_player_sender: Sender<NetworkConnection>,
+    new_player_connection_sender: Sender<NetworkConnection>,
 }
 
 impl TcpServer {
-    pub fn new(address: String, new_player_sender: Sender<NetworkConnection>) -> TcpServer {
+    pub fn new(address: String, new_player_connection_sender: Sender<NetworkConnection>) -> TcpServer {
         TcpServer {
             address,
             connections: Arc::new(Mutex::new(Vec::new())),
-            new_player_sender,
+            new_player_connection_sender,
         }
     }
 
     pub async fn start(&self) {
         let listener = TcpListener::bind(&self.address).await.unwrap();
 
-        let mut interval = time::interval(Duration::from_secs(1));
+        let mut interval = time::interval(Duration::from_millis(1000 / TPS));
         interval.set_missed_tick_behavior(MissedTickBehavior::Delay);
 
         loop {
@@ -59,7 +61,7 @@ impl TcpServer {
     pub async fn accept_connection(&self, stream: TcpStream, address: SocketAddr) {
         debug!("Connection established {}!", address);
 
-        let connection = NetworkConnection::new(self.new_player_sender.clone());
+        let connection = NetworkConnection::new(self.new_player_connection_sender.clone());
         // Additional scope so the lock gets released before await
         {
             let mut connections = self.connections.lock().unwrap();
@@ -75,7 +77,7 @@ impl TcpServer {
 
     pub async fn tick(&self) {
         for connection in self.connections.lock().unwrap().iter() {
-            connection.tick();
+            connection.keep_connection_alive();
         }
     }
 }

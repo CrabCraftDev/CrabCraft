@@ -28,13 +28,13 @@ pub struct McServer {
     tcp_server: Arc<TcpServer>,
     overload_warning_cooldown: Instant,
     world: World,
-    player_connection_receiver: Receiver<NetworkConnection>,
+    new_player_connection_receiver: Receiver<NetworkConnection>,
 }
 
 impl McServer {
     pub fn new(ip_address: String) -> McServer {
-        let (player_connection_sender, player_connection_receiver) = kanal::unbounded();
-        let tcp_server = TcpServer::new(ip_address, player_connection_sender);
+        let (new_player_connection_sender, new_player_connection_receiver) = kanal::unbounded();
+        let tcp_server = TcpServer::new(ip_address, new_player_connection_sender);
 
         McServer {
             running: true,
@@ -43,7 +43,7 @@ impl McServer {
             scheduler: ServerScheduler::default(),
             overload_warning_cooldown: Instant::now(),
             world: world::new(),
-            player_connection_receiver,
+            new_player_connection_receiver,
         }
     }
 
@@ -91,7 +91,7 @@ impl McServer {
     pub async fn tick(&mut self) {
         self.current_tick += 1;
 
-        while let Some(connection) = self.player_connection_receiver.try_recv().unwrap() {
+        while let Some(connection) = self.new_player_connection_receiver.try_recv().unwrap() {
             let entity = self.world.spawn();
             self.world.insert(entity, Player);
             self.world.insert(entity, connection);

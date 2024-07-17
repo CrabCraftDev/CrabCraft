@@ -27,9 +27,9 @@ const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
 #[derive(Debug, Component, Clone)]
 pub struct NetworkConnection {
     pub state: Arc<ShardedLock<ProtocolState>>,
-    pub keepalive_state: Arc<Mutex<KeepAliveState>>,
+    pub keep_alive_state: Arc<Mutex<KeepAliveState>>,
     pub transformer: PacketTransformer,
-    pub new_player_sender: Sender<NetworkConnection>,
+    pub new_player_connection_sender: Sender<NetworkConnection>,
     pub outgoing_packets_sender: Sender<RawPacket>,
     pub outgoing_packets_receiver: Receiver<RawPacket>,
     pub incoming_packets_sender: Sender<RawPacket>,
@@ -37,15 +37,15 @@ pub struct NetworkConnection {
 }
 
 impl NetworkConnection {
-    pub fn new(new_player_sender: Sender<NetworkConnection>) -> Self {
+    pub fn new(new_player_connection_sender: Sender<NetworkConnection>) -> Self {
         let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
         let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
 
         NetworkConnection {
             state: Arc::new(ShardedLock::new(ProtocolState::Handshake)),
-            keepalive_state: Arc::new(Mutex::new(KeepAliveState::new())),
+            keep_alive_state: Arc::new(Mutex::new(KeepAliveState::new())),
             transformer: PacketTransformer::new(),
-            new_player_sender,
+            new_player_connection_sender,
             outgoing_packets_sender,
             outgoing_packets_receiver,
             incoming_packets_sender,
@@ -145,30 +145,26 @@ impl NetworkConnection {
         *self.state.write().unwrap() = new_state;
     }
 
-    pub fn tick(&self) {
-        self.keep_connection_alive();
-    }
-
     pub fn keep_connection_alive(&self) {
         let state = self.get_state();
         if state != ProtocolState::Configuration && state != ProtocolState::Play {
             return;
         }
 
-        let mut keepalive_state = self.keepalive_state.lock().unwrap();
+        let mut keep_alive_state = self.keep_alive_state.lock().unwrap();
 
         let current_time = Local::now().timestamp_millis();
-        if current_time - keepalive_state.last_keepalive_time < KEEPALIVE_INTERVAL_MS {
+        if current_time - keep_alive_state.last_keepalive_time < KEEPALIVE_INTERVAL_MS {
             return;
         }
 
-        if keepalive_state.keepalive_pending {
+        if keep_alive_state.keep_alive_pending {
             self.disconnect("Timeout!".to_owned());
             return;
         }
 
-        keepalive_state.keepalive_pending = true;
-        keepalive_state.last_keepalive_time = current_time;
+        keep_alive_state.keep_alive_pending = true;
+        keep_alive_state.last_keepalive_time = current_time;
 
         self.send_packet(KeepAliveS2CPacket {
             keep_alive_id: current_time,

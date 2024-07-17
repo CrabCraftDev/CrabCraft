@@ -3,7 +3,6 @@ use std::fs;
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 use crab_protocol::packets::common::{PingRequestC2SPacket, PingResponseS2CPacket};
-use log::info;
 
 use crab_protocol::packets::status::{
     PlayersInfo, ServerInfo, ServerVersion, StatusRequestC2SPacket, StatusResponseS2CPacket,
@@ -15,6 +14,9 @@ use crate::{
     mc_server::{SERVER_PROTOCOL_VERSION, SERVER_VERSION},
     network::connection::NetworkConnection,
 };
+
+const BASE64_ENCODING_PREFIX: &str = "data:image/png;base64,";
+const SERVER_ICON_PATH: &str = "server-icon.png";
 
 pub struct StatusHandler {
     connection: NetworkConnection,
@@ -38,12 +40,12 @@ impl StatusHandler {
     }
 
     pub fn handle_status_request(&self) {
-        let server_icon_path = get_server_path().join("server-icon.png");
+        let server_icon_path = get_server_path().join(SERVER_ICON_PATH);
         let mut favicon = String::new();
         if server_icon_path.exists() {
             let png_data = fs::read(server_icon_path).expect("Couldn't read server icon!");
             let encoded_png = BASE64_STANDARD.encode(png_data);
-            favicon = "data:image/png;base64,".to_owned() + &encoded_png;
+            favicon = BASE64_ENCODING_PREFIX.to_owned() + &encoded_png;
         }
 
         let server_info = ServerInfo {
@@ -63,7 +65,5 @@ impl StatusHandler {
         };
 
         self.connection.send_packet(StatusResponseS2CPacket { server_info });
-
-        info!("Pinged server list!");
     }
 }

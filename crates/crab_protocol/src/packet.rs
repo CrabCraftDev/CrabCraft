@@ -9,13 +9,13 @@ pub trait Packet: Sized + Debug + ProtocolSerializer {
 
 pub const fn get_id_for_state<P: Packet>(check_state: ProtocolState) -> Option<i32> {
     let len = P::STATE_IDS.len();
-    let mut i = 0;
-    while i < len {
-        let (state, id) = P::STATE_IDS[i];
+    let mut index = 0;
+    while index < len {
+        let (state, id) = P::STATE_IDS[index];
         if state as isize == check_state as isize {
             return Some(id);
         }
-        i += 1;
+        index += 1;
     }
     None
 }
