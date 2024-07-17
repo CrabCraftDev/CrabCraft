@@ -3,6 +3,7 @@ use crate::chunks::section::ChunkSection;
 use crate::utils::errors::Error;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
+use crab_registry::blocks::{Air, Block};
 
 pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
 pub const AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION: usize = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
@@ -17,12 +18,9 @@ pub struct Chunk {
 }
 
 impl Chunk {
-    fn get_block(&self, x: u32, y: u32, z: u32) -> u16 {
-        let index = x + z * CHUNK_SIZE as u32 + y % AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION as u32;
-        *self.sections[y as usize / CHUNK_SIZE]
-            .blocks
-            .get(index as usize)
-            .unwrap()
+    fn get_block(&self, x: u8, y: u8, z: u8) -> Option<Box<dyn Block>> {
+        let local_y = y as usize % CHUNK_SIZE;
+        self.sections[y as usize / CHUNK_SIZE].get_block(x, local_y as u8, z)
     }
 
     /// Calculates the [heightmap](https://wiki.vg/Chunk_Format#Heightmaps_structure) of the chunk.
@@ -32,8 +30,8 @@ impl Chunk {
         for z in 0..16 {
             for x in 0..16 {
                 for y in (0..(CHUNK_SECTIONS_PER_WORLD_HEIGHT * 16)).rev() {
-                    let block = self.get_block(x, y as u32, z);
-                    if block != 0 {
+                    let block = self.get_block(x, y as u8, z).unwrap();
+                    if Air::is_same_type_as_self(&*block) {
                         heightmap[(z * 16 + x) as usize] = y as u16;
                         break;
                     }

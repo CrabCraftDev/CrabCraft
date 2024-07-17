@@ -1,0 +1,19 @@
+[package]
+name = "crab_registry"
+version.workspace = true
+edition = "2021"
+build = "build/main.rs"
+
+[dependencies]
+strum.workspace = true
+derive_more.workspace = true
+include_dir = "0.7.4"
+crab_protocol = { path = "../../crates/crab_protocol" }
+
+[build-dependencies]
+serde.workspace = true
+serde_json.workspace = true
+quote.workspace = true
+proc-macro2.workspace = true
+syn.workspace = true
+heck = "0.5.0"

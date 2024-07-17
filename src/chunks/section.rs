@@ -1,14 +1,17 @@
 use crate::chunks::chunk::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
 use crate::chunks::paletted_container::{BIOMES_CONTAINER, BLOCKS_CONTAINER};
 use crate::utils::errors::Error;
+use crate::REGISTRY;
 use bytes::{BufMut, Bytes, BytesMut};
+use crab_protocol::types::identifier::Identifier;
+use crab_registry::blocks::{get_block, Air, Block};
 
 /// Chunk section is a 16×16×16 collection of blocks.
 /// It stores blocks and biomes in a [paletted](PalettedContainer) format.
 #[derive(Debug, Clone)]
 pub struct ChunkSection {
     pub non_air_block_amount: u16,
-    pub blocks: [u16; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
+    blocks: [u16; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
     pub biomes: [u8; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
     pub cached_bytes: Option<Bytes>,
 }
@@ -26,24 +29,24 @@ impl ChunkSection {
         }
     }
 
-    pub fn set(&mut self, x: u8, y: u8, z: u8, block: u16) {
+    pub fn set_block(&mut self, x: u8, y: u8, z: u8, block: &dyn Block) {
         self.cached_bytes = None;
 
         let index = self.calculate_index(x, y, z);
-        let previous_block = self.blocks[index];
+        let previous_block = get_block(self.blocks[index]).unwrap();
 
-        if previous_block == 0 && block != 0 {
+        if Air::is_same_type_as_self(&*previous_block) && !Air::is_same_type_as_self(block) {
             self.non_air_block_amount += 1;
-        } else if previous_block != 0 && block == 0 {
+        } else if !Air::is_same_type_as_self(&*previous_block) && Air::is_same_type_as_self(block) {
             self.non_air_block_amount -= 1;
         }
 
-        self.blocks[index] = block;
+        self.blocks[index] = block.get_state_id();
     }
 
     #[allow(dead_code)]
-    pub fn get(&mut self, x: u8, y: u8, z: u8) -> u16 {
-        self.blocks[self.calculate_index(x, y, z)]
+    pub fn get_block(&self, x: u8, y: u8, z: u8) -> Option<Box<dyn Block>> {
+        get_block(self.blocks[self.calculate_index(x, y, z)])
     }
 
     pub fn serialize_to_mc_format(&mut self, chunk_section: &mut BytesMut) -> Result<(), Error> {
@@ -72,10 +75,16 @@ impl ChunkSection {
 
 impl Default for ChunkSection {
     fn default() -> Self {
-        const PLAINS_BIOME_ID: u8 = 39;
+        let registry = &REGISTRY.read().unwrap();
+        let biome_registry_identifier = Identifier::minecraft("worldgen/biome").unwrap();
+        let plains_biome_namespace = Identifier::minecraft("plains").unwrap();
+
+        let plains_biome_id = registry
+            .get_numeric_id(&biome_registry_identifier, &plains_biome_namespace)
+            .unwrap() as u8;
         Self::new(
-            [0; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
-            [PLAINS_BIOME_ID; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
+            [Air.get_state_id(); AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
+            [plains_biome_id; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
         )
     }
 }
