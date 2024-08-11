@@ -16,7 +16,7 @@ use crate::{
 use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
 
 pub const SERVER_PROTOCOL_VERSION: i32 = 767;
-pub const SERVER_VERSION: &str = "1.21";
+pub const SERVER_VERSION: &str = "1.21.1";
 const TPS: u64 = 20;
 const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);
 const SERVER_OVERLOAD_WARNING_COOLDOWN: Duration = Duration::from_secs(20);
