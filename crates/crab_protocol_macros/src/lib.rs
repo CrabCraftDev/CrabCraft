@@ -19,12 +19,12 @@ mod protocol_serializer_derive;
 ///   The `state` argument should be an expression that evaluates to a `ProtocolState` variant.
 ///
 /// * `#[protocol_attribute(protocol_type = "...")]`: This attribute is optional and can be used on struct fields.
-/// The `protocol_type` argument should be the name of a type that implements the `ProtocolSerializer` trait.
-/// If this attribute is not provided, the default implementation of `ProtocolSerializer` will be used.
+///   The `protocol_type` argument should be the name of a type that implements the `ProtocolSerializer` trait.
+///   If this attribute is not provided, the default implementation of `ProtocolSerializer` will be used.
 ///
 /// * `#[protocol_attribute(bounded = "...")]`: This attribute is optional and can be used on struct fields.
-/// The `bounded` argument should be an integer representing the maximum value allowed for the field.
-/// If the field value exceeds this maximum value, an error will be returned during serialization/deserialization.
+///   The `bounded` argument should be an integer representing the maximum value allowed for the field.
+///   If the field value exceeds this maximum value, an error will be returned during serialization/deserialization.
 ///
 /// # Struct
 ///
