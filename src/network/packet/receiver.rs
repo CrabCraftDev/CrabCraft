@@ -9,16 +9,17 @@ use crab_protocol::{
 use tokio::{io::AsyncReadExt, net::tcp::OwnedReadHalf};
 
 use crate::{
-    network::handlers::{
-        handshake_handler::HandshakeHandler, login_handler::LoginHandler, status_handler::StatusHandler,
+    network::{
+        connection::NetworkConnection,
+        handlers::{
+            handshake_handler::HandshakeHandler, keep_alive_handler::KeepAliveHandler, login_handler::LoginHandler,
+            status_handler::StatusHandler,
+        },
     },
     utils::errors::Error,
 };
 
-use super::{
-    connection::NetworkConnection, handlers::keep_alive_handler::KeepAliveHandler, packet_splitter::PacketSplitter,
-    packet_transformer::PacketTransformer,
-};
+use super::{splitter::PacketSplitter, transformer::PacketTransformer};
 
 pub struct PacketReceiver {
     pub read_half: OwnedReadHalf,
