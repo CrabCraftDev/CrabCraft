@@ -27,7 +27,7 @@ impl PlayerConnection {
                 .send(raw_packet)
                 .expect("Packet to be sent to network thread"),
             Err(err) => {
-                error!("Serialization error: {}", err);
+                error!("Serialization error: {err}");
             }
         };
     }

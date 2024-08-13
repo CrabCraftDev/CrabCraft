@@ -25,7 +25,7 @@ impl Logger {
 
         let file_count = count_files_with_prefix(logs_path.as_path(), &formatted_time)?;
 
-        let log_path_str = format!("{}-{}.log", formatted_time, file_count + 1);
+        let log_path_str = format!("{formatted_time}-{}.log", file_count + 1);
         let new_log_path = logs_path.join(log_path_str);
         rename(logs_path.join("latest.log"), new_log_path)?;
 
@@ -41,7 +41,7 @@ impl Log for Logger {
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
             let timestamp = Local::now().format("%H:%M:%S");
-            let uncolored_message = format!("[{}] [{}] {}", timestamp, record.level(), record.args());
+            let uncolored_message = format!("[{timestamp}] [{}] {}", record.level(), record.args());
 
             let message = match record.level() {
                 Level::Debug => uncolored_message.blue(),
@@ -50,7 +50,7 @@ impl Log for Logger {
                 _ => uncolored_message.normal(),
             };
 
-            println!("{}", message);
+            println!("{message}");
 
             if log_to_file(uncolored_message).is_err() {
                 println!("{}", "Failed to save log to file!".red())

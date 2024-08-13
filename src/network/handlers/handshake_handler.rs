@@ -35,8 +35,8 @@ impl HandshakeHandler {
             }
 
             let message = match packet.protocol_version.cmp(&SERVER_PROTOCOL_VERSION) {
-                Ordering::Less => format!("Server is on newer Minecraft version! Use {}", SERVER_VERSION),
-                Ordering::Greater => format!("Server is on older Minecraft version! Use {}", SERVER_VERSION),
+                Ordering::Less => format!("Server is on newer Minecraft version! Use {SERVER_VERSION}"),
+                Ordering::Greater => format!("Server is on older Minecraft version! Use {SERVER_VERSION}"),
                 Ordering::Equal => "".to_string(),
             };
             connection.disconnect(&message).await;

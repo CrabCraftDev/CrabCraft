@@ -42,7 +42,7 @@ impl Connection {
         match packet.serialize_packet(state) {
             Ok(bytes) => self.send(bytes).await,
             Err(err) => {
-                error!("Serialization error: {}", err);
+                error!("Serialization error: {err}");
                 self.close().await;
             }
         }
@@ -92,7 +92,7 @@ impl Connection {
     async fn close(&mut self) {
         let shutdown_result = self.write_half.shutdown().await;
         if let Err(err) = shutdown_result {
-            warn!("{}", err.to_string());
+            warn!("{err}");
         }
         self.is_closed = true;
         info!("Disconnected player!");

@@ -23,7 +23,7 @@ async fn main() {
     panic::set_hook(Box::new(|panic_info| {
         error!("Server PANICKED!!! (looks like a crash, that wasn't expected)");
         for line in panic_info.to_string().split('\n') {
-            error!("{}", line);
+            error!("{line}");
         }
         exit(1)
     }));
