@@ -1,5 +1,6 @@
 use std::sync::{Arc, Mutex};
 
+use bytes::BytesMut;
 use chrono::Local;
 use crab_nbt::NbtTag;
 use crab_protocol::{
@@ -23,6 +24,7 @@ use crate::network::packet_receiver::PacketReceiver;
 use super::{keepalive_state::KeepAliveState, packet_transformer::PacketTransformer};
 
 const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
+const MAX_PACKET_SIZE: usize = 2097151;
 
 #[derive(Debug, Component, Clone)]
 pub struct NetworkConnection {
@@ -80,14 +82,16 @@ impl NetworkConnection {
         });
 
         let reader = tokio::spawn(async move {
+            let mut buffer = BytesMut::with_capacity(MAX_PACKET_SIZE);
             loop {
-                let packets = match receiver.receive_packets().await {
+                let packets = match receiver.receive_packets(&mut buffer).await {
                     Ok(packets) => packets,
                     Err(err) => {
                         warn!("Error handling packet {:?}!", err);
                         break;
                     }
                 };
+                buffer.clear();
                 let Some(packets) = packets else {
                     break;
                 };

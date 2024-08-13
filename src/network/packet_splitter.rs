@@ -6,6 +6,7 @@ use crab_protocol::{
 use SplitterState::*;
 
 /// Accepts bytes continuously, and splits them into individual packets
+/// Basiaclly a fancy replacement for tokio's read_exact, which we can't use because it's not cancellation safe
 #[derive(Default)]
 pub struct PacketSplitter {
     buffer: BytesMut,

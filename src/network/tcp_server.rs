@@ -16,7 +16,7 @@ use tokio::{
 
 use crate::network::connection::NetworkConnection;
 
-const TPS: u64 = 1;
+const TCP_SEVER_TPS: u64 = 1;
 
 pub struct TcpServer {
     address: String,
@@ -36,7 +36,7 @@ impl TcpServer {
     pub async fn start(&self) {
         let listener = TcpListener::bind(&self.address).await.unwrap();
 
-        let mut interval = time::interval(Duration::from_millis(1000 / TPS));
+        let mut interval = time::interval(Duration::from_millis(1000 / TCP_SEVER_TPS));
         interval.set_missed_tick_behavior(MissedTickBehavior::Delay);
 
         let mut connections = FuturesUnordered::new();
