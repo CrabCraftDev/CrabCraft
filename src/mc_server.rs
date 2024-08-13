@@ -5,7 +5,7 @@ use std::time::Duration;
 use evenio::world::World;
 use kanal::Receiver;
 use log::{info, warn};
-use tokio::time::{sleep_until, Instant};
+use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
 
 use crate::{
@@ -70,12 +70,15 @@ impl McServer {
     }
 
     pub async fn tick_loop(&mut self) {
+        let mut ticker = time::interval(Duration::from_millis(1000 / TPS));
+        ticker.set_missed_tick_behavior(MissedTickBehavior::Delay);
+
         while self.running {
             let tick_start = Instant::now();
             self.tick().await;
             let last_tick_duration = Instant::now() - tick_start;
 
-            sleep_until(tick_start.add(MAX_TICK_DURATION)).await;
+            ticker.tick().await;
 
             if last_tick_duration > MAX_TICK_DURATION && self.overload_warning_cooldown < Instant::now() {
                 warn!(
