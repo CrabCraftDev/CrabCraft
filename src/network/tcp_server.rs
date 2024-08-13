@@ -146,8 +146,8 @@ impl TcpServer {
                 }
             };
 
-            if result.is_err() {
-                warn!("Error handling packet {:?}!", result.err());
+            if let Err(err) = result {
+                warn!("Error handling packet {err:?}!");
                 connection.disconnect("Unexpected error!").await;
                 break;
             }

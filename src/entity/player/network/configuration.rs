@@ -43,7 +43,7 @@ pub fn configuration_packets(
         connection.send_packet(ReportDetailsS2CPacket {
             details: vec![ReportDetail {
                 title: "Server".to_owned(),
-                description: format!("CrabCraft v{}", crabcraft_version),
+                description: format!("CrabCraft v{crabcraft_version}"),
             }],
         });
 

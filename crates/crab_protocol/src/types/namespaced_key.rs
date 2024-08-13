@@ -16,7 +16,7 @@ pub struct NamespacedKey {
 impl NamespacedKey {
     pub fn new(namespace: &str, value: &str) -> Result<NamespacedKey, ProtocolError> {
         if !NamespacedKey::is_valid_namespace(namespace) || !NamespacedKey::is_valid_value(value) {
-            return Err(ProtocolError::InvalidNamespacedKey(format!("{}:{}", namespace, value)));
+            return Err(ProtocolError::InvalidNamespacedKey(format!("{namespace}:{value}")));
         }
 
         Ok(NamespacedKey {
