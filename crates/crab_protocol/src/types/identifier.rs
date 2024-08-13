@@ -14,7 +14,7 @@ pub struct Identifier {
 impl Identifier {
     pub fn new(namespace: &str, value: &str) -> Result<Identifier, ProtocolError> {
         if !Identifier::is_valid_namespace(namespace) || !Identifier::is_valid_value(value) {
-            return Err(ProtocolError::InvalidIdentifier(format!("{}:{}", namespace, value)));
+            return Err(ProtocolError::InvalidIdentifier(format!("{namespace}:{value}")));
         }
 
         Ok(Identifier {

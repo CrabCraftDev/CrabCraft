@@ -63,7 +63,7 @@ impl TcpServer {
     }
 
     pub async fn accept_connection(&self, stream: TcpStream, address: SocketAddr) {
-        debug!("Connection established {}!", address);
+        debug!("Connection established {address}!");
 
         let connection = NetworkConnection::new(self.new_connection_sender.clone());
         // Additional scope so the lock gets released before await
@@ -73,7 +73,7 @@ impl TcpServer {
         }
         connection.accept(stream).await;
 
-        debug!("Connection closed {}!", address);
+        debug!("Connection closed {address}!");
 
         let mut connections = self.connections.lock().unwrap();
         connections.retain(|connection| !connection.incoming_packets_sender.is_closed());

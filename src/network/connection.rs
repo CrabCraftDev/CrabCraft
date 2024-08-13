@@ -70,7 +70,7 @@ impl NetworkConnection {
                 let bytes = match writer_transformer.encode(packet) {
                     Ok(bytes) => bytes,
                     Err(err) => {
-                        error!("Serialization error: {}", err);
+                        error!("Serialization error: {err}");
                         writer_connection.close();
                         break;
                     }
