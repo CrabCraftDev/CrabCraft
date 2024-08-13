@@ -23,8 +23,12 @@ impl PacketTransformer {
     }
 
     pub fn decode(&self, mut buffer: Bytes) -> Result<RawPacket, ProtocolError> {
-        buffer = self.decrypt(buffer);
-        buffer = self.decompress(buffer)?;
+        if self.encryption_enabled {
+            buffer = self.decrypt(buffer);
+        }
+        if self.compression_enabled.load(Ordering::SeqCst) {
+            buffer = self.decompress(buffer)?;
+        }
 
         let id = buffer.get_var_int()?;
         Ok(RawPacket::new(id, buffer))
@@ -32,8 +36,12 @@ impl PacketTransformer {
 
     pub fn encode(&self, packet: RawPacket) -> Result<Bytes, ProtocolError> {
         let mut bytes = packet.to_bytes();
-        bytes = self.compress(bytes);
-        bytes = self.encrypt(bytes);
+        if self.compression_enabled.load(Ordering::SeqCst) {
+            bytes = self.compress(bytes);
+        }
+        if self.encryption_enabled {
+            bytes = self.encrypt(bytes);
+        }
 
         let mut result = BytesMut::new();
         result.put_var_int(bytes.len() as i32);
@@ -42,31 +50,19 @@ impl PacketTransformer {
         Ok(result.into())
     }
 
-    fn compress(&self, buffer: Bytes) -> Bytes {
-        if !self.compression_enabled.load(Ordering::SeqCst) {
-            return buffer;
-        }
+    fn compress(&self, _buffer: Bytes) -> Bytes {
         todo!()
     }
 
-    fn decompress(&self, buffer: Bytes) -> Result<Bytes, ProtocolError> {
-        if !self.compression_enabled.load(Ordering::SeqCst) {
-            return Ok(buffer);
-        }
+    fn decompress(&self, _buffer: Bytes) -> Result<Bytes, ProtocolError> {
         todo!()
     }
 
-    fn decrypt(&self, buffer: Bytes) -> Bytes {
-        if !self.encryption_enabled {
-            return buffer;
-        }
+    fn decrypt(&self, _buffer: Bytes) -> Bytes {
         todo!()
     }
 
-    fn encrypt(&self, buffer: Bytes) -> Bytes {
-        if !self.encryption_enabled {
-            return buffer;
-        }
+    fn encrypt(&self, _buffer: Bytes) -> Bytes {
         todo!()
     }
 }

@@ -2,16 +2,16 @@ use crab_protocol::{packets::common::KeepAliveResponseC2SPacket, raw_packet::Raw
 
 use crate::network::connection::NetworkConnection;
 
-pub struct PlayHandler {
+pub struct KeepAliveHandler {
     connection: NetworkConnection,
 }
 
-impl PlayHandler {
+impl KeepAliveHandler {
     pub fn new(connection: NetworkConnection) -> Self {
         Self { connection }
     }
 
-    pub fn handle_packet(&self, raw_packet: RawPacket) {
+    pub fn handle_keepalive(&self, raw_packet: RawPacket) {
         if let Some(packet) = raw_packet.decode::<KeepAliveResponseC2SPacket>(self.connection.get_state()) {
             let mut keep_alive_state = self.connection.keep_alive_state.lock().unwrap();
             if keep_alive_state.keep_alive_pending && keep_alive_state.last_keepalive_time == packet.keep_alive_id {

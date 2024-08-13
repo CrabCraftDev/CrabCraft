@@ -10,16 +10,15 @@ use tokio::{io::AsyncReadExt, net::tcp::OwnedReadHalf};
 
 use crate::{
     network::handlers::{
-        handshake_handler::HandshakeHandler, login_handler::LoginHandler, play_handler::PlayHandler,
-        status_handler::StatusHandler,
+        handshake_handler::HandshakeHandler, login_handler::LoginHandler, status_handler::StatusHandler,
     },
     utils::errors::Error,
 };
 
-use super::{connection::NetworkConnection, packet_splitter::PacketSplitter, packet_transformer::PacketTransformer};
-
-// TODO: CONFIG_SYSTEM
-const READ_BUFFER_SIZE: usize = 4096;
+use super::{
+    connection::NetworkConnection, handlers::keep_alive_handler::KeepAliveHandler, packet_splitter::PacketSplitter,
+    packet_transformer::PacketTransformer,
+};
 
 pub struct PacketReceiver {
     pub read_half: OwnedReadHalf,
@@ -29,7 +28,7 @@ pub struct PacketReceiver {
     pub status_handler: StatusHandler,
     pub handshake_handler: HandshakeHandler,
     pub login_handler: LoginHandler,
-    pub play_handler: PlayHandler,
+    pub keep_alive_handler: KeepAliveHandler,
 }
 
 impl PacketReceiver {
@@ -42,14 +41,12 @@ impl PacketReceiver {
             status_handler: StatusHandler::new(connection.clone()),
             handshake_handler: HandshakeHandler::new(connection.clone()),
             login_handler: LoginHandler::new(connection.clone()),
-            play_handler: PlayHandler::new(connection),
+            keep_alive_handler: KeepAliveHandler::new(connection),
         }
     }
 
-    pub async fn receive_packets(&mut self) -> Result<Option<Vec<RawPacket>>, Error> {
-        let mut buffer = BytesMut::with_capacity(READ_BUFFER_SIZE);
-
-        if let Ok(0) = self.read_half.read_buf(&mut buffer).await {
+    pub async fn receive_packets(&mut self, buffer: &mut BytesMut) -> Result<Option<Vec<RawPacket>>, Error> {
+        if let Ok(0) = self.read_half.read_buf(buffer).await {
             return Ok(None);
         }
 
@@ -69,11 +66,9 @@ impl PacketReceiver {
             ProtocolState::Status => self.status_handler.handle_packet(raw_packet),
             ProtocolState::Handshake => self.handshake_handler.handle_packet(raw_packet),
             ProtocolState::Login => self.login_handler.handle_packet(raw_packet),
-            ProtocolState::Configuration => self.connection.incoming_packets_sender.send(raw_packet).unwrap(),
-            ProtocolState::Play => {
-                if raw_packet.id == packet::get_id_for_state::<KeepAliveResponseC2SPacket>(ProtocolState::Play).unwrap()
-                {
-                    self.play_handler.handle_packet(raw_packet);
+            ProtocolState::Configuration | ProtocolState::Play => {
+                if raw_packet.id == packet::get_id_for_state::<KeepAliveResponseC2SPacket>(state).unwrap() {
+                    self.keep_alive_handler.handle_keepalive(raw_packet);
                 } else {
                     self.connection.incoming_packets_sender.send(raw_packet).unwrap();
                 }
