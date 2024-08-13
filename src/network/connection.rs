@@ -21,7 +21,7 @@ use tokio::{io::AsyncWriteExt, net::TcpStream};
 
 use crate::network::packet_receiver::PacketReceiver;
 
-use super::{keepalive_state::KeepAliveState, packet_transformer::PacketTransformer};
+use super::{keep_alive_state::KeepAliveState, packet_transformer::PacketTransformer};
 
 const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
 const MAX_PACKET_SIZE: usize = 2097151;
