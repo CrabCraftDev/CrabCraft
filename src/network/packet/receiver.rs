@@ -69,7 +69,7 @@ impl PacketReceiver {
             ProtocolState::Login => self.login_handler.handle_packet(raw_packet),
             ProtocolState::Configuration | ProtocolState::Play => {
                 if raw_packet.id == packet::get_id_for_state::<KeepAliveResponseC2SPacket>(state).unwrap() {
-                    self.keep_alive_handler.handle_keepalive(raw_packet);
+                    self.keep_alive_handler.handle_keep_alive(raw_packet);
                 } else {
                     self.connection.incoming_packets_sender.send(raw_packet).unwrap();
                 }

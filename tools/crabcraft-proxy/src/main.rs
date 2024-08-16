@@ -9,7 +9,7 @@ use tokio::{
 };
 
 use crab_protocol::{
-    buf::{to_var_int, ReadByteBuf, CONTINUE_BIT, SEGMENT_BITS},
+    buf::{ReadByteBuf, WriteByteBuf, CONTINUE_BIT, SEGMENT_BITS},
     error::ProtocolError,
 };
 
@@ -98,7 +98,8 @@ async fn transfer_data(
             println!("[{direction}] {id:X}: {buffer_str:?}");
         }
 
-        let mut full_packet = BytesMut::from_iter(to_var_int(len));
+        let mut full_packet = BytesMut::new();
+        full_packet.put_var_int(len);
         full_packet.extend_from_slice(&buffer);
 
         sender.write_all(&full_packet).await?;

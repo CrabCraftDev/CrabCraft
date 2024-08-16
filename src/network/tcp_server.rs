@@ -21,15 +21,15 @@ const TCP_SEVER_TPS: u64 = 1;
 pub struct TcpServer {
     address: String,
     pub connections: Arc<Mutex<Vec<NetworkConnection>>>,
-    new_player_connection_sender: Sender<NetworkConnection>,
+    new_connection_sender: Sender<NetworkConnection>,
 }
 
 impl TcpServer {
-    pub fn new(address: String, new_player_connection_sender: Sender<NetworkConnection>) -> TcpServer {
+    pub fn new(address: String, new_connection_sender: Sender<NetworkConnection>) -> TcpServer {
         TcpServer {
             address,
             connections: Arc::new(Mutex::new(Vec::new())),
-            new_player_connection_sender,
+            new_connection_sender,
         }
     }
 
@@ -65,7 +65,7 @@ impl TcpServer {
     pub async fn accept_connection(&self, stream: TcpStream, address: SocketAddr) {
         debug!("Connection established {}!", address);
 
-        let connection = NetworkConnection::new(self.new_player_connection_sender.clone());
+        let connection = NetworkConnection::new(self.new_connection_sender.clone());
         // Additional scope so the lock gets released before await
         {
             let mut connections = self.connections.lock().unwrap();

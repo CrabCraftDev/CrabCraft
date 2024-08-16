@@ -31,7 +31,7 @@ pub struct NetworkConnection {
     pub state: Arc<ShardedLock<ProtocolState>>,
     pub keep_alive_state: Arc<Mutex<KeepAliveState>>,
     pub transformer: PacketTransformer,
-    pub new_player_connection_sender: Sender<NetworkConnection>,
+    pub new_connection_sender: Sender<NetworkConnection>,
     pub outgoing_packets_sender: Sender<RawPacket>,
     pub outgoing_packets_receiver: Receiver<RawPacket>,
     pub incoming_packets_sender: Sender<RawPacket>,
@@ -39,7 +39,7 @@ pub struct NetworkConnection {
 }
 
 impl NetworkConnection {
-    pub fn new(new_player_connection_sender: Sender<NetworkConnection>) -> Self {
+    pub fn new(new_connection_sender: Sender<NetworkConnection>) -> Self {
         let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
         let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
 
@@ -47,7 +47,7 @@ impl NetworkConnection {
             state: Arc::new(ShardedLock::new(ProtocolState::Handshake)),
             keep_alive_state: Arc::new(Mutex::new(KeepAliveState::new())),
             transformer: PacketTransformer::new(),
-            new_player_connection_sender,
+            new_connection_sender,
             outgoing_packets_sender,
             outgoing_packets_receiver,
             incoming_packets_sender,
@@ -160,7 +160,7 @@ impl NetworkConnection {
         };
 
         let current_time = Local::now().timestamp_millis();
-        if current_time - keep_alive_state.last_keepalive_time < KEEPALIVE_INTERVAL_MS {
+        if current_time - keep_alive_state.last_keep_alive_time < KEEPALIVE_INTERVAL_MS {
             return;
         }
 
@@ -170,7 +170,7 @@ impl NetworkConnection {
         }
 
         keep_alive_state.keep_alive_pending = true;
-        keep_alive_state.last_keepalive_time = current_time;
+        keep_alive_state.last_keep_alive_time = current_time;
 
         self.send_packet(KeepAliveS2CPacket {
             keep_alive_id: current_time,

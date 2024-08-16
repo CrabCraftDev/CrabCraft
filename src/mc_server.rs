@@ -33,8 +33,8 @@ pub struct McServer {
 
 impl McServer {
     pub fn new(ip_address: String) -> McServer {
-        let (new_player_connection_sender, new_player_connection_receiver) = kanal::unbounded();
-        let tcp_server = TcpServer::new(ip_address, new_player_connection_sender);
+        let (new_connection_sender, new_player_connection_receiver) = kanal::unbounded();
+        let tcp_server = TcpServer::new(ip_address, new_connection_sender);
 
         McServer {
             running: true,
