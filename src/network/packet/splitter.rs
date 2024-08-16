@@ -13,6 +13,7 @@ pub struct PacketSplitter {
     state: SplitterState,
 }
 
+#[derive(Debug)]
 enum SplitterState {
     ReadingVarInt { value: i32, position: i8 },
     Collecting { needs: i32 },
@@ -32,8 +33,9 @@ impl PacketSplitter {
             match self.state {
                 ReadingVarInt { value, position } => self.read_var_int(value, position)?,
                 Collecting { needs } => {
-                    if let Some(packet) = self.collect(needs) {
-                        packets.push(packet);
+                    match self.collect(needs) {
+                        Some(packet) => packets.push(packet),
+                        None => break,
                     };
                 }
             }
@@ -73,5 +75,35 @@ impl PacketSplitter {
 impl Default for SplitterState {
     fn default() -> Self {
         ReadingVarInt { value: 0, position: 0 }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crab_protocol::buf::WriteByteBuf;
+
+    use super::*;
+
+    #[test]
+    fn test_packet_splitter() {
+        let mut splitter = PacketSplitter::new();
+
+        let mut bytes = BytesMut::new();
+        let data1 = b"PacketSplitter";
+        let data2 = b"CrabCraft!";
+        bytes.put_var_int(data1.len().try_into().unwrap());
+        bytes.extend_from_slice(data1);
+        bytes.put_var_int(data2.len().try_into().unwrap());
+        bytes.extend_from_slice(data2);
+
+        let bytes2 = bytes.split_off(7);
+
+        let result1 = splitter.split_bytes(bytes).unwrap();
+        let result2 = splitter.split_bytes(bytes2).unwrap();
+
+        assert_eq!(result1.len(), 0);
+        assert_eq!(result2.len(), 2);
+        assert_eq!(&result2[0][..], data1);
+        assert_eq!(&result2[1][..], data2);
     }
 }
