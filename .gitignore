@@ -12,5 +12,8 @@ target/
 # JetBrain's IDEs
 .idea
 
+# VSCode
+.vscode
+
 # Minecraft server files
 /server/*
