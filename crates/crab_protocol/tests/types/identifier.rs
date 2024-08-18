@@ -1,5 +1,5 @@
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::identifier::{Identifier, MINECRAFT_IDENTIFIER};
 
 #[test]
 fn test_encode_identifier() {
@@ -24,7 +24,7 @@ fn test_decode_identifier() {
 fn test_to_string_mc_identifier() {
     let id = Identifier::minecraft("crabcraft").unwrap();
 
-    assert_eq!(id.namespace, "minecraft");
+    assert_eq!(id.namespace, MINECRAFT_IDENTIFIER);
     assert_eq!(id.value, "crabcraft");
     assert_eq!(id.to_string(), "minecraft:crabcraft")
 }

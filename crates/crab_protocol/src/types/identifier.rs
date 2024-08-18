@@ -5,6 +5,8 @@ use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
 
+pub const MINECRAFT_IDENTIFIER: &str = "minecraft";
+
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct Identifier {
     pub namespace: String,
@@ -24,7 +26,7 @@ impl Identifier {
     }
 
     pub fn minecraft(value: &str) -> Result<Identifier, ProtocolError> {
-        Identifier::new("minecraft", value)
+        Identifier::new(MINECRAFT_IDENTIFIER, value)
     }
 
     fn is_valid_namespace(namespace: &str) -> bool {
@@ -51,7 +53,7 @@ impl TryFrom<&str> for Identifier {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let split: Vec<&str> = value.split(':').collect();
         match split.len() {
-            1 => Ok(Identifier::new("minecraft", value)?),
+            1 => Ok(Identifier::new(MINECRAFT_IDENTIFIER, value)?),
             2 => Ok(Identifier::new(split[0], split[1])?),
             _ => Err(ProtocolError::InvalidIdentifier(value.to_owned())),
         }
