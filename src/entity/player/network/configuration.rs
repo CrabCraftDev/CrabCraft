@@ -10,6 +10,7 @@ use crab_protocol::packets::common::{
     ServerLink, ServerLinksS2CPacket,
 };
 use crab_protocol::packets::configuration::RegistryDataEntry;
+use crab_protocol::types::identifier::MINECRAFT_IDENTIFIER;
 use crab_protocol::{
     packets::configuration::{
         AcknowledgeFinishConfigurationC2SPacket, FinishConfigurationS2CPacket, KnownPacksC2SPacket,
@@ -56,7 +57,7 @@ pub fn configuration_packets(
         let known_packs = COMPATIBLE_SERVER_VERSIONS
             .iter()
             .map(|version| KnownPack {
-                namespace: "minecraft".to_string(),
+                namespace: MINECRAFT_IDENTIFIER.to_string(),
                 id: "core".to_string(),
                 version: version.to_string(),
             })
