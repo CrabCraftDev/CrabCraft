@@ -2,7 +2,7 @@ use super::{
     connection::{PacketEvent, PlayerConnection},
     play::PlayerJoinWorldEvent,
 };
-use crate::mc_server::SERVER_VERSION;
+use crate::mc_server::COMPATIBLE_SERVER_VERSIONS;
 use crate::REGISTRY;
 use bytes::BytesMut;
 use crab_protocol::packets::common::{
@@ -53,6 +53,16 @@ pub fn configuration_packets(
             }],
         });
 
+        let known_packs = COMPATIBLE_SERVER_VERSIONS
+            .iter()
+            .map(|version| KnownPack {
+                namespace: "minecraft".to_string(),
+                id: "core".to_string(),
+                version: version.to_string(),
+            })
+            .collect();
+        connection.send_packet(KnownPacksS2CPacket { known_packs });
+
         let registry_data = &REGISTRY.read().unwrap().data;
         for (registry_name, values) in registry_data.iter() {
             let data_entries = values
@@ -75,14 +85,6 @@ pub fn configuration_packets(
         connection.send_packet(PluginMessageS2CPacket {
             channel: Identifier::minecraft("brand").unwrap(),
             data: data.freeze().into(),
-        });
-
-        connection.send_packet(KnownPacksS2CPacket {
-            known_packs: vec![KnownPack {
-                namespace: "minecraft".to_string(),
-                id: "core".to_string(),
-                version: SERVER_VERSION.to_string(),
-            }],
         });
     }
 
