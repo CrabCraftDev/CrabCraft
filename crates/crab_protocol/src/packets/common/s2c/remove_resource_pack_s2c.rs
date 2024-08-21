@@ -12,5 +12,5 @@ pub struct RemoveResourcePackS2CPacket {
 }
 
 impl Packet for RemoveResourcePackS2CPacket {
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x45), (Status, 0x08)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x45), (Configuration, 0x08)];
 }
