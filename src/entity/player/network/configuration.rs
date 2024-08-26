@@ -10,7 +10,7 @@ use crab_protocol::packets::common::{
     ServerLink, ServerLinksS2CPacket,
 };
 use crab_protocol::packets::configuration::RegistryDataEntry;
-use crab_protocol::types::identifier::MINECRAFT_IDENTIFIER;
+use crab_protocol::types::namespaced_key::MINECRAFT_NAMESPACE;
 use crab_protocol::{
     packets::configuration::{
         AcknowledgeFinishConfigurationC2SPacket, FinishConfigurationS2CPacket, KnownPacksC2SPacket,
@@ -18,7 +18,7 @@ use crab_protocol::{
     },
     protocol_serializer::ProtocolSerializer,
     protocol_state::ProtocolState,
-    types::{identifier::Identifier, known_pack::KnownPack},
+    types::{known_pack::KnownPack, namespaced_key::NamespacedKey},
 };
 use evenio::{
     entity::EntityId,
@@ -57,7 +57,7 @@ pub fn configuration_packets(
         let known_packs = COMPATIBLE_SERVER_VERSIONS
             .iter()
             .map(|version| KnownPack {
-                namespace: MINECRAFT_IDENTIFIER.to_string(),
+                namespace: MINECRAFT_NAMESPACE.to_string(),
                 id: "core".to_string(),
                 version: version.to_string(),
             })
@@ -84,7 +84,7 @@ pub fn configuration_packets(
         "CrabCraft".to_owned().serialize(&mut data).unwrap();
 
         connection.send_packet(PluginMessageS2CPacket {
-            channel: Identifier::minecraft("brand").unwrap(),
+            channel: NamespacedKey::minecraft("brand").unwrap(),
             data: data.freeze().into(),
         });
     }

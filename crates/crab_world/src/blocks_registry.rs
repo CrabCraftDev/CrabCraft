@@ -1,6 +1,6 @@
 use crate::block::Block;
 use crate::error::WorldError;
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::namespaced_key::NamespacedKey;
 use std::collections::{BTreeMap, HashMap};
 
 #[derive(Debug, Clone)]
@@ -14,31 +14,31 @@ pub struct BlockInformation {
 #[derive(Debug, Default, Clone)]
 pub struct BlocksRegistry {
     pub current_id: u16,
-    pub(crate) blocks_information: HashMap<Identifier, BlockInformation>,
-    pub(crate) id_to_block: BTreeMap<u16, Identifier>,
+    pub(crate) blocks_information: HashMap<NamespacedKey, BlockInformation>,
+    pub(crate) id_to_block: BTreeMap<u16, NamespacedKey>,
 }
 
 impl BlocksRegistry {
     pub fn add_block(
         &mut self,
         states_amount: u16,
-        identifier: &Identifier,
+        namespaced_key: &NamespacedKey,
         mut information: BlockInformation,
     ) -> Result<(), WorldError> {
-        if self.blocks_information.contains_key(identifier) {
-            return Err(WorldError::DuplicateBlock(identifier.clone()));
+        if self.blocks_information.contains_key(namespaced_key) {
+            return Err(WorldError::DuplicateBlock(namespaced_key.clone()));
         }
 
         information.starting_id = self.current_id;
         information.default_id += information.starting_id;
-        self.blocks_information.insert(identifier.clone(), information);
-        self.id_to_block.insert(self.current_id, identifier.clone());
+        self.blocks_information.insert(namespaced_key.clone(), information);
+        self.id_to_block.insert(self.current_id, namespaced_key.clone());
         self.current_id += states_amount;
 
         Ok(())
     }
 
-    pub fn get_block_from_id(&self, key: u16) -> Result<&Identifier, WorldError> {
+    pub fn get_block_from_id(&self, key: u16) -> Result<&NamespacedKey, WorldError> {
         if key > self.current_id {
             return Err(WorldError::BlockIdDoesNotExist(key));
         }
@@ -46,9 +46,9 @@ impl BlocksRegistry {
         block_id.ok_or(WorldError::BlockIdDoesNotExist(key))
     }
 
-    pub fn get_by_id(&self, identifier: &Identifier) -> Result<&BlockInformation, WorldError> {
+    pub fn get_by_id(&self, namespaced_key: &NamespacedKey) -> Result<&BlockInformation, WorldError> {
         self.blocks_information
-            .get(identifier)
-            .ok_or(WorldError::BlockDoesNotExist(identifier.clone()))
+            .get(namespaced_key)
+            .ok_or(WorldError::BlockDoesNotExist(namespaced_key.clone()))
     }
 }

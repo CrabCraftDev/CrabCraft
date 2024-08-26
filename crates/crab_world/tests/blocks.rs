@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_world::block_data::Snowy;
 use crab_world::blocks::{init_blocks, GrassBlock};
 use crab_world::{BlockType, BLOCKS};
@@ -11,13 +11,13 @@ fn get_block_struct_information() {
 
     let block = GrassBlock::get_default_id().unwrap();
     let properties = block.get_properties().unwrap();
-    let id = block.get_identifier().unwrap();
+    let id = block.get_namespaced_key().unwrap();
 
     let mut expected_properties = HashMap::new();
     // Note: 0 represents true and 1 represents false. By default, the grass block is not snowy.
     expected_properties.insert("snowy".to_string(), 1);
     assert_eq!(expected_properties, properties);
-    assert_eq!(id, &Identifier::minecraft("grass_block").unwrap());
+    assert_eq!(id, &NamespacedKey::minecraft("grass_block").unwrap());
 }
 
 #[test]

@@ -5,11 +5,11 @@ use crab_macros::ProtocolSerializer;
 use crate::packet::Packet;
 use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::identifier::Identifier;
+use crate::types::namespaced_key::NamespacedKey;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct CookieResponseC2SPacket {
-    pub key: Identifier,
+    pub key: NamespacedKey,
     #[protocol_attribute(bounded = 5120)]
     pub payload: Option<Bytes>,
 }

@@ -1,4 +1,4 @@
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_world::blocks_registry::{BlockInformation, BlocksRegistry};
 use crab_world::error::WorldError;
 use crab_world::Block;
@@ -17,7 +17,7 @@ fn get_test_blocks_registry() -> BlocksRegistry {
     blocks
         .add_block(
             5,
-            &Identifier::minecraft("dirt").unwrap(),
+            &NamespacedKey::minecraft("dirt").unwrap(),
             BlockInformation {
                 from_properties: constructor,
                 get_properties,
@@ -29,7 +29,7 @@ fn get_test_blocks_registry() -> BlocksRegistry {
     blocks
         .add_block(
             2,
-            &Identifier::minecraft("stone").unwrap(),
+            &NamespacedKey::minecraft("stone").unwrap(),
             BlockInformation {
                 from_properties: constructor,
                 get_properties,
@@ -42,19 +42,19 @@ fn get_test_blocks_registry() -> BlocksRegistry {
 }
 
 #[test]
-fn get_blocks_by_identifier() {
+fn get_blocks_by_namespaced_key() {
     let blocks = get_test_blocks_registry();
-    let dirt_block = blocks.get_by_id(&Identifier::minecraft("dirt").unwrap()).unwrap();
-    let stone_block = blocks.get_by_id(&Identifier::minecraft("stone").unwrap()).unwrap();
+    let dirt_block = blocks.get_by_id(&NamespacedKey::minecraft("dirt").unwrap()).unwrap();
+    let stone_block = blocks.get_by_id(&NamespacedKey::minecraft("stone").unwrap()).unwrap();
 
     assert_eq!(dirt_block.starting_id, 0);
     assert_eq!(stone_block.starting_id, 5);
 }
 
 #[test]
-fn get_invalid_blocks_by_identifier() {
+fn get_invalid_blocks_by_namespaced_key() {
     let blocks = get_test_blocks_registry();
-    assert!(blocks.get_by_id(&Identifier::minecraft("test").unwrap()).is_err());
+    assert!(blocks.get_by_id(&NamespacedKey::minecraft("test").unwrap()).is_err());
 }
 
 #[test]
@@ -65,10 +65,10 @@ fn get_blocks_by_id() {
     let stone_block = blocks.get_block_from_id(5).unwrap();
     let another_stone_block = blocks.get_block_from_id(6).unwrap();
 
-    assert_eq!(dirt_block, &Identifier::minecraft("dirt").unwrap());
-    assert_eq!(another_dirt_block, &Identifier::minecraft("dirt").unwrap());
-    assert_eq!(stone_block, &Identifier::minecraft("stone").unwrap());
-    assert_eq!(another_stone_block, &Identifier::minecraft("stone").unwrap());
+    assert_eq!(dirt_block, &NamespacedKey::minecraft("dirt").unwrap());
+    assert_eq!(another_dirt_block, &NamespacedKey::minecraft("dirt").unwrap());
+    assert_eq!(stone_block, &NamespacedKey::minecraft("stone").unwrap());
+    assert_eq!(another_stone_block, &NamespacedKey::minecraft("stone").unwrap());
 }
 
 #[test]

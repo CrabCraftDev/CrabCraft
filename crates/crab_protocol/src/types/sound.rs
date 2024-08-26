@@ -4,7 +4,7 @@ use crab_macros::ProtocolSerializer;
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::namespaced_key::NamespacedKey;
 
 #[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum SoundCategory {
@@ -25,8 +25,8 @@ pub enum SoundEffect {
     Direct {
         id: i32,
     },
-    SoundIdentifier {
-        sound_name: Identifier,
+    SoundNamespacedKey {
+        sound_name: NamespacedKey,
         fixed_range: Option<f32>,
     },
 }
@@ -37,7 +37,7 @@ impl ProtocolSerializer for SoundEffect {
             SoundEffect::Direct { id } => {
                 buf.put_var_int(id + 1);
             }
-            SoundEffect::SoundIdentifier {
+            SoundEffect::SoundNamespacedKey {
                 sound_name,
                 fixed_range,
             } => {
@@ -51,9 +51,9 @@ impl ProtocolSerializer for SoundEffect {
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
         let id = buf.get_i32();
         if id == 0 {
-            let sound_name = Identifier::deserialize(buf)?;
+            let sound_name = NamespacedKey::deserialize(buf)?;
             let fixed_range = Option::<f32>::deserialize(buf)?;
-            Ok(SoundEffect::SoundIdentifier {
+            Ok(SoundEffect::SoundNamespacedKey {
                 sound_name,
                 fixed_range,
             })

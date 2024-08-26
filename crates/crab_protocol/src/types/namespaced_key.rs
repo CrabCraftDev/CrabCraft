@@ -5,28 +5,28 @@ use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
 
-pub const MINECRAFT_IDENTIFIER: &str = "minecraft";
+pub const MINECRAFT_NAMESPACE: &str = "minecraft";
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
-pub struct Identifier {
+pub struct NamespacedKey {
     pub namespace: String,
     pub value: String,
 }
 
-impl Identifier {
-    pub fn new(namespace: &str, value: &str) -> Result<Identifier, ProtocolError> {
-        if !Identifier::is_valid_namespace(namespace) || !Identifier::is_valid_value(value) {
-            return Err(ProtocolError::InvalidIdentifier(format!("{}:{}", namespace, value)));
+impl NamespacedKey {
+    pub fn new(namespace: &str, value: &str) -> Result<NamespacedKey, ProtocolError> {
+        if !NamespacedKey::is_valid_namespace(namespace) || !NamespacedKey::is_valid_value(value) {
+            return Err(ProtocolError::InvalidNamespacedKey(format!("{}:{}", namespace, value)));
         }
 
-        Ok(Identifier {
+        Ok(NamespacedKey {
             namespace: namespace.to_string(),
             value: value.to_string(),
         })
     }
 
-    pub fn minecraft(value: &str) -> Result<Identifier, ProtocolError> {
-        Identifier::new(MINECRAFT_IDENTIFIER, value)
+    pub fn minecraft(value: &str) -> Result<NamespacedKey, ProtocolError> {
+        NamespacedKey::new(MINECRAFT_NAMESPACE, value)
     }
 
     fn is_valid_namespace(namespace: &str) -> bool {
@@ -47,34 +47,34 @@ impl Identifier {
     }
 }
 
-impl TryFrom<&str> for Identifier {
+impl TryFrom<&str> for NamespacedKey {
     type Error = ProtocolError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let split: Vec<&str> = value.split(':').collect();
         match split.len() {
-            1 => Ok(Identifier::new(MINECRAFT_IDENTIFIER, value)?),
-            2 => Ok(Identifier::new(split[0], split[1])?),
-            _ => Err(ProtocolError::InvalidIdentifier(value.to_owned())),
+            1 => Ok(NamespacedKey::new(MINECRAFT_NAMESPACE, value)?),
+            2 => Ok(NamespacedKey::new(split[0], split[1])?),
+            _ => Err(ProtocolError::InvalidNamespacedKey(value.to_owned())),
         }
     }
 }
 
-impl FromStr for Identifier {
+impl FromStr for NamespacedKey {
     type Err = ProtocolError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Identifier::try_from(s)
+        NamespacedKey::try_from(s)
     }
 }
 
-impl Display for Identifier {
+impl Display for NamespacedKey {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
         write!(formatter, "{}:{}", self.namespace, self.value)
     }
 }
 
-impl ProtocolSerializer for Identifier {
+impl ProtocolSerializer for NamespacedKey {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         ProtocolSerializer::serialize(&self.to_string(), buf)?;
         Ok(())

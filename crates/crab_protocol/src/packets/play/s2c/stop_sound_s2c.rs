@@ -6,14 +6,14 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::identifier::Identifier;
+use crate::types::namespaced_key::NamespacedKey;
 use crate::types::sound::SoundCategory;
 
 #[derive(Packet, Debug, Clone)]
 #[packet(id = 0x6A, state = Play)]
 pub struct StopSoundS2CPacket {
     pub sound_category: Option<SoundCategory>,
-    pub sound_name: Option<Identifier>,
+    pub sound_name: Option<NamespacedKey>,
 }
 
 impl ProtocolSerializer for StopSoundS2CPacket {
@@ -42,7 +42,7 @@ impl ProtocolSerializer for StopSoundS2CPacket {
             None
         };
         let sound_name = if stop_sound_controls.name() {
-            Some(Identifier::deserialize(buf)?)
+            Some(NamespacedKey::deserialize(buf)?)
         } else {
             None
         };

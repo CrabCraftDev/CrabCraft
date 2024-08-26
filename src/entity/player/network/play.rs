@@ -9,7 +9,8 @@ use crab_protocol::{
         SynchronizePlayerPositionS2CPacket, SynchronizePositionFlags,
     },
     types::{
-        bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, identifier::Identifier, position::Position,
+        bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, namespaced_key::NamespacedKey,
+        position::Position,
     },
 };
 use crab_world::blocks::{Bedrock, Dirt, GrassBlock};
@@ -26,7 +27,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
     connection.send_packet(GameJoinS2CPacket {
         entity_id: 0,
         is_hardcore: false,
-        dimension_names: vec![Identifier::minecraft("overworld").unwrap()],
+        dimension_names: vec![NamespacedKey::minecraft("overworld").unwrap()],
         max_players: 100,
         view_distance: 16,
         simulation_distance: 20,
@@ -34,7 +35,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
         enable_respawn_screen: true,
         do_limited_crafting: false,
         dimension_type: 0,
-        dimension_name: Identifier::minecraft("overworld").unwrap(),
+        dimension_name: NamespacedKey::minecraft("overworld").unwrap(),
         hashed_seed: 99887766,
         game_mode: GameMode::Creative,
         previous_game_mode: None.into(),

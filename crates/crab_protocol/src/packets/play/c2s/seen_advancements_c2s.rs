@@ -4,7 +4,7 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::identifier::Identifier;
+use crate::types::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x2C, state = Play)]
@@ -14,7 +14,7 @@ pub struct SeenAdvancementsC2SPacket {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum SeenAdvancementsAction {
-    OpenedTab(Identifier),
+    OpenedTab(NamespacedKey),
     ClosedScreen,
 }
 
