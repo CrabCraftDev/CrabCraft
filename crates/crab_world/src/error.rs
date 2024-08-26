@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 use crab_protocol::error::ProtocolError;
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::namespaced_key::NamespacedKey;
 
 #[derive(Debug, Error)]
 pub enum WorldError {
@@ -10,7 +10,7 @@ pub enum WorldError {
     #[error("Provided local id {0} exceeds maximum {1}")]
     InvalidLocalState(u16, u16),
     #[error("BlockType {0} doesn't exist!")]
-    BlockDoesNotExist(Identifier),
+    BlockDoesNotExist(NamespacedKey),
     #[error("There is not block corresponding to ID {0}")]
     BlockIdDoesNotExist(u16),
     #[error("Invalid property value")]
@@ -18,7 +18,7 @@ pub enum WorldError {
     #[error("Invalid property name")]
     InvalidPropertyName,
     #[error("BlockType with id {0} was already registered")]
-    DuplicateBlock(Identifier),
+    DuplicateBlock(NamespacedKey),
     #[error(transparent)]
     Protocol(#[from] ProtocolError),
 }

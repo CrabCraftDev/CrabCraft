@@ -1,10 +1,10 @@
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::identifier::Identifier;
+use crate::types::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x4A, state = Play)]
 pub struct SelectAdvancementsTabS2CPacket {
-    pub identifier: Option<Identifier>,
+    pub namespaced_key: Option<NamespacedKey>,
 }

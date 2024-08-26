@@ -2,7 +2,7 @@ use crate::chunks::chunk::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_I
 use crate::utils::errors::Error;
 use crate::REGISTRY;
 use bytes::{BufMut, Bytes, BytesMut};
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_world::blocks::Air;
 use crab_world::paletted_container::{BIOMES_CONTAINER, BLOCKS_CONTAINER};
 use crab_world::{Block, BlockType};
@@ -77,11 +77,11 @@ impl ChunkSection {
 impl Default for ChunkSection {
     fn default() -> Self {
         let registry = &REGISTRY.read().unwrap();
-        let biome_registry_identifier = Identifier::minecraft("worldgen/biome").unwrap();
-        let plains_biome_namespace = Identifier::minecraft("plains").unwrap();
+        let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
+        let plains_biome_namespace = NamespacedKey::minecraft("plains").unwrap();
 
         let plains_biome_id = registry
-            .get_numeric_id(&biome_registry_identifier, &plains_biome_namespace)
+            .get_numeric_id(&biome_registry_namespaced_key, &plains_biome_namespace)
             .unwrap() as u8;
         Self::new(
             [Air::get_default_id().unwrap(); AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],

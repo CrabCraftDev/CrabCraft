@@ -1,4 +1,4 @@
-use crab_protocol::types::identifier::Identifier;
+use crab_protocol::types::namespaced_key::NamespacedKey;
 use include_dir::{include_dir, Dir};
 use std::collections::HashMap;
 use std::path::Path;
@@ -7,20 +7,20 @@ use std::path::Path;
 /// Default data is obtained from the assets/datapack directory.
 #[derive(Debug)]
 pub struct RegistryManager {
-    pub data: HashMap<Identifier, Vec<Identifier>>,
+    pub data: HashMap<NamespacedKey, Vec<NamespacedKey>>,
 }
 
 impl RegistryManager {
-    pub fn new(data: HashMap<Identifier, Vec<Identifier>>) -> Self {
+    pub fn new(data: HashMap<NamespacedKey, Vec<NamespacedKey>>) -> Self {
         Self { data }
     }
 
-    pub fn get_numeric_id(&self, namespace: &Identifier, entry: &Identifier) -> Option<usize> {
+    pub fn get_numeric_id(&self, namespace: &NamespacedKey, entry: &NamespacedKey) -> Option<usize> {
         let entries = self.data.get(namespace)?;
         entries.iter().position(|x| x == entry)
     }
 
-    fn find_registry_files(root_dir: &Dir) -> HashMap<Identifier, Vec<Identifier>> {
+    fn find_registry_files(root_dir: &Dir) -> HashMap<NamespacedKey, Vec<NamespacedKey>> {
         let mut result = HashMap::new();
 
         for dir in root_dir.dirs() {
@@ -28,7 +28,7 @@ impl RegistryManager {
             for file in dir.files() {
                 let path = Path::new(file.path());
                 if let Some(stem) = path.file_stem() {
-                    names.push(Identifier::minecraft(&stem.to_string_lossy()).unwrap());
+                    names.push(NamespacedKey::minecraft(&stem.to_string_lossy()).unwrap());
                 }
             }
 
@@ -36,8 +36,8 @@ impl RegistryManager {
                 result.insert(key, value);
             }
 
-            let dir_identifier = Identifier::minecraft(&dir.path().to_string_lossy()).unwrap();
-            result.insert(dir_identifier, names);
+            let dir_namespaced_key = NamespacedKey::minecraft(&dir.path().to_string_lossy()).unwrap();
+            result.insert(dir_namespaced_key, names);
         }
 
         result.retain(|_, v| !v.is_empty());

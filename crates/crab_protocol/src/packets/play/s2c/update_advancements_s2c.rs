@@ -6,21 +6,21 @@ use strum::FromRepr;
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::identifier::Identifier;
+use crate::types::namespaced_key::NamespacedKey;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(id = 0x74, state = Play)]
 pub struct UpdateAdvancementsS2CPacket {
     pub should_reset: bool,
-    pub advancement_mapping: HashMap<Identifier, Advancement>,
-    pub identifiers: Vec<Identifier>,
-    pub progress_mapping: HashMap<Identifier, AdvancementProgress>,
+    pub advancement_mapping: HashMap<NamespacedKey, Advancement>,
+    pub namespaced_keys: Vec<NamespacedKey>,
+    pub progress_mapping: HashMap<NamespacedKey, AdvancementProgress>,
 }
 
 #[derive(ProtocolSerializer, Clone, Debug)]
 pub struct Advancement {
-    pub parent_id: Option<Identifier>,
+    pub parent_id: Option<NamespacedKey>,
     pub display_data: Option<AdvancementDisplay>,
     pub requirements: Vec<Vec<String>>,
     pub sends_telemetry_data: bool,
@@ -32,7 +32,7 @@ pub struct AdvancementDisplay {
     pub description: TextComponent,
     pub frame_type: AdvancementFrameType,
     pub flags: AdvancementDisplayFlags,
-    pub background_texture: Option<Identifier>,
+    pub background_texture: Option<NamespacedKey>,
     pub x: i32,
     pub y: i32,
 }
@@ -46,7 +46,7 @@ pub enum AdvancementFrameType {
 
 #[derive(ProtocolSerializer, Clone, PartialEq, Eq, Debug)]
 pub struct AdvancementProgress {
-    pub progress: HashMap<Identifier, AdvancementProgressCriterion>,
+    pub progress: HashMap<NamespacedKey, AdvancementProgressCriterion>,
 }
 
 #[derive(ProtocolSerializer, Clone, PartialEq, Eq, Hash, Debug)]

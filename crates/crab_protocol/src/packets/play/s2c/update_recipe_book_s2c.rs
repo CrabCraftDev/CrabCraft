@@ -6,14 +6,14 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::identifier::Identifier;
+use crate::types::namespaced_key::NamespacedKey;
 
 #[derive(Packet, Debug, Clone)]
 #[packet(id = 0x41, state = Play)]
 pub struct UpdateRecipeBookS2CPacket {
     pub action: RecipeBookAction,
     pub settings: RecipeBookSettings,
-    pub recipes: Vec<Identifier>,
+    pub recipes: Vec<NamespacedKey>,
 }
 
 impl ProtocolSerializer for UpdateRecipeBookS2CPacket {
@@ -34,10 +34,10 @@ impl ProtocolSerializer for UpdateRecipeBookS2CPacket {
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
         let action_id = buf.get_var_int()?;
         let settings = RecipeBookSettings::deserialize(buf)?;
-        let recipes = Vec::<Identifier>::deserialize(buf)?;
+        let recipes = Vec::<NamespacedKey>::deserialize(buf)?;
         let action = match action_id {
             0 => {
-                let to_highlight = Vec::<Identifier>::deserialize(buf)?;
+                let to_highlight = Vec::<NamespacedKey>::deserialize(buf)?;
                 RecipeBookAction::Init { to_highlight }
             }
             1 => RecipeBookAction::Add,
@@ -60,7 +60,7 @@ impl ProtocolSerializer for UpdateRecipeBookS2CPacket {
 #[derive(Debug, Clone, PartialEq, FromRepr)]
 #[repr(i32)]
 pub enum RecipeBookAction {
-    Init { to_highlight: Vec<Identifier> },
+    Init { to_highlight: Vec<NamespacedKey> },
     Add,
     Remove,
 }

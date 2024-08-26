@@ -6,7 +6,7 @@ use crate::packets::play::LastDeathLocation;
 use crate::protocol_state::ProtocolState::*;
 use crate::types::game_mode::GameMode;
 use crate::types::game_mode::OptionalGameMode;
-use crate::types::identifier::Identifier;
+use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
@@ -15,7 +15,7 @@ pub struct RespawnS2CPacket {
     /// The ID of the type of dimension in the minecraft:dimension_type registry, defined by the Registry Data packet.
     #[protocol_attribute(protocol_type = VarInt)]
     pub dimension_type: i32,
-    pub dimension_name: Identifier,
+    pub dimension_name: NamespacedKey,
     pub hashed_seed: i64,
     pub game_mode: GameMode,
     #[protocol_attribute(protocol_type = OptionalGameMode)]
