@@ -2,9 +2,8 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 
-mod args;
-mod packet_derive;
-mod protocol_serializer_derive;
+mod protocol;
+mod world;
 
 /// `ProtocolSerializer` is a derive macro that helps in creating common Protocol Types like `Enum`, `Struct`, etc.
 /// This macro simplifies the process of implementing the `ProtocolSerializer` trait for a type.
@@ -57,7 +56,7 @@ mod protocol_serializer_derive;
 /// Note: The `ProtocolSerializer` derive macro can only be used with structs and enums.
 #[proc_macro_derive(ProtocolSerializer, attributes(protocol_attribute))]
 pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
-    match protocol_serializer_derive::derive_protocol_serializer_impl(item.into()) {
+    match crate::protocol::protocol_serializer_derive::derive_protocol_serializer_impl(item.into()) {
         Ok(tokens) => tokens.into(),
         Err(e) => e.into_compile_error().into(),
     }
@@ -76,7 +75,7 @@ pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
 ///
 /// ```ignore
 /// use crab_protocol::types::varint::VarInt;
-/// use crab_protocol_macros::Packet;
+/// use crab_macros::Packet;
 ///
 /// #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 /// #[packet(id = 0, state = Handshake)]
@@ -89,7 +88,29 @@ pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_derive(Packet, attributes(packet, protocol_attribute))]
 pub fn derive_packet(item: TokenStream) -> TokenStream {
-    match packet_derive::derive_packet_impl(item.into()) {
+    match protocol::packet_derive::derive_packet_impl(item.into()) {
+        Ok(tokens) => tokens.into(),
+        Err(e) => e.into_compile_error().into(),
+    }
+}
+
+/// Procedural macro that derives the `BlockData` trait for a struct.
+///
+/// The `BlockData` trait is used to define properties and behaviors of blocks in the world.
+/// This macro simplifies the process of implementing the `BlockData` trait for a type.
+///
+/// # Examples
+///
+/// ```ignore
+/// #[derive(BlockData)]
+/// pub struct MyBlockData {
+///     pub boolean: bool,
+///     pub value: u16,
+/// }
+/// ```
+#[proc_macro_derive(BlockData)]
+pub fn derive_block_property(item: TokenStream) -> TokenStream {
+    match world::block_property_derive::derive_block_property_impl(item.into()) {
         Ok(tokens) => tokens.into(),
         Err(e) => e.into_compile_error().into(),
     }

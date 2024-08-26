@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crab_protocol_macros::ProtocolSerializer;
+use crab_macros::ProtocolSerializer;
 
 use crate::packet::Packet;
 use crate::protocol_state::ProtocolState;

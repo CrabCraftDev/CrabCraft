@@ -3,7 +3,7 @@ use crate::error::ProtocolError;
 use crate::packet::Packet;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState;
-use crab_protocol_macros::ProtocolSerializer;
+use crab_macros::ProtocolSerializer;
 use strum::FromRepr;
 
 use crate::protocol_state::ProtocolState::*;

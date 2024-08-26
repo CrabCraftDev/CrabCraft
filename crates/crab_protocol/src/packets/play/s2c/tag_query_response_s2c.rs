@@ -1,6 +1,6 @@
 use crab_nbt::NbtTag;
 
-use crab_protocol_macros::{Packet, ProtocolSerializer};
+use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;

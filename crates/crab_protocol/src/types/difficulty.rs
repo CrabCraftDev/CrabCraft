@@ -1,6 +1,6 @@
 use strum::FromRepr;
 
-use crab_protocol_macros::ProtocolSerializer;
+use crab_macros::ProtocolSerializer;
 
 #[derive(Debug, Copy, Clone, PartialEq, FromRepr, ProtocolSerializer)]
 #[repr(u8)]

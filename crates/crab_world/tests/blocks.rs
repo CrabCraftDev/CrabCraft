@@ -1,0 +1,44 @@
+use std::collections::HashMap;
+
+use crab_protocol::types::identifier::Identifier;
+use crab_world::block_data::Snowy;
+use crab_world::blocks::{init_blocks, GrassBlock};
+use crab_world::{BlockType, BLOCKS};
+
+#[test]
+fn get_block_struct_information() {
+    BLOCKS.get_or_init(init_blocks);
+
+    let block = GrassBlock::get_default_id().unwrap();
+    let properties = block.get_properties().unwrap();
+    let id = block.get_identifier().unwrap();
+
+    let mut expected_properties = HashMap::new();
+    // Note: 0 represents true and 1 represents false. By default, the grass block is not snowy.
+    expected_properties.insert("snowy".to_string(), 1);
+    assert_eq!(expected_properties, properties);
+    assert_eq!(id, &Identifier::minecraft("grass_block").unwrap());
+}
+
+#[test]
+fn create_block_from_properties() {
+    BLOCKS.get_or_init(init_blocks);
+
+    let mut hashmap = HashMap::new();
+    hashmap.insert("snowy".to_string(), "false".to_string());
+
+    let block = GrassBlock::from_properties(&hashmap).unwrap();
+    let is_snowy = block.get_property::<Snowy>().unwrap();
+
+    assert_eq!(is_snowy, Snowy { snowy: false });
+}
+
+#[test]
+fn invalid_create_block_from_properties() {
+    BLOCKS.get_or_init(init_blocks);
+
+    let mut hashmap = HashMap::new();
+    hashmap.insert("snowy".to_string(), "cat".to_string());
+
+    assert!(GrassBlock::from_properties(&hashmap).is_err());
+}

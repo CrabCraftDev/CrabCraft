@@ -1,7 +1,7 @@
+use crab_macros::ProtocolSerializer;
 use crab_protocol::packet::Packet;
 use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::protocol_state::ProtocolState::{Configuration, Play};
-use crab_protocol_macros::ProtocolSerializer;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct ReportDetailsS2CPacket {

@@ -1,7 +1,7 @@
 use bytes::BytesMut;
 
+use crab_macros::ProtocolSerializer;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_protocol_macros::ProtocolSerializer;
 
 #[derive(Debug, PartialEq, ProtocolSerializer)]
 pub struct BoundedStructC2S {

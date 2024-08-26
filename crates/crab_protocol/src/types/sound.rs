@@ -1,10 +1,10 @@
 use strum::FromRepr;
 
+use crab_macros::ProtocolSerializer;
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
 use crab_protocol::types::identifier::Identifier;
-use crab_protocol_macros::ProtocolSerializer;
 
 #[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum SoundCategory {
@@ -25,7 +25,7 @@ pub enum SoundEffect {
     Direct {
         id: i32,
     },
-    Identifier {
+    SoundIdentifier {
         sound_name: Identifier,
         fixed_range: Option<f32>,
     },
@@ -37,7 +37,7 @@ impl ProtocolSerializer for SoundEffect {
             SoundEffect::Direct { id } => {
                 buf.put_var_int(id + 1);
             }
-            SoundEffect::Identifier {
+            SoundEffect::SoundIdentifier {
                 sound_name,
                 fixed_range,
             } => {
@@ -53,7 +53,7 @@ impl ProtocolSerializer for SoundEffect {
         if id == 0 {
             let sound_name = Identifier::deserialize(buf)?;
             let fixed_range = Option::<f32>::deserialize(buf)?;
-            Ok(SoundEffect::Identifier {
+            Ok(SoundEffect::SoundIdentifier {
                 sound_name,
                 fixed_range,
             })

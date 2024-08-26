@@ -1,4 +1,4 @@
-use crab_protocol_macros::ProtocolSerializer;
+use crab_macros::ProtocolSerializer;
 
 #[derive(Clone, Copy, PartialEq, Debug, ProtocolSerializer)]
 pub struct Position {

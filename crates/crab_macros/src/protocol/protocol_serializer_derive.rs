@@ -3,14 +3,14 @@ use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
 use syn::{parse2, Attribute, Data, DataStruct, DeriveInput, Error, Index, Result, Type};
 
-use crate::args::{parse_attributes, ProtocolAttribute};
+use crate::protocol::args::{parse_attributes, ProtocolAttribute};
 
 pub(crate) fn derive_protocol_serializer_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;
     let input_name = input.ident.clone();
     let input_name_str = input_name.to_string();
     let input_span = input.span();
-    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
     let (serialize_impl, deserialize_impl) = match input.data {
         Data::Enum(_data_enum) => generate_enum(&input.attrs, &input_name_str),
@@ -19,7 +19,7 @@ pub(crate) fn derive_protocol_serializer_impl(item: TokenStream) -> Result<Token
     };
 
     Ok(quote! {
-        impl #impl_generics ::crab_protocol::protocol_serializer::ProtocolSerializer for #input_name #ty_generics
+        impl #impl_generics ::crab_protocol::protocol_serializer::ProtocolSerializer for #input_name #type_generics
         #where_clause
         {
             fn serialize(&self, mut buf: &mut impl ::crab_protocol::buf::WriteByteBuf) -> Result<(), ::crab_protocol::error::ProtocolError> {

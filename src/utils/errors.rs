@@ -1,5 +1,6 @@
 use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
+use crab_world::error::WorldError;
 use std::io;
 use thiserror::Error;
 
@@ -13,4 +14,6 @@ pub enum Error {
     Protocol(#[from] ProtocolError),
     #[error(transparent)]
     InvalidNbt(#[from] CrabNbtError),
+    #[error(transparent)]
+    World(#[from] WorldError),
 }

@@ -1,21 +1,26 @@
-use crate::utils::errors::Error;
-use bytes::{BufMut, BytesMut};
-use crab_protocol::buf::WriteByteBuf;
-use crab_protocol::protocol_serializer::ProtocolSerializer;
-use nohash_hasher::NoHashHasher;
 use std::collections::HashMap;
 use std::hash::BuildHasherDefault;
+
+use bytes::{BufMut, BytesMut};
+use nohash_hasher::NoHashHasher;
+
+use crab_protocol::buf::WriteByteBuf;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
+
+use crate::error::WorldError;
 
 pub const BIOMES_CONTAINER: PalettedContainer = PalettedContainer {
     indirect_from: 1,
     indirect_to: 3,
     direct_size: 6,
+    expected_size: 64,
 };
 
 pub const BLOCKS_CONTAINER: PalettedContainer = PalettedContainer {
     indirect_from: 4,
     indirect_to: 8,
     direct_size: 15,
+    expected_size: 4096,
 };
 
 /// [Palette](https://en.wikipedia.org/wiki/Palette_(computing)) is a structure optimized for storing data in a limited amount of space.
@@ -30,10 +35,29 @@ pub struct PalettedContainer {
     indirect_from: usize,
     indirect_to: usize,
     direct_size: usize,
+    expected_size: usize,
 }
 
 impl PalettedContainer {
-    pub fn serialize_palette(&self, entries: Vec<i32>, bytes: &mut BytesMut) -> Result<(), Error> {
+    pub fn deserialize_palette<T: Clone>(&self, palette: &[T], data: &[u64]) -> Vec<T> {
+        let bits_per_entry = (palette.len() as f64).log2().ceil() as usize;
+        let bits_per_entry = if bits_per_entry == 0 {
+            return vec![palette[0].clone(); self.expected_size];
+        } else if bits_per_entry <= self.indirect_to {
+            bits_per_entry.max(self.indirect_from)
+        } else {
+            self.direct_size
+        };
+
+        let palette_data = extract_data_array_long(data, bits_per_entry);
+        palette_data
+            .iter()
+            .take(self.expected_size)
+            .map(|&index| palette[index as usize].clone())
+            .collect()
+    }
+
+    pub fn serialize_palette(&self, entries: Vec<i32>, bytes: &mut BytesMut) -> Result<(), WorldError> {
         let mut unique_values: HashMap<i32, usize, BuildHasherDefault<NoHashHasher<u8>>> =
             HashMap::with_hasher(BuildHasherDefault::default());
         let mut insertion_order = Vec::new();
@@ -49,8 +73,8 @@ impl PalettedContainer {
             }
         }
 
-        let bits_per_entry = (unique_values.len() as f32).sqrt().ceil() as usize;
-        if bits_per_entry == 1 {
+        let bits_per_entry = (unique_values.len() as f64).log2().ceil() as usize;
+        if bits_per_entry == 0 {
             Self::serialize_single_valued_palette(bytes, entries[0]);
         } else if bits_per_entry <= self.indirect_to {
             let entries: Vec<i32> = entries.iter().map(|v| unique_values[v] as i32).collect();
@@ -71,7 +95,7 @@ impl PalettedContainer {
         entries: &[i32],
         insertion_order: &[i32],
         bits_per_entry: usize,
-    ) -> Result<(), Error> {
+    ) -> Result<(), WorldError> {
         bytes.put_u8(bits_per_entry as u8);
         bytes.put_var_int(insertion_order.len() as i32);
         for &value in insertion_order {
@@ -87,7 +111,11 @@ impl PalettedContainer {
         chunk_section.put_var_int(0);
     }
 
-    pub fn write_entries_as_longs(bytes: &mut BytesMut, entries: &[i32], bits_per_entry: usize) -> Result<(), Error> {
+    pub fn write_entries_as_longs(
+        bytes: &mut BytesMut,
+        entries: &[i32],
+        bits_per_entry: usize,
+    ) -> Result<(), WorldError> {
         let longs = get_entries_as_longs(entries, bits_per_entry);
         longs.serialize(bytes)?;
         Ok(())
@@ -105,6 +133,18 @@ pub fn get_entries_as_longs(entries: &[i32], bits_per_entry: usize) -> Vec<i64> 
     longs
 }
 
+pub fn extract_data_array_long(data: &[u64], bits_per_number: usize) -> Vec<i32> {
+    let mut numbers = Vec::new();
+    let num_count = u64::BITS as usize / bits_per_number;
+    for entry in data {
+        for i in 0..num_count {
+            let number = ((entry >> (i * bits_per_number)) & ((1 << bits_per_number) - 1)) as i32;
+            numbers.push(number);
+        }
+    }
+    numbers
+}
+
 pub fn generate_data_array_long(numbers: &[i32], bits_per_number: usize) -> u64 {
     let mut result_number = 0;
     for (i, &number) in numbers.iter().enumerate() {
@@ -115,9 +155,11 @@ pub fn generate_data_array_long(numbers: &[i32], bits_per_number: usize) -> u64 
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use bytes::Buf;
+
     use crab_protocol::buf::ReadByteBuf;
+
+    use super::*;
 
     const TEST_ENTRIES: [i32; 4] = [1, 2, 3, 4];
     const TEST_ENTRIES_AS_BYTES: u64 = 0b0000000000000100000000000000001100000000000000100000000000000001;
@@ -146,5 +188,11 @@ mod tests {
     fn test_generate_data_array_long() {
         let result = generate_data_array_long(&TEST_ENTRIES, 16);
         assert_eq!(result, TEST_ENTRIES_AS_BYTES);
+    }
+
+    #[test]
+    fn test_extract_data_array_long() {
+        let result = extract_data_array_long(&[TEST_ENTRIES_AS_BYTES], 16);
+        assert_eq!(result, &TEST_ENTRIES)
     }
 }

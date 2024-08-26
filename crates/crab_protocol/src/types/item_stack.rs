@@ -1,6 +1,6 @@
 use crab_nbt::Nbt;
 
-use crab_protocol_macros::ProtocolSerializer;
+use crab_macros::ProtocolSerializer;
 
 use crate::error::ProtocolError;
 
