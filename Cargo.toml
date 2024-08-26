@@ -25,6 +25,7 @@ serde_json = "1.0.120"
 evenio = "0.6.0"
 derive_more = { version = "1.0.0-beta.6", features = ["into", "from"] }
 strum = { version = "0.26.3", features = ["derive"] }
+bitfield-struct = "0.8.0"
 
 # Code generation, macros etc.
 quote = "1.0.35"
@@ -52,6 +53,7 @@ lazy_static = "1.5.0"
 
 crab_protocol = { path = "crates/crab_protocol" }
 crab_registry = { path = "crates/crab_registry" }
+crab_world = { path = "crates/crab_world" }
 
 [dev-dependencies]
 cargo-husky = { version = "1.5.0", features = [

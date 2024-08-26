@@ -1,6 +1,6 @@
 use strum::FromRepr;
 
-use crab_protocol_macros::{Packet, ProtocolSerializer};
+use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;

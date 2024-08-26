@@ -1,0 +1,23 @@
+[package]
+name = "crab_world"
+version.workspace = true
+edition = "2021"
+build = "build/main.rs"
+
+[dependencies]
+strum.workspace = true
+derive_more.workspace = true
+thiserror.workspace = true
+bytes.workspace = true
+nohash-hasher = "0.2.0"
+
+crab_protocol = { path = "../crab_protocol" }
+crab_macros = { path = "../crab_macros" }
+
+[build-dependencies]
+serde.workspace = true
+serde_json.workspace = true
+quote.workspace = true
+proc-macro2.workspace = true
+heck = "0.5.0"
+

@@ -1,4 +1,4 @@
-use crab_protocol_macros::ProtocolSerializer;
+use crab_macros::ProtocolSerializer;
 
 #[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct Property {

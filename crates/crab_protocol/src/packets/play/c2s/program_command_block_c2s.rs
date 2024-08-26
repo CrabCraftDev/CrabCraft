@@ -1,7 +1,7 @@
 use bitfield_struct::bitfield;
 use strum::FromRepr;
 
-use crab_protocol_macros::{Packet, ProtocolSerializer};
+use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
 use crate::types::block_position::BlockPosition;

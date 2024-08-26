@@ -1,10 +1,10 @@
 use derive_more::{From, Into};
 use strum::FromRepr;
 
+use crab_macros::ProtocolSerializer;
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_protocol_macros::ProtocolSerializer;
 
 #[derive(Debug, Copy, Clone, PartialEq, FromRepr, ProtocolSerializer)]
 #[repr(u8)]

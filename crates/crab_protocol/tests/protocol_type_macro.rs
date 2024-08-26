@@ -1,8 +1,8 @@
 use bytes::{BufMut, BytesMut};
 use strum::FromRepr;
 
+use crab_macros::ProtocolSerializer;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_protocol_macros::ProtocolSerializer;
 
 #[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum NextState {

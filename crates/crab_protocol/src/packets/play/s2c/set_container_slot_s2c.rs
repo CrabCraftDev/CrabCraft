@@ -1,4 +1,4 @@
-use crab_protocol_macros::{Packet, ProtocolSerializer};
+use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
 use crate::types::item_stack::ItemStack;

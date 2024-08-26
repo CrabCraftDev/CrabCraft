@@ -1,9 +1,10 @@
-use crate::chunks::paletted_container::get_entries_as_longs;
 use crate::chunks::section::ChunkSection;
 use crate::utils::errors::Error;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
-use crab_registry::blocks::{Air, Block};
+use crab_world::blocks::Air;
+use crab_world::paletted_container::get_entries_as_longs;
+use crab_world::{Block, BlockType};
 
 pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
 pub const AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION: usize = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
@@ -18,7 +19,7 @@ pub struct Chunk {
 }
 
 impl Chunk {
-    fn get_block(&self, x: u8, y: u8, z: u8) -> Option<Box<dyn Block>> {
+    fn get_block(&self, x: u8, y: u8, z: u8) -> Block {
         let local_y = y as usize % CHUNK_SIZE;
         self.sections[y as usize / CHUNK_SIZE].get_block(x, local_y as u8, z)
     }
@@ -30,8 +31,8 @@ impl Chunk {
         for z in 0..16 {
             for x in 0..16 {
                 for y in (0..(CHUNK_SECTIONS_PER_WORLD_HEIGHT * 16)).rev() {
-                    let block = self.get_block(x, y as u8, z).unwrap();
-                    if Air::is_same_type_as_self(&*block) {
+                    let block = self.get_block(x, y as u8, z);
+                    if Air::is_same_type_as(&block) {
                         heightmap[(z * 16 + x) as usize] = y as u16;
                         break;
                     }

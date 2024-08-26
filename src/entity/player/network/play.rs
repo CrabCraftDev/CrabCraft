@@ -1,3 +1,4 @@
+use super::connection::PlayerConnection;
 use crate::chunks::chunk::{Chunk, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
@@ -11,11 +12,10 @@ use crab_protocol::{
         bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, identifier::Identifier, position::Position,
     },
 };
-use crab_registry::blocks::{Bedrock, Dirt, GrassBlock};
+use crab_world::blocks::{Bedrock, Dirt, GrassBlock};
+use crab_world::BlockType;
 use evenio::event::{Receiver, TargetedEvent};
 use log::info;
-
-use super::connection::PlayerConnection;
 
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
@@ -64,11 +64,11 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
     let grass_section = &mut normal_chunk.sections[0];
     for i in 0..16 {
         for j in 0..16 {
-            grass_section.set_block(i, 4, j, &GrassBlock::default());
-            grass_section.set_block(i, 3, j, &Dirt);
-            grass_section.set_block(i, 2, j, &Dirt);
-            grass_section.set_block(i, 1, j, &Dirt);
-            grass_section.set_block(i, 0, j, &Bedrock);
+            grass_section.set_block(i, 4, j, GrassBlock::get_default_id().unwrap());
+            grass_section.set_block(i, 3, j, Dirt::get_default_id().unwrap());
+            grass_section.set_block(i, 2, j, Dirt::get_default_id().unwrap());
+            grass_section.set_block(i, 1, j, Dirt::get_default_id().unwrap());
+            grass_section.set_block(i, 0, j, Bedrock::get_default_id().unwrap());
         }
     }
 

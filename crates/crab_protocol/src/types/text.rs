@@ -2,9 +2,9 @@ use crab_nbt::NbtTag;
 use derive_more::{From, Into};
 use std::fmt::Debug;
 
+use crab_macros::ProtocolSerializer;
 use crab_protocol::bounded::Bounded;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_protocol_macros::ProtocolSerializer;
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;

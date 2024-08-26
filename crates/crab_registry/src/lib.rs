@@ -3,8 +3,6 @@ use include_dir::{include_dir, Dir};
 use std::collections::HashMap;
 use std::path::Path;
 
-pub mod blocks;
-
 /// RegistryLoader is a struct that holds all dynamic registries like biomes.
 /// Default data is obtained from the assets/datapack directory.
 #[derive(Debug)]
