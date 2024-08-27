@@ -20,6 +20,10 @@ impl RegistryManager {
         entries.iter().position(|x| x == entry)
     }
 
+    pub fn get_amount(&self, namespace: &NamespacedKey) -> Option<usize> {
+        Some(self.data.get(namespace)?.len())
+    }
+
     fn find_registry_files(root_dir: &Dir) -> HashMap<NamespacedKey, Vec<NamespacedKey>> {
         let mut result = HashMap::new();
 

@@ -39,7 +39,7 @@ impl BlocksRegistry {
     }
 
     pub fn get_block_from_id(&self, key: u16) -> Result<&NamespacedKey, WorldError> {
-        if key > self.current_id {
+        if key > self.get_max_used_id() {
             return Err(WorldError::BlockIdDoesNotExist(key));
         }
         let block_id = self.id_to_block.range(..=key).next_back().map(|(_, v)| v);
@@ -50,5 +50,9 @@ impl BlocksRegistry {
         self.blocks_information
             .get(namespaced_key)
             .ok_or(WorldError::BlockDoesNotExist(namespaced_key.clone()))
+    }
+
+    pub fn get_max_used_id(&self) -> u16 {
+        self.current_id
     }
 }

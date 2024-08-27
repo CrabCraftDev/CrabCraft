@@ -9,19 +9,27 @@ use crab_protocol::protocol_serializer::ProtocolSerializer;
 
 use crate::error::WorldError;
 
-pub const BIOMES_CONTAINER: PalettedContainer = PalettedContainer {
-    indirect_from: 1,
-    indirect_to: 3,
-    direct_size: 6,
-    expected_size: 64,
-};
+pub const CHUNK_SIZE: usize = 16;
+pub const AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION: usize = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+pub const AMOUNT_OF_BIOMES_IN_CHUNK_SECTION: usize = 4 * 4 * 4;
 
-pub const BLOCKS_CONTAINER: PalettedContainer = PalettedContainer {
-    indirect_from: 4,
-    indirect_to: 8,
-    direct_size: 15,
-    expected_size: 4096,
-};
+pub fn get_biomes_container(entries_amount: usize) -> PalettedContainer {
+    PalettedContainer {
+        indirect_from: 1,
+        indirect_to: 3,
+        direct_size: (entries_amount as f64).log2().ceil() as usize,
+        expected_length: AMOUNT_OF_BIOMES_IN_CHUNK_SECTION,
+    }
+}
+
+pub fn get_blocks_container(entries_amount: usize) -> PalettedContainer {
+    PalettedContainer {
+        indirect_from: 4,
+        indirect_to: 8,
+        direct_size: (entries_amount as f64).log2().ceil() as usize,
+        expected_length: AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION,
+    }
+}
 
 /// [Palette](https://en.wikipedia.org/wiki/Palette_(computing)) is a structure optimized for storing data in a limited amount of space.
 /// In Minecraft, palettes are used to store block and biome data within chunks.
@@ -35,14 +43,14 @@ pub struct PalettedContainer {
     indirect_from: usize,
     indirect_to: usize,
     direct_size: usize,
-    expected_size: usize,
+    expected_length: usize,
 }
 
 impl PalettedContainer {
     pub fn deserialize_palette<T: Clone>(&self, palette: &[T], data: &[u64]) -> Vec<T> {
         let bits_per_entry = (palette.len() as f64).log2().ceil() as usize;
         let bits_per_entry = if bits_per_entry == 0 {
-            return vec![palette[0].clone(); self.expected_size];
+            return vec![palette[0].clone(); self.expected_length];
         } else if bits_per_entry <= self.indirect_to {
             bits_per_entry.max(self.indirect_from)
         } else {
@@ -52,7 +60,7 @@ impl PalettedContainer {
         let palette_data = extract_data_array_long(data, bits_per_entry);
         palette_data
             .iter()
-            .take(self.expected_size)
+            .take(self.expected_length)
             .map(|&index| palette[index as usize].clone())
             .collect()
     }
@@ -64,7 +72,7 @@ impl PalettedContainer {
 
         for &value in &entries {
             // If we have more unique values than we can store in the indirect palette, we can stop
-            if unique_values.len() > self.indirect_to * self.indirect_to {
+            if unique_values.len() > 2usize.pow(self.indirect_to as u32) {
                 break;
             }
             if !unique_values.contains_key(&value) {
@@ -167,7 +175,7 @@ mod tests {
     #[test]
     fn test_serialize_indirect() {
         let mut bytes = BytesMut::new();
-        BIOMES_CONTAINER
+        get_biomes_container(64)
             .serialize_palette(TEST_ENTRIES.to_vec(), &mut bytes)
             .unwrap();
         assert_eq!(bytes.get_u8(), 2);

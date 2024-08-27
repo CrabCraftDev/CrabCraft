@@ -3,13 +3,10 @@ use crate::utils::errors::Error;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
 use crab_world::blocks::Air;
-use crab_world::paletted_container::get_entries_as_longs;
+use crab_world::paletted_container::{get_entries_as_longs, CHUNK_SIZE};
 use crab_world::{Block, BlockType};
 
 pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
-pub const AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION: usize = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
-pub const AMOUNT_OF_BIOMES_IN_CHUNK_SECTION: usize = 4 * 4 * 4;
-pub const CHUNK_SIZE: usize = 16;
 
 /// Chunk is a collection of blocks with a horizontal size of 16×16, spanning the entire buildable area on the vertical axis.
 /// Each chunk consists of [sections](ChunkSection) - a 16×16×16 cube of blocks.
