@@ -1,11 +1,12 @@
-use crate::chunks::chunk::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
 use crate::utils::errors::Error;
 use crate::REGISTRY;
 use bytes::{BufMut, Bytes, BytesMut};
 use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_world::blocks::Air;
-use crab_world::paletted_container::{BIOMES_CONTAINER, BLOCKS_CONTAINER};
-use crab_world::{Block, BlockType};
+use crab_world::paletted_container::{
+    get_biomes_container, get_blocks_container, AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION,
+};
+use crab_world::{Block, BlockType, BLOCKS};
 
 /// Chunk section is a 16×16×16 collection of blocks.
 /// It stores blocks and biomes in a [paletted](crab_world::paletted_container::PalettedContainer) format.
@@ -58,8 +59,15 @@ impl ChunkSection {
 
         let mut bytes = BytesMut::new();
         bytes.put_i16(self.non_air_block_amount as i16);
-        BLOCKS_CONTAINER.serialize_palette(self.blocks.iter().map(|&v| v.0 as i32).collect(), &mut bytes)?;
-        BIOMES_CONTAINER.serialize_palette(self.biomes.iter().map(|&v| v as i32).collect(), &mut bytes)?;
+        get_blocks_container(BLOCKS.get().unwrap().get_max_used_id() as usize)
+            .serialize_palette(self.blocks.iter().map(|&v| v.0 as i32).collect(), &mut bytes)?;
+
+        let registry = &REGISTRY.read().unwrap();
+        let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome")?;
+        let biomes_amount = registry.get_amount(&biome_registry_namespaced_key).unwrap();
+
+        get_biomes_container(biomes_amount)
+            .serialize_palette(self.biomes.iter().map(|&v| v as i32).collect(), &mut bytes)?;
 
         let bytes = bytes.freeze();
 
