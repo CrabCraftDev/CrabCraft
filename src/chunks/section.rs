@@ -59,12 +59,12 @@ impl ChunkSection {
 
         let mut bytes = BytesMut::new();
         bytes.put_i16(self.non_air_block_amount as i16);
-        get_blocks_container(BLOCKS.get().unwrap().get_max_used_id() as usize)
+        get_blocks_container(BLOCKS.get().unwrap().last_state_id as usize)
             .serialize_palette(self.blocks.iter().map(|&v| v.0 as i32).collect(), &mut bytes)?;
 
         let registry = &REGISTRY.read().unwrap();
         let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome")?;
-        let biomes_amount = registry.get_amount(&biome_registry_namespaced_key).unwrap();
+        let biomes_amount = registry.get_length(&biome_registry_namespaced_key).unwrap();
 
         get_biomes_container(biomes_amount)
             .serialize_palette(self.biomes.iter().map(|&v| v as i32).collect(), &mut bytes)?;
@@ -92,7 +92,7 @@ impl Default for ChunkSection {
             .get_numeric_id(&biome_registry_namespaced_key, &plains_biome_namespace)
             .unwrap() as u8;
         Self::new(
-            [Air::get_default_id().unwrap(); AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
+            [Air::default_state_id().unwrap(); AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
             [plains_biome_id; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
         )
     }

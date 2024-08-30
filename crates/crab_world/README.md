@@ -19,5 +19,21 @@ clients in the future. The primary representation of a block is through `Block`.
 
 ### Usage
 
-To get data about a block, you can use the provided struct `BlocksRegistry`. For typed access, use the `BlockData`
+To get data about a block, you can use the provided struct `BlockRegistry`. For typed access, use the `BlockData`
 structure.
+
+### Examples
+
+```rust
+let block = GrassBlock::default_state_id().unwrap();
+let is_snowy = block.get_property::<Snowy>().unwrap();
+
+assert_eq!(is_snowy, Snowy { snowy: false });
+  ```
+
+```rust
+// You have to init blocks first, but main.rs already does it
+BLOCKS.get_or_init(init_blocks);
+
+let block = BLOCKS.get().unwrap().namespaced_key_by_state_id(3).unwrap();
+```

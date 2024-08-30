@@ -5,7 +5,7 @@ use syn::{parse2, Data, DeriveInput, Error, Fields, Result, Type};
 
 pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;
-    let input_name = input.ident.clone();
+    let input_name = &input.ident;
     let input_span = input.span();
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
@@ -18,7 +18,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
     };
 
     let mut field_names = Vec::new();
-    let mut field_checks = Vec::new();
+    let mut property_parsing = Vec::new();
 
     for field in fields {
         let field_name = field.ident.clone().unwrap();
@@ -43,7 +43,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
             _ => quote! { #field_type::from_repr(*value).unwrap() },
         };
 
-        field_checks.push(quote! {
+        property_parsing.push(quote! {
             let value = match properties.get(stringify!(#field_name)) {
                 Some(value) => value,
                 None => return Err(::crab_world::error::WorldError::InvalidPropertyName),
@@ -57,7 +57,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
         #where_clause
         {
             fn from_properties(properties: ::std::collections::HashMap<String, u16>) -> Result<Self, ::crab_world::error::WorldError> {
-                #(#field_checks)*
+                #(#property_parsing)*
                 Ok(Self {
                     #(#field_names,)*
                 })
