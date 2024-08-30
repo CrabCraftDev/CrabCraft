@@ -3,7 +3,7 @@ use include_dir::{include_dir, Dir};
 use std::collections::HashMap;
 use std::path::Path;
 
-/// RegistryLoader is a struct that holds all dynamic registries like biomes.
+/// RegistryManager is a struct that holds all dynamic registries like biomes.
 /// Default data is obtained from the assets/datapack directory.
 #[derive(Debug)]
 pub struct RegistryManager {
@@ -20,7 +20,7 @@ impl RegistryManager {
         entries.iter().position(|x| x == entry)
     }
 
-    pub fn get_amount(&self, namespace: &NamespacedKey) -> Option<usize> {
+    pub fn get_length(&self, namespace: &NamespacedKey) -> Option<usize> {
         Some(self.data.get(namespace)?.len())
     }
 

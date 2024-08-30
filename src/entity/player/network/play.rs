@@ -66,11 +66,11 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
     let grass_section = &mut normal_chunk.sections[0];
     for i in 0..16 {
         for j in 0..16 {
-            grass_section.set_block(i, 4, j, GrassBlock::get_default_id().unwrap());
-            grass_section.set_block(i, 3, j, Dirt::get_default_id().unwrap());
-            grass_section.set_block(i, 2, j, Dirt::get_default_id().unwrap());
-            grass_section.set_block(i, 1, j, Dirt::get_default_id().unwrap());
-            grass_section.set_block(i, 0, j, Bedrock::get_default_id().unwrap());
+            grass_section.set_block(i, 4, j, GrassBlock::default_state_id().unwrap());
+            grass_section.set_block(i, 3, j, Dirt::default_state_id().unwrap());
+            grass_section.set_block(i, 2, j, Dirt::default_state_id().unwrap());
+            grass_section.set_block(i, 1, j, Dirt::default_state_id().unwrap());
+            grass_section.set_block(i, 0, j, Bedrock::default_state_id().unwrap());
         }
     }
 

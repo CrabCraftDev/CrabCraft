@@ -9,7 +9,7 @@ mod world;
 /// This macro simplifies the process of implementing the `ProtocolSerializer` trait for a type.
 ///
 /// The `ProtocolSerializer` trait provides methods for serializing and deserializing the type into/from a byte buffer.
-/// The `derive_protocol_type` macro generates an implementation of the `ProtocolSerializer` trait for the type.
+/// The `derive_protocol_serializer` macro generates an implementation of the `ProtocolSerializer` trait for the type.
 ///
 /// # Attributes
 ///
@@ -55,8 +55,8 @@ mod world;
 ///
 /// Note: The `ProtocolSerializer` derive macro can only be used with structs and enums.
 #[proc_macro_derive(ProtocolSerializer, attributes(protocol_attribute))]
-pub fn derive_protocol_type(item: TokenStream) -> TokenStream {
-    match crate::protocol::protocol_serializer_derive::derive_protocol_serializer_impl(item.into()) {
+pub fn derive_protocol_serializer(item: TokenStream) -> TokenStream {
+    match protocol::protocol_serializer_derive::derive_protocol_serializer_impl(item.into()) {
         Ok(tokens) => tokens.into(),
         Err(e) => e.into_compile_error().into(),
     }

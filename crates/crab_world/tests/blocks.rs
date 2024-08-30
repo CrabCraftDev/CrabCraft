@@ -9,9 +9,9 @@ use crab_world::{BlockType, BLOCKS};
 fn get_block_struct_information() {
     BLOCKS.get_or_init(init_blocks);
 
-    let block = GrassBlock::get_default_id().unwrap();
-    let properties = block.get_properties().unwrap();
-    let id = block.get_namespaced_key().unwrap();
+    let block = GrassBlock::default_state_id().unwrap();
+    let properties = block.properties().unwrap();
+    let id = block.namespaced_key().unwrap();
 
     let mut expected_properties = HashMap::new();
     // Note: 0 represents true and 1 represents false. By default, the grass block is not snowy.

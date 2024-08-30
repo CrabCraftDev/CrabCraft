@@ -5,7 +5,7 @@ use crab_protocol::types::namespaced_key::NamespacedKey;
 
 #[derive(Debug, Error)]
 pub enum WorldError {
-    #[error("Blocks list is not initialized")]
+    #[error("Blocks registry has not been initialized")]
     BlocksNotInitialized,
     #[error("Provided local id {0} exceeds maximum {1}")]
     InvalidLocalState(u16, u16),

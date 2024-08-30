@@ -2,42 +2,42 @@
   {
     "name": "air",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "stone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "granite",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_granite",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "diorite",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_diorite",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "andesite",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_andesite",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "grass_block",
@@ -50,17 +50,17 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dirt",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "coarse_dirt",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "podzol",
@@ -73,62 +73,62 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cobblestone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oak_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "spruce_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "birch_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "jungle_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "acacia_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cherry_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dark_oak_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "mangrove_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bamboo_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bamboo_mosaic",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oak_sapling",
@@ -141,7 +141,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "spruce_sapling",
@@ -154,7 +154,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "birch_sapling",
@@ -167,7 +167,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "jungle_sapling",
@@ -180,7 +180,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "acacia_sapling",
@@ -193,7 +193,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cherry_sapling",
@@ -206,7 +206,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dark_oak_sapling",
@@ -219,7 +219,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "mangrove_propagule",
@@ -256,12 +256,12 @@
         ]
       }
     ],
-    "local_default_state": 5
+    "default_state_offset": 5
   },
   {
     "name": "bedrock",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "water",
@@ -288,7 +288,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lava",
@@ -315,12 +315,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sand",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "suspicious_sand",
@@ -335,17 +335,17 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_sand",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gravel",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "suspicious_gravel",
@@ -360,42 +360,42 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gold_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_gold_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "iron_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_iron_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "coal_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_coal_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "nether_gold_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oak_log",
@@ -409,7 +409,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "spruce_log",
@@ -423,7 +423,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "birch_log",
@@ -437,7 +437,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "jungle_log",
@@ -451,7 +451,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "acacia_log",
@@ -465,7 +465,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cherry_log",
@@ -479,7 +479,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dark_oak_log",
@@ -493,7 +493,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "mangrove_log",
@@ -507,7 +507,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "mangrove_roots",
@@ -520,7 +520,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "muddy_mangrove_roots",
@@ -534,7 +534,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "bamboo_block",
@@ -548,7 +548,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_spruce_log",
@@ -562,7 +562,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_birch_log",
@@ -576,7 +576,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_jungle_log",
@@ -590,7 +590,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_acacia_log",
@@ -604,7 +604,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_cherry_log",
@@ -618,7 +618,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_dark_oak_log",
@@ -632,7 +632,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_oak_log",
@@ -646,7 +646,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_mangrove_log",
@@ -660,7 +660,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_bamboo_block",
@@ -674,7 +674,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "oak_wood",
@@ -688,7 +688,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "spruce_wood",
@@ -702,7 +702,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "birch_wood",
@@ -716,7 +716,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "jungle_wood",
@@ -730,7 +730,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "acacia_wood",
@@ -744,7 +744,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cherry_wood",
@@ -758,7 +758,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dark_oak_wood",
@@ -772,7 +772,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "mangrove_wood",
@@ -786,7 +786,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_oak_wood",
@@ -800,7 +800,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_spruce_wood",
@@ -814,7 +814,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_birch_wood",
@@ -828,7 +828,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_jungle_wood",
@@ -842,7 +842,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_acacia_wood",
@@ -856,7 +856,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_cherry_wood",
@@ -870,7 +870,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_dark_oak_wood",
@@ -884,7 +884,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_mangrove_wood",
@@ -898,7 +898,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "oak_leaves",
@@ -930,7 +930,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "spruce_leaves",
@@ -962,7 +962,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "birch_leaves",
@@ -994,7 +994,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "jungle_leaves",
@@ -1026,7 +1026,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "acacia_leaves",
@@ -1058,7 +1058,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "cherry_leaves",
@@ -1090,7 +1090,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "dark_oak_leaves",
@@ -1122,7 +1122,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "mangrove_leaves",
@@ -1154,7 +1154,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "azalea_leaves",
@@ -1186,7 +1186,7 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "flowering_azalea_leaves",
@@ -1218,37 +1218,37 @@
         ]
       }
     ],
-    "local_default_state": 27
+    "default_state_offset": 27
   },
   {
     "name": "sponge",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "wet_sponge",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lapis_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_lapis_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lapis_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dispenser",
@@ -1272,22 +1272,22 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chiseled_sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cut_sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "note_block",
@@ -1358,7 +1358,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "white_bed",
@@ -1387,7 +1387,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "orange_bed",
@@ -1416,7 +1416,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "magenta_bed",
@@ -1445,7 +1445,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "light_blue_bed",
@@ -1474,7 +1474,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "yellow_bed",
@@ -1503,7 +1503,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "lime_bed",
@@ -1532,7 +1532,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "pink_bed",
@@ -1561,7 +1561,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "gray_bed",
@@ -1590,7 +1590,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "light_gray_bed",
@@ -1619,7 +1619,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cyan_bed",
@@ -1648,7 +1648,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "purple_bed",
@@ -1677,7 +1677,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "blue_bed",
@@ -1706,7 +1706,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "brown_bed",
@@ -1735,7 +1735,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "green_bed",
@@ -1764,7 +1764,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "red_bed",
@@ -1793,7 +1793,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "black_bed",
@@ -1822,7 +1822,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "powered_rail",
@@ -1853,7 +1853,7 @@
         ]
       }
     ],
-    "local_default_state": 13
+    "default_state_offset": 13
   },
   {
     "name": "detector_rail",
@@ -1884,7 +1884,7 @@
         ]
       }
     ],
-    "local_default_state": 13
+    "default_state_offset": 13
   },
   {
     "name": "sticky_piston",
@@ -1908,32 +1908,32 @@
         ]
       }
     ],
-    "local_default_state": 6
+    "default_state_offset": 6
   },
   {
     "name": "cobweb",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "short_grass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "fern",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_bush",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "seagrass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tall_seagrass",
@@ -1946,7 +1946,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "piston",
@@ -1970,7 +1970,7 @@
         ]
       }
     ],
-    "local_default_state": 6
+    "default_state_offset": 6
   },
   {
     "name": "piston_head",
@@ -2001,87 +2001,87 @@
         ]
       }
     ],
-    "local_default_state": 2
+    "default_state_offset": 2
   },
   {
     "name": "white_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_wool",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "moving_piston",
@@ -2105,102 +2105,102 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dandelion",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "torchflower",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "poppy",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_orchid",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "allium",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "azure_bluet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "white_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oxeye_daisy",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cornflower",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "wither_rose",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lily_of_the_valley",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_mushroom",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_mushroom",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gold_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "iron_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tnt",
@@ -2213,12 +2213,12 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "bookshelf",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chiseled_bookshelf",
@@ -2275,22 +2275,22 @@
         ]
       }
     ],
-    "local_default_state": 63
+    "default_state_offset": 63
   },
   {
     "name": "mossy_cobblestone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "obsidian",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "torch",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "wall_torch",
@@ -2305,7 +2305,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "fire",
@@ -2367,17 +2367,17 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "soul_fire",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "spawner",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oak_stairs",
@@ -2416,7 +2416,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "chest",
@@ -2446,7 +2446,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "redstone_wire",
@@ -2505,27 +2505,27 @@
         ]
       }
     ],
-    "local_default_state": 1160
+    "default_state_offset": 1160
   },
   {
     "name": "diamond_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_diamond_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "diamond_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "crafting_table",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "wheat",
@@ -2544,7 +2544,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "farmland",
@@ -2563,7 +2563,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "furnace",
@@ -2585,7 +2585,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "oak_sign",
@@ -2619,7 +2619,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "spruce_sign",
@@ -2653,7 +2653,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "birch_sign",
@@ -2687,7 +2687,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "acacia_sign",
@@ -2721,7 +2721,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cherry_sign",
@@ -2755,7 +2755,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "jungle_sign",
@@ -2789,7 +2789,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dark_oak_sign",
@@ -2823,7 +2823,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "mangrove_sign",
@@ -2857,7 +2857,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "bamboo_sign",
@@ -2891,7 +2891,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "oak_door",
@@ -2934,7 +2934,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "ladder",
@@ -2956,7 +2956,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "rail",
@@ -2984,7 +2984,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cobblestone_stairs",
@@ -3023,7 +3023,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "oak_wall_sign",
@@ -3045,7 +3045,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "spruce_wall_sign",
@@ -3067,7 +3067,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "birch_wall_sign",
@@ -3089,7 +3089,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "acacia_wall_sign",
@@ -3111,7 +3111,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cherry_wall_sign",
@@ -3133,7 +3133,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "jungle_wall_sign",
@@ -3155,7 +3155,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dark_oak_wall_sign",
@@ -3177,7 +3177,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "mangrove_wall_sign",
@@ -3199,7 +3199,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "bamboo_wall_sign",
@@ -3221,7 +3221,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "oak_hanging_sign",
@@ -3262,7 +3262,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "spruce_hanging_sign",
@@ -3303,7 +3303,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "birch_hanging_sign",
@@ -3344,7 +3344,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "acacia_hanging_sign",
@@ -3385,7 +3385,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "cherry_hanging_sign",
@@ -3426,7 +3426,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "jungle_hanging_sign",
@@ -3467,7 +3467,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "dark_oak_hanging_sign",
@@ -3508,7 +3508,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "crimson_hanging_sign",
@@ -3549,7 +3549,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "warped_hanging_sign",
@@ -3590,7 +3590,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "mangrove_hanging_sign",
@@ -3631,7 +3631,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "bamboo_hanging_sign",
@@ -3672,7 +3672,7 @@
         ]
       }
     ],
-    "local_default_state": 33
+    "default_state_offset": 33
   },
   {
     "name": "oak_wall_hanging_sign",
@@ -3694,7 +3694,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "spruce_wall_hanging_sign",
@@ -3716,7 +3716,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "birch_wall_hanging_sign",
@@ -3738,7 +3738,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "acacia_wall_hanging_sign",
@@ -3760,7 +3760,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cherry_wall_hanging_sign",
@@ -3782,7 +3782,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "jungle_wall_hanging_sign",
@@ -3804,7 +3804,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dark_oak_wall_hanging_sign",
@@ -3826,7 +3826,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "mangrove_wall_hanging_sign",
@@ -3848,7 +3848,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "crimson_wall_hanging_sign",
@@ -3870,7 +3870,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "warped_wall_hanging_sign",
@@ -3892,7 +3892,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "bamboo_wall_hanging_sign",
@@ -3914,7 +3914,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "lever",
@@ -3944,7 +3944,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "stone_pressure_plate",
@@ -3957,7 +3957,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "iron_door",
@@ -4000,7 +4000,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "oak_pressure_plate",
@@ -4013,7 +4013,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "spruce_pressure_plate",
@@ -4026,7 +4026,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "birch_pressure_plate",
@@ -4039,7 +4039,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "jungle_pressure_plate",
@@ -4052,7 +4052,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "acacia_pressure_plate",
@@ -4065,7 +4065,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cherry_pressure_plate",
@@ -4078,7 +4078,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dark_oak_pressure_plate",
@@ -4091,7 +4091,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "mangrove_pressure_plate",
@@ -4104,7 +4104,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "bamboo_pressure_plate",
@@ -4117,7 +4117,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "redstone_ore",
@@ -4130,7 +4130,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "deepslate_redstone_ore",
@@ -4143,7 +4143,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "redstone_torch",
@@ -4156,7 +4156,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "redstone_wall_torch",
@@ -4178,7 +4178,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "stone_button",
@@ -4208,7 +4208,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "snow",
@@ -4227,17 +4227,17 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "ice",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "snow_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cactus",
@@ -4264,12 +4264,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "clay",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sugar_cane",
@@ -4296,7 +4296,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "jukebox",
@@ -4309,7 +4309,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "oak_fence",
@@ -4350,22 +4350,22 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "netherrack",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "soul_sand",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "soul_soil",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "basalt",
@@ -4379,7 +4379,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "polished_basalt",
@@ -4393,12 +4393,12 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "soul_torch",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "soul_wall_torch",
@@ -4413,12 +4413,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "glowstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "nether_portal",
@@ -4431,7 +4431,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "carved_pumpkin",
@@ -4446,7 +4446,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "jack_o_lantern",
@@ -4461,7 +4461,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cake",
@@ -4479,7 +4479,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "repeater",
@@ -4517,87 +4517,87 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "white_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_stained_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oak_trapdoor",
@@ -4640,7 +4640,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "spruce_trapdoor",
@@ -4683,7 +4683,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "birch_trapdoor",
@@ -4726,7 +4726,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "jungle_trapdoor",
@@ -4769,7 +4769,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "acacia_trapdoor",
@@ -4812,7 +4812,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "cherry_trapdoor",
@@ -4855,7 +4855,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "dark_oak_trapdoor",
@@ -4898,7 +4898,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "mangrove_trapdoor",
@@ -4941,7 +4941,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "bamboo_trapdoor",
@@ -4984,67 +4984,67 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "mossy_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cracked_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chiseled_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "packed_mud",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "mud_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "infested_stone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "infested_cobblestone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "infested_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "infested_mossy_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "infested_cracked_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "infested_chiseled_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_mushroom_block",
@@ -5092,7 +5092,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_mushroom_block",
@@ -5140,7 +5140,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "mushroom_stem",
@@ -5188,7 +5188,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "iron_bars",
@@ -5229,7 +5229,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "chain",
@@ -5250,7 +5250,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "glass_pane",
@@ -5291,17 +5291,17 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "pumpkin",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "melon",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "attached_pumpkin_stem",
@@ -5316,7 +5316,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "attached_melon_stem",
@@ -5331,7 +5331,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pumpkin_stem",
@@ -5350,7 +5350,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "melon_stem",
@@ -5369,7 +5369,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "vine",
@@ -5410,7 +5410,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "glow_lichen",
@@ -5465,7 +5465,7 @@
         ]
       }
     ],
-    "local_default_state": 127
+    "default_state_offset": 127
   },
   {
     "name": "oak_fence_gate",
@@ -5501,7 +5501,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "brick_stairs",
@@ -5540,7 +5540,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "stone_brick_stairs",
@@ -5579,7 +5579,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "mud_brick_stairs",
@@ -5618,7 +5618,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "mycelium",
@@ -5631,17 +5631,17 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "lily_pad",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "nether_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "nether_brick_fence",
@@ -5682,7 +5682,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "nether_brick_stairs",
@@ -5721,7 +5721,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "nether_wart",
@@ -5736,12 +5736,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "enchanting_table",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brewing_stand",
@@ -5768,12 +5768,12 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "cauldron",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "water_cauldron",
@@ -5787,12 +5787,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lava_cauldron",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "powder_snow_cauldron",
@@ -5806,12 +5806,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "end_portal",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "end_portal_frame",
@@ -5833,17 +5833,17 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "end_stone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dragon_egg",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "redstone_lamp",
@@ -5856,7 +5856,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cocoa",
@@ -5879,7 +5879,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sandstone_stairs",
@@ -5918,17 +5918,17 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "emerald_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_emerald_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "ender_chest",
@@ -5950,7 +5950,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "tripwire_hook",
@@ -5979,7 +5979,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "tripwire",
@@ -6034,12 +6034,12 @@
         ]
       }
     ],
-    "local_default_state": 127
+    "default_state_offset": 127
   },
   {
     "name": "emerald_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "spruce_stairs",
@@ -6078,7 +6078,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "birch_stairs",
@@ -6117,7 +6117,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "jungle_stairs",
@@ -6156,7 +6156,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "command_block",
@@ -6180,12 +6180,12 @@
         ]
       }
     ],
-    "local_default_state": 6
+    "default_state_offset": 6
   },
   {
     "name": "beacon",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cobblestone_wall",
@@ -6237,7 +6237,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "mossy_cobblestone_wall",
@@ -6289,147 +6289,147 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "flower_pot",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_torchflower",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_oak_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_spruce_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_birch_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_jungle_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_acacia_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_cherry_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_dark_oak_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_mangrove_propagule",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_fern",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_dandelion",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_poppy",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_blue_orchid",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_allium",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_azure_bluet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_red_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_orange_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_white_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_pink_tulip",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_oxeye_daisy",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_cornflower",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_lily_of_the_valley",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_wither_rose",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_red_mushroom",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_brown_mushroom",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_dead_bush",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_cactus",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "carrots",
@@ -6448,7 +6448,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potatoes",
@@ -6467,7 +6467,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oak_button",
@@ -6497,7 +6497,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "spruce_button",
@@ -6527,7 +6527,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "birch_button",
@@ -6557,7 +6557,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "jungle_button",
@@ -6587,7 +6587,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "acacia_button",
@@ -6617,7 +6617,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "cherry_button",
@@ -6647,7 +6647,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "dark_oak_button",
@@ -6677,7 +6677,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "mangrove_button",
@@ -6707,7 +6707,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "bamboo_button",
@@ -6737,7 +6737,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "skeleton_skull",
@@ -6771,7 +6771,7 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "skeleton_wall_skull",
@@ -6793,7 +6793,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "wither_skeleton_skull",
@@ -6827,7 +6827,7 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "wither_skeleton_wall_skull",
@@ -6849,7 +6849,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "zombie_head",
@@ -6883,7 +6883,7 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "zombie_wall_head",
@@ -6905,7 +6905,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "player_head",
@@ -6939,7 +6939,7 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "player_wall_head",
@@ -6961,7 +6961,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "creeper_head",
@@ -6995,7 +6995,7 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "creeper_wall_head",
@@ -7017,7 +7017,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "dragon_head",
@@ -7051,7 +7051,7 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "dragon_wall_head",
@@ -7073,7 +7073,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "piglin_head",
@@ -7107,7 +7107,7 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "piglin_wall_head",
@@ -7129,7 +7129,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "anvil",
@@ -7144,7 +7144,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chipped_anvil",
@@ -7159,7 +7159,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "damaged_anvil",
@@ -7174,7 +7174,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "trapped_chest",
@@ -7204,7 +7204,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "light_weighted_pressure_plate",
@@ -7231,7 +7231,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "heavy_weighted_pressure_plate",
@@ -7258,7 +7258,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "comparator",
@@ -7287,7 +7287,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "daylight_detector",
@@ -7321,17 +7321,17 @@
         ]
       }
     ],
-    "local_default_state": 16
+    "default_state_offset": 16
   },
   {
     "name": "redstone_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "nether_quartz_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "hopper",
@@ -7354,17 +7354,17 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "quartz_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chiseled_quartz_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "quartz_pillar",
@@ -7378,7 +7378,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "quartz_stairs",
@@ -7417,7 +7417,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "activator_rail",
@@ -7448,7 +7448,7 @@
         ]
       }
     ],
-    "local_default_state": 13
+    "default_state_offset": 13
   },
   {
     "name": "dropper",
@@ -7472,87 +7472,87 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "white_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "white_stained_glass_pane",
@@ -7593,7 +7593,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "orange_stained_glass_pane",
@@ -7634,7 +7634,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "magenta_stained_glass_pane",
@@ -7675,7 +7675,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "light_blue_stained_glass_pane",
@@ -7716,7 +7716,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "yellow_stained_glass_pane",
@@ -7757,7 +7757,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "lime_stained_glass_pane",
@@ -7798,7 +7798,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "pink_stained_glass_pane",
@@ -7839,7 +7839,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "gray_stained_glass_pane",
@@ -7880,7 +7880,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "light_gray_stained_glass_pane",
@@ -7921,7 +7921,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "cyan_stained_glass_pane",
@@ -7962,7 +7962,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "purple_stained_glass_pane",
@@ -8003,7 +8003,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "blue_stained_glass_pane",
@@ -8044,7 +8044,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "brown_stained_glass_pane",
@@ -8085,7 +8085,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "green_stained_glass_pane",
@@ -8126,7 +8126,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "red_stained_glass_pane",
@@ -8167,7 +8167,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "black_stained_glass_pane",
@@ -8208,7 +8208,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "acacia_stairs",
@@ -8247,7 +8247,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "cherry_stairs",
@@ -8286,7 +8286,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "dark_oak_stairs",
@@ -8325,7 +8325,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "mangrove_stairs",
@@ -8364,7 +8364,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "bamboo_stairs",
@@ -8403,7 +8403,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "bamboo_mosaic_stairs",
@@ -8442,12 +8442,12 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "slime_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "barrier",
@@ -8460,7 +8460,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "light",
@@ -8494,7 +8494,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "iron_trapdoor",
@@ -8537,22 +8537,22 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "prismarine",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "prismarine_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dark_prismarine",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "prismarine_stairs",
@@ -8591,7 +8591,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "prismarine_brick_stairs",
@@ -8630,7 +8630,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "dark_prismarine_stairs",
@@ -8669,7 +8669,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "prismarine_slab",
@@ -8690,7 +8690,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "prismarine_brick_slab",
@@ -8711,7 +8711,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "dark_prismarine_slab",
@@ -8732,12 +8732,12 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "sea_lantern",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "hay_block",
@@ -8751,102 +8751,102 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "white_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "terracotta",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "coal_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "packed_ice",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sunflower",
@@ -8859,7 +8859,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "lilac",
@@ -8872,7 +8872,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "rose_bush",
@@ -8885,7 +8885,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "peony",
@@ -8898,7 +8898,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "tall_grass",
@@ -8911,7 +8911,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "large_fern",
@@ -8924,7 +8924,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "white_banner",
@@ -8951,7 +8951,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_banner",
@@ -8978,7 +8978,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_banner",
@@ -9005,7 +9005,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_banner",
@@ -9032,7 +9032,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_banner",
@@ -9059,7 +9059,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_banner",
@@ -9086,7 +9086,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_banner",
@@ -9113,7 +9113,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_banner",
@@ -9140,7 +9140,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_banner",
@@ -9167,7 +9167,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_banner",
@@ -9194,7 +9194,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_banner",
@@ -9221,7 +9221,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_banner",
@@ -9248,7 +9248,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_banner",
@@ -9275,7 +9275,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_banner",
@@ -9302,7 +9302,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_banner",
@@ -9329,7 +9329,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_banner",
@@ -9356,7 +9356,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "white_wall_banner",
@@ -9371,7 +9371,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_wall_banner",
@@ -9386,7 +9386,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_wall_banner",
@@ -9401,7 +9401,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_wall_banner",
@@ -9416,7 +9416,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_wall_banner",
@@ -9431,7 +9431,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_wall_banner",
@@ -9446,7 +9446,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_wall_banner",
@@ -9461,7 +9461,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_wall_banner",
@@ -9476,7 +9476,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_wall_banner",
@@ -9491,7 +9491,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_wall_banner",
@@ -9506,7 +9506,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_wall_banner",
@@ -9521,7 +9521,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_wall_banner",
@@ -9536,7 +9536,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_wall_banner",
@@ -9551,7 +9551,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_wall_banner",
@@ -9566,7 +9566,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_wall_banner",
@@ -9581,7 +9581,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_wall_banner",
@@ -9596,22 +9596,22 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chiseled_red_sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cut_red_sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_sandstone_stairs",
@@ -9650,7 +9650,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "oak_slab",
@@ -9671,7 +9671,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "spruce_slab",
@@ -9692,7 +9692,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "birch_slab",
@@ -9713,7 +9713,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "jungle_slab",
@@ -9734,7 +9734,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "acacia_slab",
@@ -9755,7 +9755,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cherry_slab",
@@ -9776,7 +9776,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "dark_oak_slab",
@@ -9797,7 +9797,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "mangrove_slab",
@@ -9818,7 +9818,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "bamboo_slab",
@@ -9839,7 +9839,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "bamboo_mosaic_slab",
@@ -9860,7 +9860,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "stone_slab",
@@ -9881,7 +9881,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "smooth_stone_slab",
@@ -9902,7 +9902,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "sandstone_slab",
@@ -9923,7 +9923,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cut_sandstone_slab",
@@ -9944,7 +9944,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "petrified_oak_slab",
@@ -9965,7 +9965,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cobblestone_slab",
@@ -9986,7 +9986,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "brick_slab",
@@ -10007,7 +10007,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "stone_brick_slab",
@@ -10028,7 +10028,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "mud_brick_slab",
@@ -10049,7 +10049,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "nether_brick_slab",
@@ -10070,7 +10070,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "quartz_slab",
@@ -10091,7 +10091,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "red_sandstone_slab",
@@ -10112,7 +10112,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cut_red_sandstone_slab",
@@ -10133,7 +10133,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "purpur_slab",
@@ -10154,27 +10154,27 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "smooth_stone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "smooth_sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "smooth_quartz",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "smooth_red_sandstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "spruce_fence_gate",
@@ -10210,7 +10210,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "birch_fence_gate",
@@ -10246,7 +10246,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "jungle_fence_gate",
@@ -10282,7 +10282,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "acacia_fence_gate",
@@ -10318,7 +10318,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "cherry_fence_gate",
@@ -10354,7 +10354,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "dark_oak_fence_gate",
@@ -10390,7 +10390,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "mangrove_fence_gate",
@@ -10426,7 +10426,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "bamboo_fence_gate",
@@ -10462,7 +10462,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "spruce_fence",
@@ -10503,7 +10503,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "birch_fence",
@@ -10544,7 +10544,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "jungle_fence",
@@ -10585,7 +10585,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "acacia_fence",
@@ -10626,7 +10626,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "cherry_fence",
@@ -10667,7 +10667,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "dark_oak_fence",
@@ -10708,7 +10708,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "mangrove_fence",
@@ -10749,7 +10749,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "bamboo_fence",
@@ -10790,7 +10790,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "spruce_door",
@@ -10833,7 +10833,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "birch_door",
@@ -10876,7 +10876,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "jungle_door",
@@ -10919,7 +10919,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "acacia_door",
@@ -10962,7 +10962,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "cherry_door",
@@ -11005,7 +11005,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "dark_oak_door",
@@ -11048,7 +11048,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "mangrove_door",
@@ -11091,7 +11091,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "bamboo_door",
@@ -11134,7 +11134,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "end_rod",
@@ -11151,7 +11151,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "chorus_plant",
@@ -11199,7 +11199,7 @@
         ]
       }
     ],
-    "local_default_state": 63
+    "default_state_offset": 63
   },
   {
     "name": "chorus_flower",
@@ -11216,12 +11216,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purpur_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purpur_pillar",
@@ -11235,7 +11235,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "purpur_stairs",
@@ -11274,12 +11274,12 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "end_stone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "torchflower_crop",
@@ -11292,7 +11292,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pitcher_crop",
@@ -11315,7 +11315,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "pitcher_plant",
@@ -11328,7 +11328,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "beetroots",
@@ -11343,17 +11343,17 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dirt_path",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "end_gateway",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "repeating_command_block",
@@ -11377,7 +11377,7 @@
         ]
       }
     ],
-    "local_default_state": 6
+    "default_state_offset": 6
   },
   {
     "name": "chain_command_block",
@@ -11401,7 +11401,7 @@
         ]
       }
     ],
-    "local_default_state": 6
+    "default_state_offset": 6
   },
   {
     "name": "frosted_ice",
@@ -11416,22 +11416,22 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magma_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "nether_wart_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_nether_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bone_block",
@@ -11445,12 +11445,12 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "structure_void",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "observer",
@@ -11474,7 +11474,7 @@
         ]
       }
     ],
-    "local_default_state": 5
+    "default_state_offset": 5
   },
   {
     "name": "shulker_box",
@@ -11491,7 +11491,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "white_shulker_box",
@@ -11508,7 +11508,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "orange_shulker_box",
@@ -11525,7 +11525,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "magenta_shulker_box",
@@ -11542,7 +11542,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "light_blue_shulker_box",
@@ -11559,7 +11559,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "yellow_shulker_box",
@@ -11576,7 +11576,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "lime_shulker_box",
@@ -11593,7 +11593,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "pink_shulker_box",
@@ -11610,7 +11610,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "gray_shulker_box",
@@ -11627,7 +11627,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "light_gray_shulker_box",
@@ -11644,7 +11644,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "cyan_shulker_box",
@@ -11661,7 +11661,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "purple_shulker_box",
@@ -11678,7 +11678,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "blue_shulker_box",
@@ -11695,7 +11695,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "brown_shulker_box",
@@ -11712,7 +11712,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "green_shulker_box",
@@ -11729,7 +11729,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "red_shulker_box",
@@ -11746,7 +11746,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "black_shulker_box",
@@ -11763,7 +11763,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "white_glazed_terracotta",
@@ -11778,7 +11778,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_glazed_terracotta",
@@ -11793,7 +11793,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_glazed_terracotta",
@@ -11808,7 +11808,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_glazed_terracotta",
@@ -11823,7 +11823,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_glazed_terracotta",
@@ -11838,7 +11838,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_glazed_terracotta",
@@ -11853,7 +11853,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_glazed_terracotta",
@@ -11868,7 +11868,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_glazed_terracotta",
@@ -11883,7 +11883,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_glazed_terracotta",
@@ -11898,7 +11898,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_glazed_terracotta",
@@ -11913,7 +11913,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_glazed_terracotta",
@@ -11928,7 +11928,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_glazed_terracotta",
@@ -11943,7 +11943,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_glazed_terracotta",
@@ -11958,7 +11958,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_glazed_terracotta",
@@ -11973,7 +11973,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_glazed_terracotta",
@@ -11988,7 +11988,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_glazed_terracotta",
@@ -12003,167 +12003,167 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "white_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_concrete",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "white_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "orange_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "magenta_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_blue_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "yellow_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lime_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "gray_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "light_gray_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cyan_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "purple_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brown_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "green_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "red_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "black_concrete_powder",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "kelp",
@@ -12200,17 +12200,17 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "kelp_plant",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dried_kelp_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "turtle_egg",
@@ -12233,7 +12233,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sniffer_egg",
@@ -12247,57 +12247,57 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_tube_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_brain_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_bubble_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_fire_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_horn_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tube_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brain_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bubble_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "fire_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "horn_coral_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_tube_coral",
@@ -12310,7 +12310,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_brain_coral",
@@ -12323,7 +12323,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_bubble_coral",
@@ -12336,7 +12336,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_fire_coral",
@@ -12349,7 +12349,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_horn_coral",
@@ -12362,7 +12362,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tube_coral",
@@ -12375,7 +12375,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brain_coral",
@@ -12388,7 +12388,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bubble_coral",
@@ -12401,7 +12401,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "fire_coral",
@@ -12414,7 +12414,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "horn_coral",
@@ -12427,7 +12427,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_tube_coral_fan",
@@ -12440,7 +12440,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_brain_coral_fan",
@@ -12453,7 +12453,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_bubble_coral_fan",
@@ -12466,7 +12466,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_fire_coral_fan",
@@ -12479,7 +12479,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_horn_coral_fan",
@@ -12492,7 +12492,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tube_coral_fan",
@@ -12505,7 +12505,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brain_coral_fan",
@@ -12518,7 +12518,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bubble_coral_fan",
@@ -12531,7 +12531,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "fire_coral_fan",
@@ -12544,7 +12544,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "horn_coral_fan",
@@ -12557,7 +12557,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_tube_coral_wall_fan",
@@ -12579,7 +12579,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_brain_coral_wall_fan",
@@ -12601,7 +12601,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_bubble_coral_wall_fan",
@@ -12623,7 +12623,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_fire_coral_wall_fan",
@@ -12645,7 +12645,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "dead_horn_coral_wall_fan",
@@ -12667,7 +12667,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tube_coral_wall_fan",
@@ -12689,7 +12689,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "brain_coral_wall_fan",
@@ -12711,7 +12711,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bubble_coral_wall_fan",
@@ -12733,7 +12733,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "fire_coral_wall_fan",
@@ -12755,7 +12755,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "horn_coral_wall_fan",
@@ -12777,7 +12777,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sea_pickle",
@@ -12799,12 +12799,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blue_ice",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "conduit",
@@ -12817,12 +12817,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bamboo_sapling",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bamboo",
@@ -12850,22 +12850,22 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_bamboo",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "void_air",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cave_air",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bubble_column",
@@ -12878,7 +12878,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_granite_stairs",
@@ -12917,7 +12917,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "smooth_red_sandstone_stairs",
@@ -12956,7 +12956,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "mossy_stone_brick_stairs",
@@ -12995,7 +12995,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "polished_diorite_stairs",
@@ -13034,7 +13034,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "mossy_cobblestone_stairs",
@@ -13073,7 +13073,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "end_stone_brick_stairs",
@@ -13112,7 +13112,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "stone_stairs",
@@ -13151,7 +13151,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "smooth_sandstone_stairs",
@@ -13190,7 +13190,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "smooth_quartz_stairs",
@@ -13229,7 +13229,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "granite_stairs",
@@ -13268,7 +13268,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "andesite_stairs",
@@ -13307,7 +13307,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "red_nether_brick_stairs",
@@ -13346,7 +13346,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "polished_andesite_stairs",
@@ -13385,7 +13385,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "diorite_stairs",
@@ -13424,7 +13424,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "polished_granite_slab",
@@ -13445,7 +13445,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "smooth_red_sandstone_slab",
@@ -13466,7 +13466,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "mossy_stone_brick_slab",
@@ -13487,7 +13487,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_diorite_slab",
@@ -13508,7 +13508,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "mossy_cobblestone_slab",
@@ -13529,7 +13529,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "end_stone_brick_slab",
@@ -13550,7 +13550,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "smooth_sandstone_slab",
@@ -13571,7 +13571,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "smooth_quartz_slab",
@@ -13592,7 +13592,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "granite_slab",
@@ -13613,7 +13613,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "andesite_slab",
@@ -13634,7 +13634,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "red_nether_brick_slab",
@@ -13655,7 +13655,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_andesite_slab",
@@ -13676,7 +13676,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "diorite_slab",
@@ -13697,7 +13697,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "brick_wall",
@@ -13749,7 +13749,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "prismarine_wall",
@@ -13801,7 +13801,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "red_sandstone_wall",
@@ -13853,7 +13853,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "mossy_stone_brick_wall",
@@ -13905,7 +13905,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "granite_wall",
@@ -13957,7 +13957,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "stone_brick_wall",
@@ -14009,7 +14009,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "mud_brick_wall",
@@ -14061,7 +14061,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "nether_brick_wall",
@@ -14113,7 +14113,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "andesite_wall",
@@ -14165,7 +14165,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "red_nether_brick_wall",
@@ -14217,7 +14217,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "sandstone_wall",
@@ -14269,7 +14269,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "end_stone_brick_wall",
@@ -14321,7 +14321,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "diorite_wall",
@@ -14373,7 +14373,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "scaffolding",
@@ -14406,7 +14406,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "loom",
@@ -14421,7 +14421,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "barrel",
@@ -14445,7 +14445,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "smoker",
@@ -14467,7 +14467,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "blast_furnace",
@@ -14489,17 +14489,17 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cartography_table",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "fletching_table",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "grindstone",
@@ -14522,7 +14522,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "lectern",
@@ -14551,12 +14551,12 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "smithing_table",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "stonecutter",
@@ -14571,7 +14571,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bell",
@@ -14602,7 +14602,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "lantern",
@@ -14622,7 +14622,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "soul_lantern",
@@ -14642,7 +14642,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "campfire",
@@ -14678,7 +14678,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "soul_campfire",
@@ -14714,7 +14714,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "sweet_berry_bush",
@@ -14729,7 +14729,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "warped_stem",
@@ -14743,7 +14743,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_warped_stem",
@@ -14757,7 +14757,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "warped_hyphae",
@@ -14771,7 +14771,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_warped_hyphae",
@@ -14785,32 +14785,32 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "warped_nylium",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "warped_fungus",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "warped_wart_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "warped_roots",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "nether_sprouts",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "crimson_stem",
@@ -14824,7 +14824,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_crimson_stem",
@@ -14838,7 +14838,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "crimson_hyphae",
@@ -14852,7 +14852,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "stripped_crimson_hyphae",
@@ -14866,22 +14866,22 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "crimson_nylium",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "crimson_fungus",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "shroomlight",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "weeping_vines",
@@ -14918,12 +14918,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "weeping_vines_plant",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "twisting_vines",
@@ -14960,27 +14960,27 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "twisting_vines_plant",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "crimson_roots",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "crimson_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "warped_planks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "crimson_slab",
@@ -15001,7 +15001,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "warped_slab",
@@ -15022,7 +15022,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "crimson_pressure_plate",
@@ -15035,7 +15035,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "warped_pressure_plate",
@@ -15048,7 +15048,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "crimson_fence",
@@ -15089,7 +15089,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "warped_fence",
@@ -15130,7 +15130,7 @@
         ]
       }
     ],
-    "local_default_state": 31
+    "default_state_offset": 31
   },
   {
     "name": "crimson_trapdoor",
@@ -15173,7 +15173,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "warped_trapdoor",
@@ -15216,7 +15216,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "crimson_fence_gate",
@@ -15252,7 +15252,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "warped_fence_gate",
@@ -15288,7 +15288,7 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "crimson_stairs",
@@ -15327,7 +15327,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "warped_stairs",
@@ -15366,7 +15366,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "crimson_button",
@@ -15396,7 +15396,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "warped_button",
@@ -15426,7 +15426,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "crimson_door",
@@ -15469,7 +15469,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "warped_door",
@@ -15512,7 +15512,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "crimson_sign",
@@ -15546,7 +15546,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "warped_sign",
@@ -15580,7 +15580,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "crimson_wall_sign",
@@ -15602,7 +15602,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "warped_wall_sign",
@@ -15624,7 +15624,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "structure_block",
@@ -15639,7 +15639,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "jigsaw",
@@ -15662,7 +15662,7 @@
         ]
       }
     ],
-    "local_default_state": 10
+    "default_state_offset": 10
   },
   {
     "name": "composter",
@@ -15682,7 +15682,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "target",
@@ -15709,7 +15709,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "bee_nest",
@@ -15735,7 +15735,7 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "beehive",
@@ -15761,32 +15761,32 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "honey_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "honeycomb_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "netherite_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "ancient_debris",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "crying_obsidian",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "respawn_anchor",
@@ -15802,37 +15802,37 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_crimson_fungus",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_warped_fungus",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_crimson_roots",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_warped_roots",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "lodestone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blackstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "blackstone_stairs",
@@ -15871,7 +15871,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "blackstone_wall",
@@ -15923,7 +15923,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "blackstone_slab",
@@ -15944,27 +15944,27 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_blackstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_blackstone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cracked_polished_blackstone_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chiseled_polished_blackstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_blackstone_brick_slab",
@@ -15985,7 +15985,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_blackstone_brick_stairs",
@@ -16024,7 +16024,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "polished_blackstone_brick_wall",
@@ -16076,12 +16076,12 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "gilded_blackstone",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_blackstone_stairs",
@@ -16120,7 +16120,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "polished_blackstone_slab",
@@ -16141,7 +16141,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_blackstone_pressure_plate",
@@ -16154,7 +16154,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "polished_blackstone_button",
@@ -16184,7 +16184,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "polished_blackstone_wall",
@@ -16236,22 +16236,22 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "chiseled_nether_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cracked_nether_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "quartz_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "candle",
@@ -16280,7 +16280,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "white_candle",
@@ -16309,7 +16309,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "orange_candle",
@@ -16338,7 +16338,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "magenta_candle",
@@ -16367,7 +16367,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "light_blue_candle",
@@ -16396,7 +16396,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "yellow_candle",
@@ -16425,7 +16425,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "lime_candle",
@@ -16454,7 +16454,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "pink_candle",
@@ -16483,7 +16483,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "gray_candle",
@@ -16512,7 +16512,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "light_gray_candle",
@@ -16541,7 +16541,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cyan_candle",
@@ -16570,7 +16570,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "purple_candle",
@@ -16599,7 +16599,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "blue_candle",
@@ -16628,7 +16628,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "brown_candle",
@@ -16657,7 +16657,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "green_candle",
@@ -16686,7 +16686,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "red_candle",
@@ -16715,7 +16715,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "black_candle",
@@ -16744,7 +16744,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "candle_cake",
@@ -16757,7 +16757,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "white_candle_cake",
@@ -16770,7 +16770,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "orange_candle_cake",
@@ -16783,7 +16783,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "magenta_candle_cake",
@@ -16796,7 +16796,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "light_blue_candle_cake",
@@ -16809,7 +16809,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "yellow_candle_cake",
@@ -16822,7 +16822,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "lime_candle_cake",
@@ -16835,7 +16835,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "pink_candle_cake",
@@ -16848,7 +16848,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "gray_candle_cake",
@@ -16861,7 +16861,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "light_gray_candle_cake",
@@ -16874,7 +16874,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cyan_candle_cake",
@@ -16887,7 +16887,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "purple_candle_cake",
@@ -16900,7 +16900,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "blue_candle_cake",
@@ -16913,7 +16913,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "brown_candle_cake",
@@ -16926,7 +16926,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "green_candle_cake",
@@ -16939,7 +16939,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "red_candle_cake",
@@ -16952,7 +16952,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "black_candle_cake",
@@ -16965,17 +16965,17 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "amethyst_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "budding_amethyst",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "amethyst_cluster",
@@ -16999,7 +16999,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "large_amethyst_bud",
@@ -17023,7 +17023,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "medium_amethyst_bud",
@@ -17047,7 +17047,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "small_amethyst_bud",
@@ -17071,12 +17071,12 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "tuff",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tuff_slab",
@@ -17097,7 +17097,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "tuff_stairs",
@@ -17136,7 +17136,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "tuff_wall",
@@ -17188,12 +17188,12 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_tuff",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_tuff_slab",
@@ -17214,7 +17214,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_tuff_stairs",
@@ -17253,7 +17253,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "polished_tuff_wall",
@@ -17305,17 +17305,17 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "chiseled_tuff",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tuff_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tuff_brick_slab",
@@ -17336,7 +17336,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "tuff_brick_stairs",
@@ -17375,7 +17375,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "tuff_brick_wall",
@@ -17427,27 +17427,27 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "chiseled_tuff_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "calcite",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "tinted_glass",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "powder_snow",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sculk_sensor",
@@ -17489,7 +17489,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "calibrated_sculk_sensor",
@@ -17540,12 +17540,12 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "sculk",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "sculk_vein",
@@ -17600,7 +17600,7 @@
         ]
       }
     ],
-    "local_default_state": 127
+    "default_state_offset": 127
   },
   {
     "name": "sculk_catalyst",
@@ -17613,7 +17613,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "sculk_shrieker",
@@ -17640,97 +17640,97 @@
         ]
       }
     ],
-    "local_default_state": 7
+    "default_state_offset": 7
   },
   {
     "name": "copper_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "exposed_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "weathered_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oxidized_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "copper_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_copper_ore",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oxidized_cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "weathered_cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "exposed_cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oxidized_chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "weathered_chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "exposed_chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_oxidized_chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_weathered_chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_exposed_chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_chiseled_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "oxidized_cut_copper_stairs",
@@ -17769,7 +17769,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "weathered_cut_copper_stairs",
@@ -17808,7 +17808,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "exposed_cut_copper_stairs",
@@ -17847,7 +17847,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "cut_copper_stairs",
@@ -17886,7 +17886,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "oxidized_cut_copper_slab",
@@ -17907,7 +17907,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "weathered_cut_copper_slab",
@@ -17928,7 +17928,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "exposed_cut_copper_slab",
@@ -17949,7 +17949,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cut_copper_slab",
@@ -17970,47 +17970,47 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_copper_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_weathered_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_exposed_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_oxidized_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_oxidized_cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_weathered_cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_exposed_cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_cut_copper",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "waxed_oxidized_cut_copper_stairs",
@@ -18049,7 +18049,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_weathered_cut_copper_stairs",
@@ -18088,7 +18088,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_exposed_cut_copper_stairs",
@@ -18127,7 +18127,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_cut_copper_stairs",
@@ -18166,7 +18166,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_oxidized_cut_copper_slab",
@@ -18187,7 +18187,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_weathered_cut_copper_slab",
@@ -18208,7 +18208,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_exposed_cut_copper_slab",
@@ -18229,7 +18229,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_cut_copper_slab",
@@ -18250,7 +18250,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "copper_door",
@@ -18293,7 +18293,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "exposed_copper_door",
@@ -18336,7 +18336,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "oxidized_copper_door",
@@ -18379,7 +18379,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "weathered_copper_door",
@@ -18422,7 +18422,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_copper_door",
@@ -18465,7 +18465,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_exposed_copper_door",
@@ -18508,7 +18508,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_oxidized_copper_door",
@@ -18551,7 +18551,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "waxed_weathered_copper_door",
@@ -18594,7 +18594,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "copper_trapdoor",
@@ -18637,7 +18637,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "exposed_copper_trapdoor",
@@ -18680,7 +18680,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "oxidized_copper_trapdoor",
@@ -18723,7 +18723,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "weathered_copper_trapdoor",
@@ -18766,7 +18766,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "waxed_copper_trapdoor",
@@ -18809,7 +18809,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "waxed_exposed_copper_trapdoor",
@@ -18852,7 +18852,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "waxed_oxidized_copper_trapdoor",
@@ -18895,7 +18895,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "waxed_weathered_copper_trapdoor",
@@ -18938,7 +18938,7 @@
         ]
       }
     ],
-    "local_default_state": 15
+    "default_state_offset": 15
   },
   {
     "name": "copper_grate",
@@ -18951,7 +18951,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "exposed_copper_grate",
@@ -18964,7 +18964,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "weathered_copper_grate",
@@ -18977,7 +18977,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "oxidized_copper_grate",
@@ -18990,7 +18990,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "waxed_copper_grate",
@@ -19003,7 +19003,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "waxed_exposed_copper_grate",
@@ -19016,7 +19016,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "waxed_weathered_copper_grate",
@@ -19029,7 +19029,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "waxed_oxidized_copper_grate",
@@ -19042,7 +19042,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "copper_bulb",
@@ -19062,7 +19062,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "exposed_copper_bulb",
@@ -19082,7 +19082,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "weathered_copper_bulb",
@@ -19102,7 +19102,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "oxidized_copper_bulb",
@@ -19122,7 +19122,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_copper_bulb",
@@ -19142,7 +19142,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_exposed_copper_bulb",
@@ -19162,7 +19162,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_weathered_copper_bulb",
@@ -19182,7 +19182,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "waxed_oxidized_copper_bulb",
@@ -19202,7 +19202,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "lightning_rod",
@@ -19233,7 +19233,7 @@
         ]
       }
     ],
-    "local_default_state": 19
+    "default_state_offset": 19
   },
   {
     "name": "pointed_dripstone",
@@ -19263,12 +19263,12 @@
         ]
       }
     ],
-    "local_default_state": 5
+    "default_state_offset": 5
   },
   {
     "name": "dripstone_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cave_vines",
@@ -19312,7 +19312,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cave_vines_plant",
@@ -19325,27 +19325,27 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "spore_blossom",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "azalea",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "flowering_azalea",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "moss_carpet",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "pink_petals",
@@ -19369,12 +19369,12 @@
         ]
       }
     ],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "moss_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "big_dripleaf",
@@ -19405,7 +19405,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "big_dripleaf_stem",
@@ -19427,7 +19427,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "small_dripleaf",
@@ -19456,7 +19456,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "hanging_roots",
@@ -19469,17 +19469,17 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "rooted_dirt",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "mud",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate",
@@ -19493,12 +19493,12 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "cobbled_deepslate",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cobbled_deepslate_stairs",
@@ -19537,7 +19537,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "cobbled_deepslate_slab",
@@ -19558,7 +19558,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "cobbled_deepslate_wall",
@@ -19610,12 +19610,12 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_deepslate",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "polished_deepslate_stairs",
@@ -19654,7 +19654,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "polished_deepslate_slab",
@@ -19675,7 +19675,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "polished_deepslate_wall",
@@ -19727,12 +19727,12 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "deepslate_tiles",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_tile_stairs",
@@ -19771,7 +19771,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "deepslate_tile_slab",
@@ -19792,7 +19792,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "deepslate_tile_wall",
@@ -19844,12 +19844,12 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "deepslate_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "deepslate_brick_stairs",
@@ -19888,7 +19888,7 @@
         ]
       }
     ],
-    "local_default_state": 11
+    "default_state_offset": 11
   },
   {
     "name": "deepslate_brick_slab",
@@ -19909,7 +19909,7 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "deepslate_brick_wall",
@@ -19961,22 +19961,22 @@
         ]
       }
     ],
-    "local_default_state": 3
+    "default_state_offset": 3
   },
   {
     "name": "chiseled_deepslate",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cracked_deepslate_bricks",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "cracked_deepslate_tiles",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "infested_deepslate",
@@ -19990,37 +19990,37 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "smooth_basalt",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "raw_iron_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "raw_copper_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "raw_gold_block",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_azalea_bush",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "potted_flowering_azalea_bush",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "ochre_froglight",
@@ -20034,7 +20034,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "verdant_froglight",
@@ -20048,7 +20048,7 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "pearlescent_froglight",
@@ -20062,17 +20062,17 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   },
   {
     "name": "frogspawn",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "reinforced_deepslate",
     "properties": [],
-    "local_default_state": 0
+    "default_state_offset": 0
   },
   {
     "name": "decorated_pot",
@@ -20101,7 +20101,7 @@
         ]
       }
     ],
-    "local_default_state": 9
+    "default_state_offset": 9
   },
   {
     "name": "crafter",
@@ -20138,7 +20138,7 @@
         ]
       }
     ],
-    "local_default_state": 45
+    "default_state_offset": 45
   },
   {
     "name": "trial_spawner",
@@ -20162,7 +20162,7 @@
         ]
       }
     ],
-    "local_default_state": 6
+    "default_state_offset": 6
   },
   {
     "name": "vault",
@@ -20193,7 +20193,7 @@
         ]
       }
     ],
-    "local_default_state": 4
+    "default_state_offset": 4
   },
   {
     "name": "heavy_core",
@@ -20206,6 +20206,6 @@
         ]
       }
     ],
-    "local_default_state": 1
+    "default_state_offset": 1
   }
 ]

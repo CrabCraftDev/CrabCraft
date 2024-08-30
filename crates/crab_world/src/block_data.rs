@@ -9,7 +9,7 @@ use crate::error::WorldError;
 /// # Example
 ///
 /// ```ignore
-/// let block = GrassBlock::get_default_id().unwrap();
+/// let block = GrassBlock::default_state_id().unwrap();
 /// let is_snowy = block.get_property::<Snowy>().unwrap().snowy;
 /// ```
 pub trait BlockData {
@@ -25,7 +25,7 @@ pub struct Snowy {
 
 #[derive(Debug, Clone, PartialEq, Eq, BlockData)]
 pub struct Waterlogged {
-    pub snowy: bool,
+    pub waterlogged: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, BlockData)]
