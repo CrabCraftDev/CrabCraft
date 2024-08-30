@@ -1,5 +1,5 @@
 use crate::chunks::section::ChunkSection;
-use crate::utils::errors::Error;
+use crate::error::WorldError;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
 use crab_world::blocks::Air;
@@ -50,7 +50,7 @@ impl Chunk {
 
     /// Serializes the section to format used in [Chunk Data packet](crab_protocol::packets::play::ChunkDataAndUpdateLightS2CPacket).
     /// For more information about the format, see [wiki.vg/Chunk_Format](https://wiki.vg/Chunk_Format).
-    pub fn serialize_to_mc_format(&mut self, chunk: &mut BytesMut) -> Result<(), Error> {
+    pub fn serialize_to_mc_format(&mut self, chunk: &mut BytesMut) -> Result<(), WorldError> {
         for section in &mut self.sections {
             section.serialize_to_mc_format(chunk)?;
         }

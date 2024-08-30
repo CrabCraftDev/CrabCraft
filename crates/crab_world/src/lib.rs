@@ -10,6 +10,7 @@ mod block;
 pub mod block_data;
 pub mod block_registry;
 pub mod blocks;
+pub mod chunks;
 pub mod error;
 pub mod paletted_container;
 

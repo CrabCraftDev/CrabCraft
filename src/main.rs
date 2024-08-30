@@ -2,26 +2,19 @@ use std::panic;
 use std::process::exit;
 
 use chrono::Local;
-use crab_registry::RegistryManager;
+use crab_registry::{RegistryManager, REGISTRY};
 use crab_world::blocks::init_blocks;
 use crab_world::BLOCKS;
-use crossbeam::sync::ShardedLock;
-use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
 use utils::logger::Logger;
 
 use crate::mc_server::McServer;
 
-mod chunks;
 mod entity;
 mod mc_server;
 mod network;
 mod utils;
 mod world;
-
-lazy_static! {
-    static ref REGISTRY: ShardedLock<RegistryManager> = ShardedLock::new(RegistryManager::default());
-}
 
 #[tokio::main]
 async fn main() {
@@ -44,6 +37,7 @@ async fn main() {
     log::set_logger(&Logger).expect("Failed to prepare logger! Exiting!");
     Logger::rename_log_file().expect("Failed to prepare logger file! Exiting!");
 
+    REGISTRY.get_or_init(RegistryManager::default);
     BLOCKS.get_or_init(init_blocks);
 
     let mc_server = McServer::new("127.0.0.1:25565".to_string());

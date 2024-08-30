@@ -2,6 +2,9 @@ use crab_protocol::types::namespaced_key::NamespacedKey;
 use include_dir::{include_dir, Dir};
 use std::collections::HashMap;
 use std::path::Path;
+use std::sync::OnceLock;
+
+pub static REGISTRY: OnceLock<RegistryManager> = OnceLock::new();
 
 /// RegistryManager is a struct that holds all dynamic registries like biomes.
 /// Default data is obtained from the assets/datapack directory.

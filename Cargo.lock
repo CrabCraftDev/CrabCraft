@@ -267,7 +267,6 @@ dependencies = [
  "evenio",
  "flate2",
  "kanal",
- "lazy_static",
  "log",
  "nohash-hasher",
  "serde",
@@ -331,7 +330,9 @@ version = "0.0.4"
 dependencies = [
  "bytes",
  "crab_macros",
+ "crab_nbt",
  "crab_protocol",
+ "crab_registry",
  "derive_more",
  "heck",
  "nohash-hasher",
