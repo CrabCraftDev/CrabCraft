@@ -1,5 +1,4 @@
 use super::connection::PlayerConnection;
-use crate::chunks::chunk::{Chunk, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::{
@@ -14,6 +13,7 @@ use crab_protocol::{
     },
 };
 use crab_world::blocks::{Bedrock, Dirt, GrassBlock};
+use crab_world::chunks::chunk::{Chunk, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 use crab_world::paletted_container::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use crab_world::BlockType;
 use evenio::event::{Receiver, TargetedEvent};

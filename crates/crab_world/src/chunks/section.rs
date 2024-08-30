@@ -1,7 +1,7 @@
-use crate::utils::errors::Error;
-use crate::REGISTRY;
+use crate::error::WorldError;
 use bytes::{BufMut, Bytes, BytesMut};
 use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_registry::REGISTRY;
 use crab_world::blocks::Air;
 use crab_world::paletted_container::{
     get_biomes_container, get_blocks_container, AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION,
@@ -51,7 +51,7 @@ impl ChunkSection {
         self.blocks[self.calculate_index(x, y, z)]
     }
 
-    pub fn serialize_to_mc_format(&mut self, chunk_section: &mut BytesMut) -> Result<(), Error> {
+    pub fn serialize_to_mc_format(&mut self, chunk_section: &mut BytesMut) -> Result<(), WorldError> {
         if let Some(cached_bytes) = &self.cached_bytes {
             chunk_section.put_slice(cached_bytes);
             return Ok(());
@@ -62,7 +62,7 @@ impl ChunkSection {
         get_blocks_container(BLOCKS.get().unwrap().last_state_id as usize)
             .serialize_palette(self.blocks.iter().map(|&v| v.0 as i32).collect(), &mut bytes)?;
 
-        let registry = &REGISTRY.read().unwrap();
+        let registry = REGISTRY.get().unwrap();
         let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome")?;
         let biomes_amount = registry.get_length(&biome_registry_namespaced_key).unwrap();
 
@@ -84,7 +84,7 @@ impl ChunkSection {
 
 impl Default for ChunkSection {
     fn default() -> Self {
-        let registry = &REGISTRY.read().unwrap();
+        let registry = REGISTRY.get().unwrap();
         let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
         let plains_biome_namespace = NamespacedKey::minecraft("plains").unwrap();
 

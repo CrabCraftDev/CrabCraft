@@ -64,7 +64,7 @@ pub fn configuration_packets(
             .collect();
         connection.send_packet(KnownPacksS2CPacket { known_packs });
 
-        let registry_data = &REGISTRY.read().unwrap().data;
+        let registry_data = &REGISTRY.get().unwrap().data;
         for (registry_name, values) in registry_data.iter() {
             let data_entries = values
                 .iter()
