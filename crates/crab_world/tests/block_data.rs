@@ -24,11 +24,7 @@ enum ExampleEnum {
 
 #[test]
 fn complex_block_data() {
-    let properties: HashMap<String, u16> = HashMap::from([
-        ("boolean".to_owned(), 0),
-        ("number".to_owned(), 3),
-        ("enum_value".to_owned(), 1),
-    ]);
+    let properties = HashMap::from([("boolean", 0), ("number", 3), ("enum_value", 1)]);
 
     let data: ComplexBlockData = ComplexBlockData::from_properties(properties).unwrap();
     // Note: 0 represents true and 1 represents false.
@@ -39,11 +35,7 @@ fn complex_block_data() {
 
 #[test]
 fn invalid_block_data() {
-    let properties = HashMap::from([
-        ("boolean".to_owned(), 3),
-        ("number".to_owned(), 90),
-        ("enum_value".to_owned(), 5),
-    ]);
+    let properties = HashMap::from([("boolean", 3), ("number", 90), ("enum_value", 5)]);
 
     assert!(ComplexBlockData::from_properties(properties).is_err());
 }

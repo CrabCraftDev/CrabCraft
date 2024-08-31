@@ -64,16 +64,16 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn properties(local_state: u16) -> Result<::std::collections::HashMap<String, u16>, ::crab_world::error::WorldError> {
+                fn properties(local_state: u16) -> Result<::std::collections::HashMap<&'static str, u16>, ::crab_world::error::WorldError> {
                     if local_state > #states_amount {
                         return Err(::crab_world::error::WorldError::InvalidLocalState(local_state, #states_amount));
                     }
 
-                    let mut hashmap: ::std::collections::HashMap<String, u16> = ::std::collections::HashMap::new();
+                    let mut hashmap: ::std::collections::HashMap<&'static str, u16> = ::std::collections::HashMap::new();
                     let mut current_state = local_state;
 
                     #(
-                        hashmap.insert(stringify!(#property_names).to_string(), current_state % #states_combinations_amount);
+                        hashmap.insert(stringify!(#property_names), current_state % #states_combinations_amount);
                         current_state /= #states_combinations_amount;
                     )*
 
@@ -81,7 +81,7 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_string_properties(hashmap: &::std::collections::HashMap<String, String>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
+                fn from_string_properties(hashmap: &::std::collections::HashMap<&'static str, String>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(
@@ -93,7 +93,7 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_properties(hashmap: &::std::collections::HashMap<String, u16>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
+                fn from_properties(hashmap: &::std::collections::HashMap<&'static str, u16>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(

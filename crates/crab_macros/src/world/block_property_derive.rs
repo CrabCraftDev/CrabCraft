@@ -63,7 +63,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
             let #field_name = #field_conversion;
         });
         apply_properties.push(quote! {
-            properties.insert(stringify!(#field_name).to_string(), #apply_property);
+            properties.insert(stringify!(#field_name), #apply_property);
         });
     }
 
@@ -71,14 +71,14 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
         impl #impl_generics ::crab_world::block_data::BlockData for #input_name #type_generics
         #where_clause
         {
-            fn from_properties(properties: ::std::collections::HashMap<String, u16>) -> Result<Self, ::crab_world::error::WorldError> {
+            fn from_properties(properties: ::std::collections::HashMap<&'static str, u16>) -> Result<Self, ::crab_world::error::WorldError> {
                 #(#property_parsing)*
                 Ok(Self {
                     #(#field_names,)*
                 })
             }
 
-            fn apply(&self, properties: &mut ::std::collections::HashMap<String, u16>) -> Result<(), ::crab_world::error::WorldError> {
+            fn apply(&self, properties: &mut ::std::collections::HashMap<&'static str, u16>) -> Result<(), ::crab_world::error::WorldError> {
                 #(#apply_properties)*
                 Ok(())
             }
