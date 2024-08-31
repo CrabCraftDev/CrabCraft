@@ -15,7 +15,7 @@ fn get_block_struct_information() {
 
     let mut expected_properties = HashMap::new();
     // Note: 0 represents true and 1 represents false. By default, the grass block is not snowy.
-    expected_properties.insert("snowy".to_string(), 1);
+    expected_properties.insert("snowy", 1);
     assert_eq!(expected_properties, properties);
     assert_eq!(id, &NamespacedKey::minecraft("grass_block").unwrap());
 }
@@ -25,7 +25,7 @@ fn create_block_from_properties() {
     BLOCKS.get_or_init(init_blocks);
 
     let mut hashmap = HashMap::new();
-    hashmap.insert("snowy".to_string(), "false".to_string());
+    hashmap.insert("snowy", "false".to_string());
 
     let block = GrassBlock::from_string_properties(&hashmap).unwrap();
     let is_snowy = block.property::<Snowy>().unwrap();
@@ -38,7 +38,7 @@ fn invalid_create_block_from_properties() {
     BLOCKS.get_or_init(init_blocks);
 
     let mut hashmap = HashMap::new();
-    hashmap.insert("snowy".to_string(), "cat".to_string());
+    hashmap.insert("snowy", "cat".to_string());
 
     assert!(GrassBlock::from_string_properties(&hashmap).is_err());
 }

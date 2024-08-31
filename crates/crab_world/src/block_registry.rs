@@ -5,9 +5,9 @@ use std::collections::{BTreeMap, HashMap};
 
 #[derive(Debug, Clone)]
 pub struct BlockInformation {
-    pub from_properties: fn(hashmap: &HashMap<String, u16>) -> Result<Block, WorldError>,
-    pub from_string_properties: fn(hashmap: &HashMap<String, String>) -> Result<Block, WorldError>,
-    pub properties: fn(local_state: u16) -> Result<HashMap<String, u16>, WorldError>,
+    pub from_properties: fn(hashmap: &HashMap<&'static str, u16>) -> Result<Block, WorldError>,
+    pub from_string_properties: fn(hashmap: &HashMap<&'static str, String>) -> Result<Block, WorldError>,
+    pub properties: fn(local_state: u16) -> Result<HashMap<&'static str, u16>, WorldError>,
     pub starting_state_id: u16,
     pub default_state_id: u16,
 }
