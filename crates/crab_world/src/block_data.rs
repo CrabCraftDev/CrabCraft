@@ -13,11 +13,11 @@ use crate::error::WorldError;
 /// let is_snowy = block.property::<Snowy>().unwrap().snowy;
 /// ```
 pub trait BlockData {
-    fn from_properties(properties: HashMap<String, u16>) -> Result<Self, WorldError>
+    fn from_properties(properties: HashMap<&'static str, u16>) -> Result<Self, WorldError>
     where
         Self: Sized;
 
-    fn apply(&self, properties: &mut HashMap<String, u16>) -> Result<(), WorldError>
+    fn apply(&self, properties: &mut HashMap<&'static str, u16>) -> Result<(), WorldError>
     where
         Self: Sized;
 }
