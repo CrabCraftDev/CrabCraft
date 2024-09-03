@@ -26,7 +26,7 @@ structure.
 
 ```rust
 let block = GrassBlock::default_state_id().unwrap();
-let is_snowy = block.get_property::<Snowy>().unwrap();
+let is_snowy = block.property::<Snowy>().unwrap();
 
 assert_eq!(is_snowy, Snowy { snowy: false });
   ```

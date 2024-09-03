@@ -43,6 +43,7 @@ pub fn generate() -> TokenStream {
         blocks_initialization.push(quote! {
             blocks.add_block(#states_amount, &#name::namespaced_key(), ::crab_world::block_registry::BlockInformation {
                 from_properties: #name::from_properties,
+                from_string_properties: #name::from_string_properties,
                 properties: #name::properties,
                 starting_state_id: 0,
                 default_state_id: #default_state_offset
@@ -80,12 +81,25 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_properties(hashmap: &::std::collections::HashMap<String, String>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
+                fn from_string_properties(hashmap: &::std::collections::HashMap<String, String>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(
                         let property_value = #match_string_to_number?;
                         state_id_offset += property_value as u16 * multiplier;
+                        multiplier *= #states_combinations_amount;
+                    )*
+                    Ok(::crab_world::Block(state_id_offset))
+                }
+
+                #[allow(unused_mut, unused)]
+                fn from_properties(hashmap: &::std::collections::HashMap<String, u16>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
+                    let mut state_id_offset: u16 = Self::starting_state_id()?.0;
+                    let mut multiplier: u16 = 1;
+                    #(
+                        let value = hashmap.get(stringify!(#property_names))
+                            .ok_or_else(|| ::crab_world::error::WorldError::InvalidPropertyName)?;
+                        state_id_offset += *value * multiplier;
                         multiplier *= #states_combinations_amount;
                     )*
                     Ok(::crab_world::Block(state_id_offset))

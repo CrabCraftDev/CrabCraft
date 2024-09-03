@@ -27,8 +27,8 @@ fn create_block_from_properties() {
     let mut hashmap = HashMap::new();
     hashmap.insert("snowy".to_string(), "false".to_string());
 
-    let block = GrassBlock::from_properties(&hashmap).unwrap();
-    let is_snowy = block.get_property::<Snowy>().unwrap();
+    let block = GrassBlock::from_string_properties(&hashmap).unwrap();
+    let is_snowy = block.property::<Snowy>().unwrap();
 
     assert_eq!(is_snowy, Snowy { snowy: false });
 }
@@ -40,5 +40,5 @@ fn invalid_create_block_from_properties() {
     let mut hashmap = HashMap::new();
     hashmap.insert("snowy".to_string(), "cat".to_string());
 
-    assert!(GrassBlock::from_properties(&hashmap).is_err());
+    assert!(GrassBlock::from_string_properties(&hashmap).is_err());
 }

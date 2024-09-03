@@ -19,6 +19,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
 
     let mut field_names = Vec::new();
     let mut property_parsing = Vec::new();
+    let mut apply_properties = Vec::new();
 
     for field in fields {
         let field_name = field.ident.clone().unwrap();
@@ -43,12 +44,26 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
             _ => quote! { #field_type::from_repr(*value).unwrap() },
         };
 
+        let apply_property = match type_ident.as_str() {
+            "u16" => quote! { self.#field_name },
+            "bool" => quote! {
+                match self.#field_name {
+                    true => 0,
+                    false => 1,
+                }
+            },
+            _ => quote! { self.#field_name as u16 },
+        };
+
         property_parsing.push(quote! {
             let value = match properties.get(stringify!(#field_name)) {
                 Some(value) => value,
                 None => return Err(::crab_world::error::WorldError::InvalidPropertyName),
             };
             let #field_name = #field_conversion;
+        });
+        apply_properties.push(quote! {
+            properties.insert(stringify!(#field_name).to_string(), #apply_property);
         });
     }
 
@@ -61,6 +76,11 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
                 Ok(Self {
                     #(#field_names,)*
                 })
+            }
+
+            fn apply(&self, properties: &mut ::std::collections::HashMap<String, u16>) -> Result<(), ::crab_world::error::WorldError> {
+                #(#apply_properties)*
+                Ok(())
             }
         }
     })

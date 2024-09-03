@@ -6,6 +6,7 @@ mod protocol;
 mod world;
 
 /// `ProtocolSerializer` is a derive macro that helps in creating common Protocol Types like `Enum`, `Struct`, etc.
+///
 /// This macro simplifies the process of implementing the `ProtocolSerializer` trait for a type.
 ///
 /// The `ProtocolSerializer` trait provides methods for serializing and deserializing the type into/from a byte buffer.

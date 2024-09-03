@@ -4,7 +4,11 @@ use crab_world::error::WorldError;
 use crab_world::Block;
 use std::collections::HashMap;
 
-fn constructor(_hashmap: &HashMap<String, String>) -> Result<Block, WorldError> {
+fn from_properties(_hashmap: &HashMap<String, u16>) -> Result<Block, WorldError> {
+    unreachable!()
+}
+
+fn from_string_properties(_hashmap: &HashMap<String, String>) -> Result<Block, WorldError> {
     unreachable!()
 }
 
@@ -19,7 +23,8 @@ fn get_example_block_registry() -> BlockRegistry {
             5,
             &NamespacedKey::minecraft("dirt").unwrap(),
             BlockInformation {
-                from_properties: constructor,
+                from_properties,
+                from_string_properties,
                 properties,
                 starting_state_id: 0,
                 default_state_id: 0,
@@ -31,7 +36,8 @@ fn get_example_block_registry() -> BlockRegistry {
             2,
             &NamespacedKey::minecraft("stone").unwrap(),
             BlockInformation {
-                from_properties: constructor,
+                from_properties,
+                from_string_properties,
                 properties,
                 starting_state_id: 0,
                 default_state_id: 0,

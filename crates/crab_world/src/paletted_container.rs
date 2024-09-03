@@ -32,6 +32,7 @@ pub fn get_blocks_container(entries_amount: usize) -> PalettedContainer {
 }
 
 /// [Palette](https://en.wikipedia.org/wiki/Palette_(computing)) is a structure optimized for storing data in a limited amount of space.
+///
 /// In Minecraft, palettes are used to store block and biome data within chunks.
 ///
 /// Minecraft utilizes three [types of palettes](https://wiki.vg/Chunk_Format#Palette_formats):
