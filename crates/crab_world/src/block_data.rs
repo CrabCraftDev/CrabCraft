@@ -10,10 +10,14 @@ use crate::error::WorldError;
 ///
 /// ```ignore
 /// let block = GrassBlock::default_state_id().unwrap();
-/// let is_snowy = block.get_property::<Snowy>().unwrap().snowy;
+/// let is_snowy = block.property::<Snowy>().unwrap().snowy;
 /// ```
 pub trait BlockData {
     fn from_properties(properties: HashMap<String, u16>) -> Result<Self, WorldError>
+    where
+        Self: Sized;
+
+    fn apply(&self, properties: &mut HashMap<String, u16>) -> Result<(), WorldError>
     where
         Self: Sized;
 }
@@ -29,10 +33,10 @@ pub struct Waterlogged {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, BlockData)]
-pub struct RedstoneWire {
-    power: u16,
-    north: bool,
-    east: bool,
-    south: bool,
-    west: bool,
+pub struct RedstoneWireData {
+    pub power: u16,
+    pub north: bool,
+    pub east: bool,
+    pub south: bool,
+    pub west: bool,
 }

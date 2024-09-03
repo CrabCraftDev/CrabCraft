@@ -32,20 +32,39 @@ impl Block {
         Ok(properties)
     }
 
+    /// Creates new Block based on Hashmap<String, u16>
     pub fn from_properties(
+        namespaced_key: &NamespacedKey,
+        properties: &HashMap<String, u16>,
+    ) -> Result<Block, WorldError> {
+        let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
+        (block_information.from_properties)(properties)
+    }
+
+    /// Creates new Block based on Hashmap<String, String>
+    /// Used mostly in Anvil - world file format
+    pub fn from_string_properties(
         namespaced_key: &NamespacedKey,
         properties: &HashMap<String, String>,
     ) -> Result<Block, WorldError> {
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
-        (block_information.from_properties)(properties)
+        (block_information.from_string_properties)(properties)
     }
 
     pub fn is_same_as(&self, other: &Block) -> bool {
         matches!((self.namespaced_key(), other.namespaced_key()), (Ok(own_key), Ok(other_key)) if own_key == other_key)
     }
 
-    pub fn get_property<P: BlockData>(&self) -> Result<P, WorldError> {
+    pub fn property<P: BlockData>(&self) -> Result<P, WorldError> {
         P::from_properties(self.properties()?)
+    }
+
+    pub fn apply_property(&mut self, property: &impl BlockData) -> Result<(), WorldError> {
+        let mut properties = self.properties()?;
+        property.apply(&mut properties)?;
+        let new_block = Self::from_properties(self.namespaced_key()?, &properties)?;
+        self.0 = new_block.0;
+        Ok(())
     }
 }
 
@@ -57,7 +76,8 @@ pub trait BlockType {
     fn namespaced_key() -> NamespacedKey;
 
     fn properties(local_state: u16) -> Result<HashMap<String, u16>, WorldError>;
-    fn from_properties(hashmap: &HashMap<String, String>) -> Result<Block, WorldError>;
+    fn from_properties(hashmap: &HashMap<String, u16>) -> Result<Block, WorldError>;
+    fn from_string_properties(hashmap: &HashMap<String, String>) -> Result<Block, WorldError>;
 
     fn is_same_type_as(block: &Block) -> bool {
         matches!(block.namespaced_key(), Ok(block_key) if *block_key == Self::namespaced_key())
