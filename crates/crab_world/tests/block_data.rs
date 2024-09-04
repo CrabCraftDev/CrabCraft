@@ -53,7 +53,7 @@ fn get_block_struct_information() {
 
     let mut block = GrassBlock::default_state_id().unwrap();
 
-    assert!(!block.property::<Snowy>().unwrap().snowy);
-    block.apply_property(&Snowy { snowy: true }).unwrap();
-    assert!(block.property::<Snowy>().unwrap().snowy);
+    assert!(!block.property::<Snowy>().unwrap());
+    block.apply_property::<Snowy>(&true).unwrap();
+    assert!(block.property::<Snowy>().unwrap());
 }

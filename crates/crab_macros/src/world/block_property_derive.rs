@@ -1,7 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::spanned::Spanned;
-use syn::{parse2, Data, DeriveInput, Error, Fields, Result, Type};
+use syn::{parse2, spanned::Spanned, Data, DeriveInput, Error, Fields, Result, Type};
 
 pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;
@@ -11,7 +10,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
 
     let fields = match &input.data {
         Data::Struct(data) => match &data.fields {
-            Fields::Named(fields) => fields.named.iter(),
+            Fields::Named(fields) => &fields.named,
             _ => return Err(Error::new(input_span, "All fields have to be named!")),
         },
         _ => return Err(Error::new(input_span, "You can use `BlockData` only for structs")),
@@ -20,6 +19,26 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
     let mut field_names = Vec::new();
     let mut property_parsing = Vec::new();
     let mut apply_properties = Vec::new();
+
+    let (value_type_def, get_impl) = if fields.len() == 1 {
+        let field_type = &fields[0].ty;
+        let field_name = &fields[0].ident;
+        (
+            quote! {
+                type Value = #field_type;
+            },
+            quote! {
+                self.#field_name
+            },
+        )
+    } else {
+        (
+            quote! { type Value = Self; },
+            quote! {
+                self
+            },
+        )
+    };
 
     for field in fields {
         let field_name = field.ident.clone().unwrap();
@@ -44,15 +63,21 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
             _ => quote! { #field_type::from_repr(*value).unwrap() },
         };
 
-        let apply_property = match type_ident.as_str() {
-            "u16" => quote! { self.#field_name },
+        let field_get = if fields.len() != 1 {
+            quote! { property.#field_name }
+        } else {
+            quote! { property }
+        };
+
+        let property_conversion = match type_ident.as_str() {
+            "u16" => quote! { #field_get },
             "bool" => quote! {
-                match self.#field_name {
+                match #field_get {
                     true => 0,
                     false => 1,
                 }
             },
-            _ => quote! { self.#field_name as u16 },
+            _ => quote! { #field_get as u16 },
         };
 
         property_parsing.push(quote! {
@@ -63,7 +88,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
             let #field_name = #field_conversion;
         });
         apply_properties.push(quote! {
-            properties.insert(stringify!(#field_name), #apply_property);
+            properties.insert(stringify!(#field_name), #property_conversion);
         });
     }
 
@@ -71,6 +96,12 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
         impl #impl_generics ::crab_world::block_data::BlockData for #input_name #type_generics
         #where_clause
         {
+            #value_type_def
+
+            fn get(self) -> Self::Value {
+                #get_impl
+            }
+
             fn from_properties(properties: ::std::collections::HashMap<&'static str, u16>) -> Result<Self, ::crab_world::error::WorldError> {
                 #(#property_parsing)*
                 Ok(Self {
@@ -78,7 +109,7 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
                 })
             }
 
-            fn apply(&self, properties: &mut ::std::collections::HashMap<&'static str, u16>) -> Result<(), ::crab_world::error::WorldError> {
+            fn apply(property: &Self::Value, properties: &mut ::std::collections::HashMap<&'static str, u16>) -> Result<(), ::crab_world::error::WorldError> {
                 #(#apply_properties)*
                 Ok(())
             }
