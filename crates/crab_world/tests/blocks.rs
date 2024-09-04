@@ -30,7 +30,7 @@ fn create_block_from_properties() {
     let block = GrassBlock::from_string_properties(&hashmap).unwrap();
     let is_snowy = block.property::<Snowy>().unwrap();
 
-    assert_eq!(is_snowy, Snowy { snowy: false });
+    assert!(!is_snowy);
 }
 
 #[test]
