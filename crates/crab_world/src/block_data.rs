@@ -8,16 +8,22 @@ use crate::error::WorldError;
 ///
 /// # Example
 ///
-/// ```ignore
+/// ```rust
+/// # use crab_world::{BlockType,BLOCKS,blocks::init_blocks,block_data::Snowy,blocks::GrassBlock};
+/// # BLOCKS.get_or_init(init_blocks);
 /// let block = GrassBlock::default_state_id().unwrap();
-/// let is_snowy = block.property::<Snowy>().unwrap().snowy;
+/// let is_snowy = block.property::<Snowy>().unwrap();
 /// ```
 pub trait BlockData {
+    type Value;
+
+    fn get(self) -> Self::Value;
+
     fn from_properties(properties: HashMap<&'static str, u16>) -> Result<Self, WorldError>
     where
         Self: Sized;
 
-    fn apply(&self, properties: &mut HashMap<&'static str, u16>) -> Result<(), WorldError>
+    fn apply(property: &Self::Value, properties: &mut HashMap<&'static str, u16>) -> Result<(), WorldError>
     where
         Self: Sized;
 }

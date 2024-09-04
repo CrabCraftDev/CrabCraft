@@ -55,13 +55,13 @@ impl Block {
         matches!((self.namespaced_key(), other.namespaced_key()), (Ok(own_key), Ok(other_key)) if own_key == other_key)
     }
 
-    pub fn property<P: BlockData>(&self) -> Result<P, WorldError> {
-        P::from_properties(self.properties()?)
+    pub fn property<P: BlockData>(&self) -> Result<P::Value, WorldError> {
+        P::from_properties(self.properties()?).map(P::get)
     }
 
-    pub fn apply_property(&mut self, property: &impl BlockData) -> Result<(), WorldError> {
+    pub fn apply_property<P: BlockData>(&mut self, property: &P::Value) -> Result<(), WorldError> {
         let mut properties = self.properties()?;
-        property.apply(&mut properties)?;
+        P::apply(property, &mut properties)?;
         let new_block = Self::from_properties(self.namespaced_key()?, &properties)?;
         self.0 = new_block.0;
         Ok(())
