@@ -4,11 +4,11 @@ use crab_world::error::WorldError;
 use crab_world::Block;
 use std::collections::HashMap;
 
-fn from_properties(_hashmap: &HashMap<&'static str, u16>) -> Result<Block, WorldError> {
+fn from_properties(_hashmap: &HashMap<&str, u16>) -> Result<Block, WorldError> {
     unreachable!()
 }
 
-fn from_string_properties(_hashmap: &HashMap<&'static str, String>) -> Result<Block, WorldError> {
+fn from_string_properties(_hashmap: &HashMap<&str, String>) -> Result<Block, WorldError> {
     unreachable!()
 }
 

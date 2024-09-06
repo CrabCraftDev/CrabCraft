@@ -81,7 +81,7 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_string_properties(hashmap: &::std::collections::HashMap<&'static str, String>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
+                fn from_string_properties(hashmap: &::std::collections::HashMap<&str, String>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(
@@ -93,7 +93,7 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_properties(hashmap: &::std::collections::HashMap<&'static str, u16>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
+                fn from_properties(hashmap: &::std::collections::HashMap<&str, u16>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(

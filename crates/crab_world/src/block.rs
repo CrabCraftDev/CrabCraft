@@ -35,7 +35,7 @@ impl Block {
     /// Creates new Block based on Hashmap<String, u16>
     pub fn from_properties(
         namespaced_key: &NamespacedKey,
-        properties: &HashMap<&'static str, u16>,
+        properties: &HashMap<&str, u16>,
     ) -> Result<Block, WorldError> {
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
         (block_information.from_properties)(properties)
@@ -45,7 +45,7 @@ impl Block {
     /// Used mostly in Anvil - world file format
     pub fn from_string_properties(
         namespaced_key: &NamespacedKey,
-        properties: &HashMap<&'static str, String>,
+        properties: &HashMap<&str, String>,
     ) -> Result<Block, WorldError> {
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
         (block_information.from_string_properties)(properties)
@@ -76,8 +76,8 @@ pub trait BlockType {
     fn namespaced_key() -> NamespacedKey;
 
     fn properties(local_state: u16) -> Result<HashMap<&'static str, u16>, WorldError>;
-    fn from_properties(hashmap: &HashMap<&'static str, u16>) -> Result<Block, WorldError>;
-    fn from_string_properties(hashmap: &HashMap<&'static str, String>) -> Result<Block, WorldError>;
+    fn from_properties(hashmap: &HashMap<&str, u16>) -> Result<Block, WorldError>;
+    fn from_string_properties(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError>;
 
     fn is_same_type_as(block: &Block) -> bool {
         matches!(block.namespaced_key(), Ok(block_key) if *block_key == Self::namespaced_key())
