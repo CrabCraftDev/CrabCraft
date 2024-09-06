@@ -1,4 +1,5 @@
 use bitfield_struct::bitfield;
+use evenio::prelude::Component;
 use strum::FromRepr;
 
 use crab_macros::ProtocolSerializer;
@@ -7,7 +8,7 @@ use crate::packet::Packet;
 use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
+#[derive(ProtocolSerializer, Debug, Clone, Component)]
 pub struct ClientInformationC2SPacket {
     #[protocol_attribute(bounded = 16)]
     pub locale: String,

@@ -1,74 +1,60 @@
-use std::sync::Arc;
-
-use bytes::Bytes;
-use chrono::Local;
-use crossbeam::sync::ShardedLock;
+use crate::network::connection::Connection;
+use crate::network::early_connection_handler::EarlyConnectionHandler;
+use crate::network::packet_transformer::PacketTransformer;
+use crab_protocol::buf::get_var_int_from_stream;
+use crab_protocol::protocol_state::ProtocolState;
+use crab_protocol::raw_packet::RawPacket;
 use kanal::Sender;
-use log::{debug, error, warn};
-use tokio::io::ReadHalf;
-use tokio::sync::Mutex;
+use log::{debug, error};
+use std::io::ErrorKind;
+use std::net::SocketAddr;
+use std::process::exit;
+use std::time::Duration;
+use tokio::io::AsyncWriteExt;
+use tokio::time::sleep;
 use tokio::{
     io::AsyncReadExt,
     net::{TcpListener, TcpStream},
+    select,
 };
 
-use crate::network::connection::Connection;
-use crate::{
-    entity::player::network::connection::PlayerConnection, network::handlers::handshake_handler::HandshakeHandler,
-};
-
-use crate::network::handlers::login_handler::LoginHandler;
-use crate::network::handlers::play_handler::PlayHandler;
-use crate::network::handlers::status_handler::StatusHandler;
-use crab_protocol::buf::{get_var_int_from_stream, ReadByteBuf};
-use crab_protocol::packets::common::KeepAliveResponseC2SPacket;
-use crab_protocol::protocol_state::ProtocolState;
-use crab_protocol::raw_packet::RawPacket;
+const MAX_PACKET_SIZE_BYTES: i32 = (1 << 21) - 1;
 
 pub struct TcpServer {
     address: String,
-    pub connections: Arc<Mutex<Vec<Arc<Mutex<Connection>>>>>,
-    new_player_sender: Sender<PlayerConnection>,
+    /// Used to send Player Connection to MC Server for further processing.
+    new_player_sender: Sender<Connection>,
 }
 
 impl TcpServer {
-    pub fn new(address: String, new_player_sender: Sender<PlayerConnection>) -> TcpServer {
+    pub fn new(address: String, new_player_sender: Sender<Connection>) -> TcpServer {
         TcpServer {
             address,
-            connections: Arc::new(Mutex::new(Vec::new())),
             new_player_sender,
         }
     }
 
     pub async fn start(&self) {
-        let listener = TcpListener::bind(&self.address).await.unwrap();
+        let listener = TcpListener::bind(&self.address).await.unwrap_or_else(|error| {
+            let error_message = match error.kind() {
+                ErrorKind::AddrInUse => "Tried to bind to an address that's already in use!",
+                ErrorKind::PermissionDenied => "Tried to bind to a protected address!",
+                _ => panic!("{error}"),
+            };
+            error!("Failed to bind TCP server to {}! {error_message}", self.address);
+            exit(1);
+        });
 
+        self.handle_incoming_connections(listener).await;
+    }
+
+    async fn handle_incoming_connections(&self, listener: TcpListener) {
         loop {
             match listener.accept().await {
                 Ok((stream, address)) => {
                     debug!("Connection established {address}!");
-
                     stream.set_nodelay(true).unwrap();
-                    let (read_half, write_half) = tokio::io::split(stream);
-
-                    let connection = Arc::new(Mutex::new(Connection {
-                        write_half,
-                        state: Arc::new(ShardedLock::new(ProtocolState::Handshake)),
-                        is_closed: false,
-                        address,
-                        keepalive_pending: false,
-                        last_keepalive_time: Local::now().timestamp_millis(),
-                    }));
-                    self.connections.lock().await.push(connection.clone());
-                    let connections_mutex = Arc::clone(&self.connections);
-                    let sender = self.new_player_sender.clone();
-                    tokio::spawn(async move {
-                        TcpServer::handle_connection(connection, read_half, sender).await;
-                        connections_mutex
-                            .lock()
-                            .await
-                            .retain(|conn| !conn.try_lock().unwrap().is_closed)
-                    });
+                    tokio::spawn(Self::handle_connection(self.new_player_sender.clone(), stream, address));
                 }
                 Err(err) => {
                     error!("Error accepting connection: {err}");
@@ -77,84 +63,79 @@ impl TcpServer {
         }
     }
 
-    pub async fn tick(&self) {
-        let connections = self.connections.lock().await;
-        for conn in connections.iter() {
-            let mut conn = conn.lock().await;
-            conn.keep_connection_alive().await;
-        }
-    }
+    async fn handle_connection(new_player_sender: Sender<Connection>, stream: TcpStream, address: SocketAddr) {
+        let (mut read_half, mut write_half) = tokio::io::split(stream);
 
-    async fn handle_connection(
-        connection: Arc<Mutex<Connection>>,
-        mut read_half: ReadHalf<TcpStream>,
-        new_player_sender: Sender<PlayerConnection>,
-    ) {
-        let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
         let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
+        let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
 
-        let connection_clone = Arc::clone(&connection);
+        let mut connection = Connection::new(address, outgoing_packets_sender, incoming_packets_receiver);
+        let packet_transformer = PacketTransformer::default();
+
+        // Disconnect any connection that is in early state for longer than 500ms
+        let mut connection_clone = connection.clone();
         tokio::spawn(async move {
-            let receiver = outgoing_packets_receiver.to_async();
-            while let Ok(packet) = receiver.recv().await {
-                connection_clone.lock().await.send_raw_packet(packet).await;
+            sleep(Duration::from_millis(500)).await;
+            if connection_clone.state().is_early() {
+                connection_clone.close();
             }
         });
 
-        while let Ok(len) = get_var_int_from_stream(&mut read_half).await {
-            let mut buffer = vec![0; len as usize];
-
-            if let Ok(0) = read_half.read_exact(&mut buffer).await {
-                break;
-            }
-
-            let mut bytes = Bytes::from(buffer);
-
-            let packet_id = bytes.get_var_int().unwrap();
-            let raw_packet = RawPacket::new(packet_id, bytes);
-
-            let mut connection = connection.lock().await;
-            let state = *connection.state.read().unwrap();
-            let result = match state {
-                ProtocolState::Status => StatusHandler::handle_packet(&mut connection, raw_packet).await,
-                ProtocolState::Handshake => HandshakeHandler::handle_packet(&mut connection, raw_packet).await,
-                ProtocolState::Login => match LoginHandler::handle_packet(&mut connection, raw_packet).await {
-                    Ok(true) => {
-                        new_player_sender
-                            .send(PlayerConnection {
-                                protocol_state: Arc::clone(&connection.state),
-                                packet_receiver: incoming_packets_receiver.clone(),
-                                packet_sender: outgoing_packets_sender.clone(),
-                            })
-                            .unwrap();
-                        Ok(())
+        let packet_transformer_clone = packet_transformer.clone();
+        let connection_clone = connection.clone();
+        let writer = tokio::spawn(async move {
+            while let Ok(packet) = outgoing_packets_receiver.as_async().recv().await {
+                let bytes = match packet_transformer_clone.encode(packet, connection_clone.state()) {
+                    Ok(bytes) => bytes,
+                    Err(err) => {
+                        error!("Serialization error: {}", err);
+                        outgoing_packets_receiver.close();
+                        break;
                     }
-                    Ok(false) => Ok(()),
-                    Err(err) => Err(err),
-                },
-                ProtocolState::Configuration => {
-                    incoming_packets_sender.send(raw_packet).unwrap();
-                    Ok(())
-                }
-                ProtocolState::Play => {
-                    if let Some(packet) = raw_packet.decode::<KeepAliveResponseC2SPacket>(state) {
-                        PlayHandler::handle_keep_alive(&mut connection, packet).await
-                    } else {
-                        incoming_packets_sender.send(raw_packet).unwrap();
-                        Ok(())
-                    }
-                }
-            };
+                };
 
-            if result.is_err() {
-                warn!("Error handling packet {:?}!", result.err());
-                connection.disconnect("Unexpected error!").await;
-                break;
+                if write_half.write_all(&bytes).await.is_err() {
+                    break;
+                }
             }
+        });
+
+        let mut connection_clone = connection.clone();
+        let reader = tokio::spawn(async move {
+            while let Ok(len) = get_var_int_from_stream(&mut read_half).await {
+                if len > MAX_PACKET_SIZE_BYTES {
+                    connection_clone.disconnect("Received too large packet!");
+                    break;
+                }
+                if connection_clone.is_closed() {
+                    break;
+                }
+
+                let mut buffer = vec![0; len as usize];
+                if let Ok(0) = read_half.read_exact(&mut buffer).await {
+                    break;
+                }
+                let raw_packet = packet_transformer.decode(buffer).unwrap();
+
+                match connection_clone.state() {
+                    ProtocolState::Status => {
+                        EarlyConnectionHandler::handle_status_packet(&mut connection_clone, raw_packet)
+                    }
+                    ProtocolState::Handshake => EarlyConnectionHandler::handle_handshake_packet(
+                        &mut connection_clone,
+                        raw_packet,
+                        new_player_sender.clone(),
+                    ),
+                    _ => incoming_packets_sender.send(raw_packet).unwrap(),
+                }
+            }
+        });
+
+        select! {
+            _ = writer => (),
+            _ = reader => ()
         }
 
-        let mut connection = connection.lock().await;
-        connection.is_closed = true;
-        debug!("Connection closed {:?}!", connection.address);
+        connection.close()
     }
 }

@@ -17,7 +17,7 @@ version = "0.0.4"
 [workspace.dependencies]
 bytes = "1.6.0"
 thiserror = "1.0.61"
-uuid = { version = "1.10.0", features = ["v4"] }
+uuid = { version = "1.10.0", features = ["v4", "serde"] }
 tokio = { version = "1.38.0", features = ["full"] }
 crab_nbt = "0.1.1"
 serde = { version = "1.0.204", features = ["derive"] }
@@ -41,6 +41,7 @@ crab_nbt.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 evenio.workspace = true
+derive_more.workspace = true
 chrono = "0.4.38"
 log = "0.4.22"
 flate2 = "1.0.30"

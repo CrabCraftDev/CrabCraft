@@ -1,16 +1,15 @@
-use super::{
-    connection::{PacketEvent, PlayerConnection},
-    play::PlayerJoinWorldEvent,
-};
+use crate::entity::player::PlayerJoined;
 use crate::mc_server::COMPATIBLE_SERVER_VERSIONS;
-use crate::REGISTRY;
+use crate::network::connection::Connection;
+use crate::{GITHUB_ISSUES_URL, REGISTRY};
 use bytes::BytesMut;
 use crab_protocol::packets::common::{
     ClientInformationC2SPacket, KnownServerLinkType, PluginMessageS2CPacket, ReportDetail, ReportDetailsS2CPacket,
     ServerLink, ServerLinksS2CPacket,
 };
 use crab_protocol::packets::configuration::RegistryDataEntry;
-use crab_protocol::types::namespaced_key::MINECRAFT_NAMESPACE;
+use crab_protocol::raw_packet::RawPacket;
+use crab_protocol::types::namespaced_key::{NamespacedKey, MINECRAFT_NAMESPACE};
 use crab_protocol::{
     packets::configuration::{
         AcknowledgeFinishConfigurationC2SPacket, FinishConfigurationS2CPacket, KnownPacksC2SPacket,
@@ -18,40 +17,46 @@ use crab_protocol::{
     },
     protocol_serializer::ProtocolSerializer,
     protocol_state::ProtocolState,
-    types::{known_pack::KnownPack, namespaced_key::NamespacedKey},
+    types::known_pack::KnownPack,
 };
+use evenio::prelude::Insert;
 use evenio::{
     entity::EntityId,
     event::{Receiver, Sender},
 };
 
 pub fn configuration_packets(
-    receiver: Receiver<PacketEvent, (EntityId, &PlayerConnection)>,
-    mut world_join_sender: Sender<PlayerJoinWorldEvent>,
+    receiver: Receiver<RawPacket, (EntityId, &Connection)>,
+    mut sender: Sender<(PlayerJoined, Insert<ClientInformationC2SPacket>)>,
 ) {
     let (entity, connection) = receiver.query;
-    let PacketEvent {
-        packet,
-        protcol_state: state,
-    } = receiver.event;
-    if *state != ProtocolState::Configuration {
+    let packet = receiver.event;
+    let state = connection.state();
+    if state != ProtocolState::Configuration {
         return;
     }
 
-    if let Some(_packet) = packet.decode::<ClientInformationC2SPacket>(*state) {
-        let crabcraft_version = env!("CARGO_PKG_VERSION");
+    if let Some(client_information) = packet.decode::<ClientInformationC2SPacket>(state) {
+        sender.insert(entity, client_information.clone());
+        let server_version = env!("CARGO_PKG_VERSION");
         connection.send_packet(ReportDetailsS2CPacket {
             details: vec![ReportDetail {
                 title: "Server".to_owned(),
-                description: format!("CrabCraft v{}", crabcraft_version),
+                description: format!("CrabCraft v{server_version}"),
             }],
         });
 
         connection.send_packet(ServerLinksS2CPacket {
-            links: vec![ServerLink::Known {
-                link: KnownServerLinkType::BugReport,
-                url: "https://github.com/CrabCraftDev/CrabCraft".to_owned(),
-            }],
+            links: vec![
+                ServerLink::Known {
+                    link: KnownServerLinkType::BugReport,
+                    url: GITHUB_ISSUES_URL.to_owned(),
+                },
+                ServerLink::Known {
+                    link: KnownServerLinkType::Community,
+                    url: "https://discord.gg/XZKprmznqP".to_string(),
+                },
+            ],
         });
 
         let known_packs = COMPATIBLE_SERVER_VERSIONS
@@ -89,12 +94,12 @@ pub fn configuration_packets(
         });
     }
 
-    if let Some(_packet) = packet.decode::<KnownPacksC2SPacket>(*state) {
+    if let Some(_packet) = packet.decode::<KnownPacksC2SPacket>(state) {
         connection.send_packet(FinishConfigurationS2CPacket);
     }
 
-    if let Some(_packet) = packet.decode::<AcknowledgeFinishConfigurationC2SPacket>(*state) {
-        *connection.protocol_state.write().unwrap() = ProtocolState::Play;
-        world_join_sender.send_to(entity, PlayerJoinWorldEvent);
+    if let Some(_packet) = packet.decode::<AcknowledgeFinishConfigurationC2SPacket>(ProtocolState::Configuration) {
+        connection.set_state(ProtocolState::Play);
+        sender.send_to(entity, PlayerJoined);
     }
 }

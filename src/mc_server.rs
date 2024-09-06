@@ -1,19 +1,16 @@
-use std::ops::Add;
-use std::sync::Arc;
-use std::time::Duration;
-
+use crate::network::connection::Connection;
+use crate::world::Shutdown;
+use crate::{entity::player::KeepAliveStatus, network::tcp_server::TcpServer, world};
+use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
+use chrono::Local;
 use evenio::world::World;
 use kanal::Receiver;
 use log::{info, warn};
+use std::ops::Add;
+use std::sync::Arc;
+use std::time::Duration;
 use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
-
-use crate::{
-    entity::player::{network::connection::PlayerConnection, Player},
-    network::tcp_server::TcpServer,
-    world,
-};
-use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
 
 pub const SERVER_PROTOCOL_VERSION: i32 = 767;
 pub const SERVER_VERSION: &str = "1.21.1";
@@ -30,13 +27,13 @@ pub struct McServer {
     tcp_server: Arc<TcpServer>,
     overload_warning_cooldown: Instant,
     world: World,
-    player_connection_receiver: Receiver<PlayerConnection>,
+    incoming_connections_receiver: Receiver<Connection>,
 }
 
 impl McServer {
     pub fn new(ip_address: String) -> McServer {
-        let (player_connection_sender, player_connection_receiver) = kanal::unbounded();
-        let tcp_server = TcpServer::new(ip_address, player_connection_sender);
+        let (incoming_connections_sender, incoming_connections_receiver) = kanal::unbounded();
+        let tcp_server = TcpServer::new(ip_address, incoming_connections_sender);
 
         McServer {
             running: true,
@@ -45,7 +42,7 @@ impl McServer {
             scheduler: ServerScheduler::default(),
             overload_warning_cooldown: Instant::now(),
             world: world::new(),
-            player_connection_receiver,
+            incoming_connections_receiver,
         }
     }
 
@@ -61,7 +58,7 @@ impl McServer {
 
         select! {
             _ = ctrl_c => {
-                println!(); // To write new messages after ^C
+                println!(); // Write new messages after ^C
                 self.shutdown();
             },
             _ = tcp_server_task => {},
@@ -96,17 +93,21 @@ impl McServer {
     pub async fn tick(&mut self) {
         self.current_tick += 1;
 
-        while let Some(connection) = self.player_connection_receiver.try_recv().unwrap() {
+        while let Some(new_connection) = self.incoming_connections_receiver.try_recv().unwrap() {
             let entity = self.world.spawn();
-            self.world.insert(entity, Player);
-            self.world.insert(entity, connection);
+            self.world.insert(
+                entity,
+                KeepAliveStatus {
+                    keepalive_pending: false,
+                    last_keepalive_time: Local::now().timestamp_millis(),
+                },
+            );
+            self.world.insert(entity, new_connection);
         }
 
         self.world.send(WorldTick);
 
         self.scheduler.tick();
-
-        self.tcp_server.tick().await;
     }
 
     pub fn shutdown(&mut self) {
@@ -121,11 +122,7 @@ impl McServer {
             return;
         }
 
-        let connections = &self.tcp_server.connections.lock().await;
-        for connection in connections.iter() {
-            let mut connection = connection.lock().await;
-            connection.disconnect("Server shutting down!").await;
-        }
+        self.world.send(Shutdown);
 
         info!("CrabCraft stopped! Bye!")
     }

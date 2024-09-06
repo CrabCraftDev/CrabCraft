@@ -264,6 +264,7 @@ dependencies = [
  "crab_registry",
  "crab_world",
  "crossbeam",
+ "derive_more",
  "evenio",
  "flate2",
  "kanal",
@@ -306,6 +307,7 @@ dependencies = [
  "crab_macros",
  "crab_nbt",
  "derive_more",
+ "evenio",
  "serde",
  "serde_json",
  "strum",
@@ -952,6 +954,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81dfa00651efa65069b0b6b651f4aaa31ba9e3c3ce0137aaad053604ee7e0314"
 dependencies = [
  "getrandom",
+ "serde",
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
-use serde::{Deserialize, Serialize};
-
 use crab_macros::{Packet, ProtocolSerializer};
+use evenio::prelude::Component;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
@@ -49,8 +50,8 @@ pub struct PlayersInfo {
     pub sample: Vec<PlayerSample>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Component)]
 pub struct PlayerSample {
     pub name: String,
-    pub id: String,
+    pub id: Uuid,
 }

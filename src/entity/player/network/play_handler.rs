@@ -1,6 +1,8 @@
-use super::connection::PlayerConnection;
+use crate::entity::player::PlayerJoined;
+use crate::network::connection::Connection;
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
+use crab_protocol::packets::status::PlayerSample;
 use crab_protocol::{
     packets::play::{
         ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
@@ -16,15 +18,11 @@ use crab_world::blocks::{Bedrock, Dirt, GrassBlock};
 use crab_world::chunks::chunk::{Chunk, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 use crab_world::paletted_container::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use crab_world::BlockType;
-use evenio::event::{Receiver, TargetedEvent};
+use evenio::event::Receiver;
 use log::info;
 
-#[derive(TargetedEvent)]
-pub struct PlayerJoinWorldEvent;
-
-pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>) {
-    let connection = receiver.query;
-
+pub fn on_world_join(receiver: Receiver<PlayerJoined, (&Connection, &PlayerSample)>) {
+    let (connection, sample) = receiver.query;
     connection.send_packet(GameJoinS2CPacket {
         entity_id: 0,
         is_hardcore: false,
@@ -48,7 +46,6 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
     });
 
     // TODO: Temporary implementation of chunk sending
-
     connection.send_packet(SetDefaultSpawnPositionS2CPacket {
         location: BlockPosition { x: 0, y: 0, z: 0 },
         angle: 0.0,
@@ -128,5 +125,5 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &PlayerConnection>
         teleport_id: 2137,
     });
 
-    info!("Player joined!");
+    info!("Player {} joined!", sample.name);
 }

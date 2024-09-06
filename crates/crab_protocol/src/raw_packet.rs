@@ -1,11 +1,11 @@
 use std::fmt::Debug;
 
-use bytes::{BufMut, Bytes, BytesMut};
-
 use crate::protocol_state::ProtocolState;
 use crate::{buf::WriteByteBuf, error::ProtocolError, packet::Packet};
+use bytes::{BufMut, Bytes, BytesMut};
+use evenio::event::TargetedEvent;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, TargetedEvent)]
 pub struct RawPacket {
     pub id: i32,
     pub data: Bytes,

@@ -1,20 +1,21 @@
-use std::panic;
-use std::process::exit;
-
+use crate::mc_server::McServer;
+use crate::utils::logger::Logger;
 use chrono::Local;
 use crab_registry::{RegistryManager, REGISTRY};
 use crab_world::blocks::init_blocks;
 use crab_world::BLOCKS;
 use log::{error, info, LevelFilter};
-use utils::logger::Logger;
-
-use crate::mc_server::McServer;
+use std::backtrace::Backtrace;
+use std::panic;
+use std::process::exit;
 
 mod entity;
 mod mc_server;
 mod network;
 mod utils;
 mod world;
+
+pub const GITHUB_ISSUES_URL: &str = "https://github.com/CrabCraftDev/CrabCraft/issues/new/choose";
 
 #[tokio::main]
 async fn main() {
@@ -23,8 +24,13 @@ async fn main() {
     panic::set_hook(Box::new(|panic_info| {
         error!("Server PANICKED!!! (looks like a crash, that wasn't expected)");
         for line in panic_info.to_string().split('\n') {
-            error!("{}", line);
+            error!("{line}");
         }
+        error!("Backtrace:");
+        for line in Backtrace::force_capture().to_string().split('\n') {
+            error!("{line}");
+        }
+        print_error_issues_url();
         exit(1)
     }));
 
@@ -48,4 +54,9 @@ async fn main() {
     mc_server.start().await;
 
     info!("Exiting!");
+}
+
+pub fn print_error_issues_url() {
+    error!("This error should never happen, but you experienced it!");
+    error!("Please, report it here: {GITHUB_ISSUES_URL} with entire context")
 }
