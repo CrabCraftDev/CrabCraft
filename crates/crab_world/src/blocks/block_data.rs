@@ -9,7 +9,8 @@ use crate::error::WorldError;
 /// # Example
 ///
 /// ```rust
-/// # use crab_world::{BlockType,BLOCKS,blocks::init_blocks,block_data::Snowy,blocks::GrassBlock};
+/// use crab_world::blocks::{BlockType, Block, BLOCKS, init_blocks, GrassBlock};
+/// use crab_world::blocks::block_data::Snowy;
 /// # BLOCKS.get_or_init(init_blocks);
 /// let block = GrassBlock::default_state_id().unwrap();
 /// let is_snowy = block.property::<Snowy>().unwrap();
@@ -19,11 +20,11 @@ pub trait BlockData {
 
     fn get(self) -> Self::Value;
 
-    fn from_properties(properties: HashMap<&'static str, u16>) -> Result<Self, WorldError>
+    fn from_properties(properties: HashMap<&'static str, String>) -> Result<Self, WorldError>
     where
         Self: Sized;
 
-    fn apply(property: &Self::Value, properties: &mut HashMap<&'static str, u16>) -> Result<(), WorldError>
+    fn apply(property: &Self::Value, properties: &mut HashMap<&'static str, String>) -> Result<(), WorldError>
     where
         Self: Sized;
 }

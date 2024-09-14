@@ -1,18 +1,14 @@
 use crab_protocol::types::namespaced_key::NamespacedKey;
-use crab_world::block_registry::{BlockInformation, BlockRegistry};
+use crab_world::blocks::block_registry::{BlockInformation, BlockRegistry};
 use crab_world::error::WorldError;
-use crab_world::Block;
+use crab_world::blocks::Block;
 use std::collections::HashMap;
 
-fn from_properties(_hashmap: &HashMap<&str, u16>) -> Result<Block, WorldError> {
+fn from_properties(_hashmap: &HashMap<&str, String>) -> Result<Block, WorldError> {
     unreachable!()
 }
 
-fn from_string_properties(_hashmap: &HashMap<&str, String>) -> Result<Block, WorldError> {
-    unreachable!()
-}
-
-fn properties(_id: u16) -> Result<HashMap<&'static str, u16>, WorldError> {
+fn properties(_id: u16) -> Result<HashMap<&'static str, String>, WorldError> {
     unreachable!()
 }
 
@@ -24,7 +20,6 @@ fn get_example_block_registry() -> BlockRegistry {
             &NamespacedKey::minecraft("dirt").unwrap(),
             BlockInformation {
                 from_properties,
-                from_string_properties,
                 properties,
                 starting_state_id: 0,
                 default_state_id: 0,
@@ -37,7 +32,6 @@ fn get_example_block_registry() -> BlockRegistry {
             &NamespacedKey::minecraft("stone").unwrap(),
             BlockInformation {
                 from_properties,
-                from_string_properties,
                 properties,
                 starting_state_id: 0,
                 default_state_id: 0,

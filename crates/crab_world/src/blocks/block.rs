@@ -4,10 +4,10 @@ use derive_more::{From, Into};
 
 use crab_protocol::types::namespaced_key::NamespacedKey;
 
-use crate::block_data::BlockData;
-use crate::block_registry::BlockInformation;
+use crate::blocks::block_data::BlockData;
+use crate::blocks::block_registry::BlockInformation;
 use crate::error::WorldError;
-use crate::{get_block_registry, BLOCKS};
+use crate::blocks::{get_block_registry, BLOCKS};
 
 /// Represents a block used in our codebase
 /// u16 is block state id (mostly used in protocol), which is unique id for each block state
@@ -23,7 +23,7 @@ impl Block {
             .namespaced_key_by_state_id(self.0)
     }
 
-    pub fn properties(&self) -> Result<HashMap<&'static str, u16>, WorldError> {
+    pub fn properties(&self) -> Result<HashMap<&'static str, String>, WorldError> {
         let namespaced_key = self.namespaced_key()?;
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
         let local_state = self.0 - block_information.starting_state_id;
@@ -32,23 +32,13 @@ impl Block {
         Ok(properties)
     }
 
-    /// Creates new Block based on Hashmap<String, u16>
+    /// Creates new Block based on Hashmap<&str, String>
     pub fn from_properties(
-        namespaced_key: &NamespacedKey,
-        properties: &HashMap<&str, u16>,
-    ) -> Result<Block, WorldError> {
-        let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
-        (block_information.from_properties)(properties)
-    }
-
-    /// Creates new Block based on Hashmap<String, String>
-    /// Used mostly in Anvil - world file format
-    pub fn from_string_properties(
         namespaced_key: &NamespacedKey,
         properties: &HashMap<&str, String>,
     ) -> Result<Block, WorldError> {
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
-        (block_information.from_string_properties)(properties)
+        (block_information.from_properties)(properties)
     }
 
     pub fn is_same_as(&self, other: &Block) -> bool {
@@ -75,9 +65,8 @@ pub trait BlockType {
     /// For example `minecraft:stone`
     fn namespaced_key() -> NamespacedKey;
 
-    fn properties(local_state: u16) -> Result<HashMap<&'static str, u16>, WorldError>;
-    fn from_properties(hashmap: &HashMap<&str, u16>) -> Result<Block, WorldError>;
-    fn from_string_properties(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError>;
+    fn properties(local_state: u16) -> Result<HashMap<&'static str, String>, WorldError>;
+    fn from_properties(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError>;
 
     fn is_same_type_as(block: &Block) -> bool {
         matches!(block.namespaced_key(), Ok(block_key) if *block_key == Self::namespaced_key())

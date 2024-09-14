@@ -1,11 +1,10 @@
 use std::collections::HashMap;
-
-use strum::FromRepr;
+use strum::{Display, EnumString};
 
 use crab_macros::BlockData;
-use crab_world::block_data::{BlockData, Snowy};
+use crab_world::blocks::block_data::{BlockData, Snowy};
 use crab_world::blocks::{init_blocks, GrassBlock};
-use crab_world::{BlockType, BLOCKS};
+use crab_world::blocks::{BlockType, BLOCKS};
 
 #[derive(Debug, Clone, PartialEq, Eq, BlockData)]
 struct ComplexBlockData {
@@ -14,7 +13,8 @@ struct ComplexBlockData {
     pub enum_value: ExampleEnum,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, FromRepr)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, Display)]
+#[strum(serialize_all = "snake_case")]
 #[repr(u16)]
 enum ExampleEnum {
     A,
@@ -24,10 +24,9 @@ enum ExampleEnum {
 
 #[test]
 fn complex_block_data() {
-    let properties = HashMap::from([("boolean", 0), ("number", 3), ("enum_value", 1)]);
+    let properties = HashMap::from([("boolean", "true".to_string()), ("number", "3".to_string()), ("enum_value", "b".to_string())]);
 
     let data: ComplexBlockData = ComplexBlockData::from_properties(properties).unwrap();
-    // Note: 0 represents true and 1 represents false.
     assert!(data.boolean);
     assert_eq!(data.number, 3);
     assert_eq!(data.enum_value, ExampleEnum::B);
@@ -35,7 +34,7 @@ fn complex_block_data() {
 
 #[test]
 fn invalid_block_data() {
-    let properties = HashMap::from([("boolean", 3), ("number", 90), ("enum_value", 5)]);
+    let properties = HashMap::from([("boolean", "xd".to_string())]);
 
     assert!(ComplexBlockData::from_properties(properties).is_err());
 }
