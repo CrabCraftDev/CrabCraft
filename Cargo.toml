@@ -12,7 +12,7 @@ edition = "2021"
 members = ["tools/*", "crates/*"]
 
 [workspace.package]
-version = "0.0.4"
+version = "0.0.5"
 
 [workspace.dependencies]
 bytes = "1.7.1"

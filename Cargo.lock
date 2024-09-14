@@ -258,7 +258,7 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
 name = "crab_craft"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "base64",
  "bytes",
@@ -286,7 +286,7 @@ dependencies = [
 
 [[package]]
 name = "crab_macros"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -307,7 +307,7 @@ dependencies = [
 
 [[package]]
 name = "crab_protocol"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "bitfield-struct",
  "bytes",
@@ -324,7 +324,7 @@ dependencies = [
 
 [[package]]
 name = "crab_registry"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "crab_protocol",
  "derive_more",
@@ -334,7 +334,7 @@ dependencies = [
 
 [[package]]
 name = "crab_world"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "bytes",
  "crab_macros",
