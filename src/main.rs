@@ -16,6 +16,9 @@ mod network;
 mod utils;
 mod world;
 
+pub const GITHUB_ISSUES_URL: &str = "https://github.com/CrabCraftDev/CrabCraft/issues/new/choose";
+pub const DISCORD_INVITE_URL: &str = "https://discord.gg/XZKprmznqP";
+
 #[tokio::main]
 async fn main() {
     let startup_begin = Local::now().timestamp_millis();

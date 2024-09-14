@@ -1,5 +1,8 @@
 use super::{connection::PacketEvent, play_handler::PlayerJoinWorldEvent};
-use crate::{mc_server::COMPATIBLE_SERVER_VERSIONS, network::connection::NetworkConnection};
+use crate::{
+    mc_server::COMPATIBLE_SERVER_VERSIONS, network::connection::NetworkConnection, DISCORD_INVITE_URL,
+    GITHUB_ISSUES_URL,
+};
 use bytes::BytesMut;
 use crab_protocol::packets::common::{
     ClientInformationC2SPacket, KnownServerLinkType, PluginMessageS2CPacket, ReportDetail, ReportDetailsS2CPacket,
@@ -45,10 +48,16 @@ pub fn configuration_packets(
         });
 
         connection.send_packet(ServerLinksS2CPacket {
-            links: vec![ServerLink::Known {
-                link: KnownServerLinkType::BugReport,
-                url: "https://github.com/CrabCraftDev/CrabCraft".to_owned(),
-            }],
+            links: vec![
+                ServerLink::Known {
+                    link: KnownServerLinkType::BugReport,
+                    url: GITHUB_ISSUES_URL.to_owned(),
+                },
+                ServerLink::Known {
+                    link: KnownServerLinkType::Community,
+                    url: DISCORD_INVITE_URL.to_string(),
+                },
+            ],
         });
 
         let known_packs = COMPATIBLE_SERVER_VERSIONS
