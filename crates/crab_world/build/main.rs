@@ -3,7 +3,7 @@ use std::process::Command;
 use std::{env, fs};
 
 use heck::ToUpperCamelCase;
-use proc_macro2::{Ident, TokenStream};
+use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use serde::Deserialize;
 
@@ -24,7 +24,7 @@ struct Property {
 }
 
 pub fn generate() -> TokenStream {
-    println!("cargo::rerun-if-changed=../../assets/blocks.json");
+    println!("cargo::rerun-if-changed=../../../assets/blocks.json");
 
     let content: Vec<Block> = serde_json::from_str(BLOCKS).unwrap();
 
@@ -34,16 +34,14 @@ pub fn generate() -> TokenStream {
     for block in content.iter() {
         let name = format_ident!("{}", &block.name.to_upper_camel_case());
         let default_state_offset = block.default_state_offset;
-        let (mut property_names, mut states_combinations_amount, mut match_string_to_number) = process_states(block);
+        let (mut states_combinations_amount, mut string_to_id, mut id_to_string) = process_states(block);
 
         let states_amount = states_combinations_amount.iter().product::<u16>();
-
         let block_name = &block.name;
 
         blocks_initialization.push(quote! {
-            blocks.add_block(#states_amount, &#name::namespaced_key(), ::crab_world::block_registry::BlockInformation {
+            blocks.add_block(#states_amount, &#name::namespaced_key(), ::crab_world::blocks::block_registry::BlockInformation {
                 from_properties: #name::from_properties,
-                from_string_properties: #name::from_string_properties,
                 properties: #name::properties,
                 starting_state_id: 0,
                 default_state_id: #default_state_offset
@@ -51,29 +49,30 @@ pub fn generate() -> TokenStream {
         });
 
         states_combinations_amount.reverse();
-        property_names.reverse();
-        match_string_to_number.reverse();
+        string_to_id.reverse();
+        id_to_string.reverse();
 
         blocks.push(quote! {
             #[derive(Clone, PartialEq, Hash)]
             pub struct #name;
 
-            impl ::crab_world::BlockType for #name {
+            impl ::crab_world::blocks::BlockType for #name {
                 fn namespaced_key() -> ::crab_protocol::types::namespaced_key::NamespacedKey {
                     ::crab_protocol::types::namespaced_key::NamespacedKey::minecraft(#block_name).unwrap()
                 }
 
                 #[allow(unused_mut, unused)]
-                fn properties(local_state: u16) -> Result<::std::collections::HashMap<&'static str, u16>, ::crab_world::error::WorldError> {
+                fn properties(local_state: u16) -> Result<::std::collections::HashMap<&'static str, String>, ::crab_world::error::WorldError> {
                     if local_state > #states_amount {
                         return Err(::crab_world::error::WorldError::InvalidLocalState(local_state, #states_amount));
                     }
 
-                    let mut hashmap: ::std::collections::HashMap<&'static str, u16> = ::std::collections::HashMap::new();
+                    let mut hashmap: ::std::collections::HashMap<&'static str, String> = ::std::collections::HashMap::new();
                     let mut current_state = local_state;
 
                     #(
-                        hashmap.insert(stringify!(#property_names), current_state % #states_combinations_amount);
+                        let state_id = current_state % #states_combinations_amount;
+                        #id_to_string
                         current_state /= #states_combinations_amount;
                     )*
 
@@ -81,38 +80,23 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_string_properties(hashmap: &::std::collections::HashMap<&str, String>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
+                fn from_properties(hashmap: &::std::collections::HashMap<&str, String>) -> Result<::crab_world::blocks::Block, ::crab_world::error::WorldError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(
-                        let property_value = #match_string_to_number?;
+                        let property_value = #string_to_id?;
                         state_id_offset += property_value as u16 * multiplier;
                         multiplier *= #states_combinations_amount;
                     )*
-                    Ok(::crab_world::Block(state_id_offset))
-                }
-
-                #[allow(unused_mut, unused)]
-                fn from_properties(hashmap: &::std::collections::HashMap<&str, u16>) -> Result<::crab_world::Block, ::crab_world::error::WorldError> {
-                    let mut state_id_offset: u16 = Self::starting_state_id()?.0;
-                    let mut multiplier: u16 = 1;
-                    #(
-                        let value = hashmap.get(stringify!(#property_names))
-                            .ok_or_else(|| ::crab_world::error::WorldError::InvalidPropertyName)?;
-                        state_id_offset += *value * multiplier;
-                        multiplier *= #states_combinations_amount;
-                    )*
-                    Ok(::crab_world::Block(state_id_offset))
+                    Ok(::crab_world::blocks::Block(state_id_offset))
                 }
             }
         });
     }
 
     quote! {
-        use ::crab_world::BlockType;
-
-        pub fn init_blocks() -> ::crab_world::block_registry::BlockRegistry {
-            let mut blocks = ::crab_world::block_registry::BlockRegistry::default();
+        pub fn init_blocks() -> ::crab_world::blocks::block_registry::BlockRegistry {
+            let mut blocks = ::crab_world::blocks::block_registry::BlockRegistry::default();
             #(#blocks_initialization)*
             blocks
         }
@@ -121,33 +105,44 @@ pub fn generate() -> TokenStream {
     }
 }
 
-fn process_states(block: &Block) -> (Vec<Ident>, Vec<u16>, Vec<TokenStream>) {
-    let mut property_names = vec![];
-    let mut match_string_to_number = vec![];
+fn process_states(block: &Block) -> (Vec<u16>, Vec<TokenStream>, Vec<TokenStream>) {
+    let mut string_to_id = vec![];
+    let mut id_to_string = vec![];
 
     let mut state_combinations_count = vec![];
     for property in &block.properties {
         state_combinations_count.push(property.values.len() as u16);
 
         let property_name = property.name.as_str();
-        property_names.push(format_ident!("{}", property_name));
 
-        let mut property_value_matches = vec![];
+        let mut string_to_id_matches = vec![];
         for (i, value) in property.values.iter().enumerate() {
-            property_value_matches.push(quote! {#value => Ok::<usize, crate::error::WorldError>(#i)});
+            string_to_id_matches.push(quote! {#value => Ok::<usize, crate::error::WorldError>(#i)});
         }
-        match_string_to_number.push(quote! {
+        string_to_id.push(quote! {
             match hashmap.get(#property_name) {
                 Some(value) => match value.as_str() {
-                    #(#property_value_matches,)*
+                    #(#string_to_id_matches,)*
                     _ => return Err(crate::error::WorldError::InvalidPropertyValue),
                 },
                 None => return Err(crate::error::WorldError::InvalidPropertyName),
             }
         });
+
+        let mut id_to_string_matches = vec![];
+        for (i, value) in property.values.iter().enumerate() {
+            let i = i as u16;
+            id_to_string_matches.push(quote! {#i => #value.to_string()});
+        }
+        id_to_string.push(quote! {
+            hashmap.insert(#property_name, match state_id {
+                #(#id_to_string_matches,)*
+                _ => todo!()
+            });
+        });
     }
 
-    (property_names, state_combinations_count, match_string_to_number)
+    (state_combinations_count, string_to_id, id_to_string)
 }
 
 fn main() {

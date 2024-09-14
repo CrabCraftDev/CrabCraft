@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse2, spanned::Spanned, Data, DeriveInput, Error, Fields, Result, Type};
+use syn::{parse2, spanned::Spanned, Data, DeriveInput, Error, Fields, Result};
 
 pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;
@@ -42,42 +42,12 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
 
     for field in fields {
         let field_name = field.ident.clone().unwrap();
-        let field_type = &field.ty;
 
         field_names.push(field_name.clone());
-
-        let Type::Path(type_path) = field_type else {
-            return Err(Error::new(field_type.span(), "Unsupported field type"));
-        };
-
-        let type_ident = type_path.path.get_ident().unwrap().to_string();
-        let field_conversion = match type_ident.as_str() {
-            "u16" => quote! { *value },
-            "bool" => quote! {
-                match value {
-                    0 => true,
-                    1 => false,
-                    _ => return Err(::crab_world::error::WorldError::InvalidPropertyValue),
-                }
-            },
-            _ => quote! { #field_type::from_repr(*value).unwrap() },
-        };
-
         let field_get = if fields.len() != 1 {
-            quote! { property.#field_name }
+            quote! { property.#field_name.to_string() }
         } else {
-            quote! { property }
-        };
-
-        let property_conversion = match type_ident.as_str() {
-            "u16" => quote! { #field_get },
-            "bool" => quote! {
-                match #field_get {
-                    true => 0,
-                    false => 1,
-                }
-            },
-            _ => quote! { #field_get as u16 },
+            quote! { property.to_string() }
         };
 
         property_parsing.push(quote! {
@@ -85,15 +55,16 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
                 Some(value) => value,
                 None => return Err(::crab_world::error::WorldError::InvalidPropertyName),
             };
-            let #field_name = #field_conversion;
+            let #field_name = value.parse().map_err(|_| ::crab_world::error::WorldError::InvalidPropertyValue)?;
         });
+
         apply_properties.push(quote! {
-            properties.insert(stringify!(#field_name), #property_conversion);
+            properties.insert(stringify!(#field_name), #field_get.to_lowercase());
         });
     }
 
     Ok(quote! {
-        impl #impl_generics ::crab_world::block_data::BlockData for #input_name #type_generics
+        impl #impl_generics ::crab_world::blocks::block_data::BlockData for #input_name #type_generics
         #where_clause
         {
             #value_type_def
@@ -102,14 +73,14 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
                 #get_impl
             }
 
-            fn from_properties(properties: ::std::collections::HashMap<&'static str, u16>) -> Result<Self, ::crab_world::error::WorldError> {
+            fn from_properties(properties: ::std::collections::HashMap<&str, String>) -> Result<Self, ::crab_world::error::WorldError> {
                 #(#property_parsing)*
                 Ok(Self {
                     #(#field_names,)*
                 })
             }
 
-            fn apply(property: &Self::Value, properties: &mut ::std::collections::HashMap<&'static str, u16>) -> Result<(), ::crab_world::error::WorldError> {
+            fn apply(property: &Self::Value, properties: &mut ::std::collections::HashMap<&str, String>) -> Result<(), ::crab_world::error::WorldError> {
                 #(#apply_properties)*
                 Ok(())
             }

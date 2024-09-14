@@ -1,13 +1,12 @@
-use crate::block::Block;
+use crate::blocks::Block;
 use crate::error::WorldError;
 use crab_protocol::types::namespaced_key::NamespacedKey;
 use std::collections::{BTreeMap, HashMap};
 
 #[derive(Debug, Clone)]
 pub struct BlockInformation {
-    pub from_properties: fn(hashmap: &HashMap<&str, u16>) -> Result<Block, WorldError>,
-    pub from_string_properties: fn(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError>,
-    pub properties: fn(local_state: u16) -> Result<HashMap<&'static str, u16>, WorldError>,
+    pub from_properties: fn(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError>,
+    pub properties: fn(local_state: u16) -> Result<HashMap<&'static str, String>, WorldError>,
     pub starting_state_id: u16,
     pub default_state_id: u16,
 }
