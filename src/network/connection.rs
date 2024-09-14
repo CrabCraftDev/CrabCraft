@@ -25,7 +25,7 @@ use tokio::{
     },
 };
 
-use crate::utils::errors::Error;
+use crate::{entity::player::network::incoming_connection::IncomingConnection, utils::errors::Error};
 
 use super::{
     handlers::{handshake_handler, keep_alive_handler, login_handler, status_handler},
@@ -47,6 +47,7 @@ pub struct NetworkConnection {
     pub outgoing_packets_receiver: Receiver<RawPacket>,
     pub incoming_packets_sender: Sender<RawPacket>,
     pub incoming_packets_receiver: Receiver<RawPacket>,
+    prefix: Arc<ShardedLock<String>>,
 }
 
 impl NetworkConnection {
@@ -63,6 +64,7 @@ impl NetworkConnection {
             outgoing_packets_receiver,
             incoming_packets_sender,
             incoming_packets_receiver,
+            prefix: Arc::new("Unknown player's connection: ".to_owned().into()),
         }
     }
 
@@ -84,12 +86,12 @@ impl NetworkConnection {
         let (writer_result, reader_result) = tokio::join!(writer, reader);
         if let Err(err) = writer_result {
             if err.is_panic() {
-                error!("Player's connection writer task panicked {err:?}")
+                error!("{}Writer task panicked {err:?}", self.prefix())
             }
         }
         if let Err(err) = reader_result {
             if err.is_panic() {
-                error!("Player's connection reader task panicked {err:?}")
+                error!("{}Reader task panicked {err:?}", self.prefix())
             }
         }
     }
@@ -103,7 +105,7 @@ impl NetworkConnection {
             let bytes = match transformer.encode(packet) {
                 Ok(bytes) => bytes,
                 Err(err) => {
-                    error!("Serialization error: {err}");
+                    error!("{}Serialization error: {err}", connection.prefix());
                     connection.close();
                     break;
                 }
@@ -128,7 +130,7 @@ impl NetworkConnection {
                     break;
                 }
                 Err(err) => {
-                    warn!("Error decoding packet {err:?}!");
+                    warn!("{}Error decoding packet {err:?}!", connection.prefix());
                     connection.disconnect("Invalid packet received!".to_owned());
                     break;
                 }
@@ -157,7 +159,10 @@ impl NetworkConnection {
                 if let Some(keep_alive_packet) = raw_packet.decode::<KeepAliveResponseC2SPacket>(state) {
                     keep_alive_handler::handle_packet(self, keep_alive_packet);
                 } else if self.incoming_packets_sender.send(raw_packet).is_err() {
-                    warn!("Tried to transfer received packet to main while channel already closed")
+                    warn!(
+                        "{}Tried to send received packet to main while channel already closed",
+                        self.prefix()
+                    )
                 }
             }
         };
@@ -166,13 +171,12 @@ impl NetworkConnection {
     pub fn send_packet<P: Packet>(&self, packet: P) {
         match RawPacket::try_from_packet(packet, self.get_state()) {
             Ok(raw_packet) => {
-                let _ = self
-                    .outgoing_packets_sender
-                    .send(raw_packet)
-                    .inspect_err(|_| warn!("Tried to send packet while connection closed"));
+                if self.outgoing_packets_sender.send(raw_packet).is_err() {
+                    warn!("{}Tried to send packet while connection closed", self.prefix());
+                }
             }
             Err(err) => {
-                error!("Serialization error: {err}");
+                error!("{}Serialization error: {err}", self.prefix());
             }
         };
     }
@@ -213,6 +217,14 @@ impl NetworkConnection {
 
     pub fn set_state(&self, new_state: ProtocolState) {
         *self.state.write().unwrap() = new_state;
+    }
+
+    pub fn prefix(&self) -> String {
+        self.prefix.read().unwrap().clone()
+    }
+
+    pub fn set_prefix(&self, player_name: &str) {
+        *self.prefix.write().unwrap() = format!("{player_name}'s connection: ")
     }
 
     pub fn keep_connection_alive(&self) {
