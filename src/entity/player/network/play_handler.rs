@@ -1,4 +1,4 @@
-use crate::network::connection::NetworkConnection;
+use crate::{entity::components::name::Name, network::connection::NetworkConnection};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::{
@@ -22,8 +22,8 @@ use log::info;
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
 
-pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &NetworkConnection>) {
-    let connection = receiver.query;
+pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnection, &Name)>) {
+    let (connection, name) = receiver.query;
 
     connection.send_packet(GameJoinS2CPacket {
         entity_id: 0,
@@ -128,5 +128,5 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, &NetworkConnection
         teleport_id: 2137,
     });
 
-    info!("Player joined!");
+    info!("{name} joined!");
 }

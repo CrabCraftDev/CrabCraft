@@ -264,6 +264,7 @@ dependencies = [
  "crab_registry",
  "crab_world",
  "crossbeam",
+ "derive_more",
  "evenio",
  "flate2",
  "futures",

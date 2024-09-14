@@ -9,8 +9,8 @@ use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
 
 use crate::{
-    entity::player::Player,
-    network::{connection::NetworkConnection, tcp_server::TcpServer},
+    entity::player::network::incoming_connection::IncomingConnection,
+    network::tcp_server::TcpServer,
     world::{self, ServerShutdown},
 };
 use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
@@ -30,13 +30,13 @@ pub struct McServer {
     tcp_server: Arc<TcpServer>,
     overload_warning_cooldown: Instant,
     world: World,
-    new_connection_receiver: Receiver<NetworkConnection>,
+    incoming_connection_receiver: Receiver<IncomingConnection>,
 }
 
 impl McServer {
     pub fn new(ip_address: String) -> McServer {
-        let (new_connection_sender, new_connection_receiver) = kanal::unbounded();
-        let tcp_server = TcpServer::new(ip_address, new_connection_sender);
+        let (incoming_connection_sender, incoming_connection_receiver) = kanal::unbounded();
+        let tcp_server = TcpServer::new(ip_address, incoming_connection_sender);
 
         McServer {
             running: true,
@@ -45,7 +45,7 @@ impl McServer {
             scheduler: ServerScheduler::default(),
             overload_warning_cooldown: Instant::now(),
             world: world::new(),
-            new_connection_receiver,
+            incoming_connection_receiver,
         }
     }
 
@@ -96,8 +96,8 @@ impl McServer {
     pub async fn tick(&mut self) {
         self.current_tick += 1;
 
-        while let Some(connection) = self.new_connection_receiver.try_recv().unwrap() {
-            Player::spawn(&mut self.world, connection);
+        while let Some(incoming_connection) = self.incoming_connection_receiver.try_recv().unwrap() {
+            self.world.send(incoming_connection);
         }
 
         self.world.send(WorldTick);

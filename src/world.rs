@@ -13,6 +13,7 @@ pub fn new() -> World {
     // Player entity
     world.add_handler(player::network::connection::receive_packets);
     world.add_handler(player::network::connection::on_disconnect);
+    world.add_handler(player::network::incoming_connection::on_incoming_connection);
     world.add_handler(player::network::configuration_handler::configuration_packets);
     world.add_handler(player::network::play_handler::on_world_join);
 

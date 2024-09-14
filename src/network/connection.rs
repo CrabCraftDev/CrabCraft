@@ -42,7 +42,7 @@ pub struct NetworkConnection {
     pub state: Arc<ShardedLock<ProtocolState>>,
     pub keep_alive_state: Arc<Mutex<KeepAliveState>>,
     pub transformer: PacketTransformer,
-    pub new_connection_sender: Sender<NetworkConnection>,
+    pub incoming_connection_sender: Sender<IncomingConnection>,
     pub outgoing_packets_sender: Sender<RawPacket>,
     pub outgoing_packets_receiver: Receiver<RawPacket>,
     pub incoming_packets_sender: Sender<RawPacket>,
@@ -50,7 +50,7 @@ pub struct NetworkConnection {
 }
 
 impl NetworkConnection {
-    pub fn new(new_connection_sender: Sender<NetworkConnection>) -> Self {
+    pub fn new(incoming_connection_sender: Sender<IncomingConnection>) -> Self {
         let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
         let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
 
@@ -58,7 +58,7 @@ impl NetworkConnection {
             state: Arc::new(ShardedLock::new(ProtocolState::Handshake)),
             keep_alive_state: Arc::new(Mutex::new(KeepAliveState::default())),
             transformer: PacketTransformer::new(),
-            new_connection_sender,
+            incoming_connection_sender,
             outgoing_packets_sender,
             outgoing_packets_receiver,
             incoming_packets_sender,

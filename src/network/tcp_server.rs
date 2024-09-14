@@ -9,20 +9,20 @@ use tokio::{
     select,
 };
 
-use crate::network::connection::NetworkConnection;
+use crate::{entity::player::network::incoming_connection::IncomingConnection, network::connection::NetworkConnection};
 
 pub struct TcpServer {
     address: String,
     /// After player connects and finishes handshake and most of login state
     /// Connection is sent through this channel, to be added to ECS
-    new_connection_sender: Sender<NetworkConnection>,
+    incoming_connection_sender: Sender<IncomingConnection>,
 }
 
 impl TcpServer {
-    pub fn new(address: String, new_connection_sender: Sender<NetworkConnection>) -> TcpServer {
+    pub fn new(address: String, incoming_connection_sender: Sender<IncomingConnection>) -> TcpServer {
         TcpServer {
             address,
-            new_connection_sender,
+            incoming_connection_sender,
         }
     }
 
@@ -52,7 +52,7 @@ impl TcpServer {
     pub async fn accept_connection(&self, stream: TcpStream, address: SocketAddr) {
         debug!("Connection established {address}!");
 
-        let connection = NetworkConnection::new(self.new_connection_sender.clone());
+        let connection = NetworkConnection::new(self.incoming_connection_sender.clone());
 
         connection.accept(stream).await;
 

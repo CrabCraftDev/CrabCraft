@@ -6,7 +6,7 @@ use evenio::{
 };
 use log::info;
 
-use crate::{network::connection::NetworkConnection, world::WorldTick};
+use crate::{entity::components::name::Name, network::connection::NetworkConnection, world::WorldTick};
 
 #[derive(TargetedEvent)]
 pub struct PacketEvent {
@@ -39,9 +39,9 @@ pub fn receive_packets(
 #[derive(TargetedEvent)]
 pub struct PlayerDisconnectedEvent;
 
-pub fn on_disconnect(receiver: Receiver<PlayerDisconnectedEvent, EntityId>, mut sender: Sender<Despawn>) {
-    let entity = receiver.query;
+pub fn on_disconnect(receiver: Receiver<PlayerDisconnectedEvent, (EntityId, &Name)>, mut sender: Sender<Despawn>) {
+    let (entity, name) = receiver.query;
 
-    info!("Player disconnected!");
+    info!("{name} disconnected!");
     sender.send_to(entity, Despawn);
 }
