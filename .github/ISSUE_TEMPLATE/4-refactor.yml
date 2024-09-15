@@ -2,6 +2,7 @@ name: 🧹 Refactor
 description: Refactor current code!
 title: "[Refactor]: "
 labels: [ "type: refactor" ]
+type: "refactor"
 body:
   - type: textarea
     id: whattochange
