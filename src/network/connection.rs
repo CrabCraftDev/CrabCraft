@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use chrono::Local;
 use crab_nbt::NbtTag;
@@ -23,6 +26,8 @@ use tokio::{
         tcp::{OwnedReadHalf, OwnedWriteHalf},
         TcpStream,
     },
+    select,
+    time::sleep,
 };
 
 use crate::{entity::player::network::incoming_connection::IncomingConnection, utils::errors::Error};
@@ -33,7 +38,7 @@ use super::{
     packet_transformer::PacketTransformer,
 };
 
-const KEEPALIVE_INTERVAL_MS: i64 = 15_000;
+const KEEPALIVE_INTERVAL: Duration = Duration::from_millis(15_000);
 
 /// Represents a network connection between player and the server.
 /// Used to send packets, receive and manage connection
@@ -98,23 +103,30 @@ impl NetworkConnection {
 
     async fn writer(connection: NetworkConnection, mut read_half: OwnedWriteHalf, transformer: PacketTransformer) {
         let receiver = connection.outgoing_packets_receiver.clone().to_async();
-        loop {
-            let Ok(packet) = receiver.recv().await else {
-                break;
-            };
-            let bytes = match transformer.encode(packet) {
-                Ok(bytes) => bytes,
-                Err(err) => {
-                    error!("{}Serialization error: {err}", connection.prefix());
+        let writer_future = async {
+            loop {
+                let Ok(packet) = receiver.recv().await else {
+                    break;
+                };
+                let bytes = match transformer.encode(packet) {
+                    Ok(bytes) => bytes,
+                    Err(err) => {
+                        error!("{}Serialization error: {err}", connection.prefix());
+                        connection.close();
+                        break;
+                    }
+                };
+                if read_half.write_all(&bytes).await.is_err() {
                     connection.close();
                     break;
                 }
-            };
-            if read_half.write_all(&bytes).await.is_err() {
-                connection.close();
-                break;
             }
-            connection.keep_connection_alive();
+        };
+        select! {
+            _ = writer_future => (),
+            // Writer has a side job of keeping the connection alive (he doesn't get paid enough)
+            _ = connection.keep_connection_alive() => ()
+
         }
     }
 
@@ -136,6 +148,36 @@ impl NetworkConnection {
                 }
             };
             connection.process_packet(packet).await;
+        }
+    }
+
+    pub async fn keep_connection_alive(&self) {
+        loop {
+            sleep(KEEPALIVE_INTERVAL).await;
+            let state = self.get_state();
+            if state != ProtocolState::Configuration && state != ProtocolState::Play {
+                continue;
+            }
+
+            let current_time;
+            {
+                let Ok(mut keep_alive_state) = self.keep_alive_state.lock() else {
+                    continue;
+                };
+
+                if keep_alive_state.keep_alive_pending {
+                    self.disconnect("Timeout!".to_owned());
+                    continue;
+                }
+
+                current_time = Local::now().timestamp_millis();
+                keep_alive_state.keep_alive_pending = true;
+                keep_alive_state.last_keep_alive_time = current_time;
+            }
+
+            self.send_packet(KeepAliveS2CPacket {
+                keep_alive_id: current_time,
+            });
         }
     }
 
@@ -225,33 +267,5 @@ impl NetworkConnection {
 
     pub fn set_prefix(&self, player_name: &str) {
         *self.prefix.write().unwrap() = format!("{player_name}'s connection: ")
-    }
-
-    pub fn keep_connection_alive(&self) {
-        let state = self.get_state();
-        if state != ProtocolState::Configuration && state != ProtocolState::Play {
-            return;
-        }
-
-        let Ok(mut keep_alive_state) = self.keep_alive_state.lock() else {
-            return;
-        };
-
-        let current_time = Local::now().timestamp_millis();
-        if current_time - keep_alive_state.last_keep_alive_time < KEEPALIVE_INTERVAL_MS {
-            return;
-        }
-
-        if keep_alive_state.keep_alive_pending {
-            self.disconnect("Timeout!".to_owned());
-            return;
-        }
-
-        keep_alive_state.keep_alive_pending = true;
-        keep_alive_state.last_keep_alive_time = current_time;
-
-        self.send_packet(KeepAliveS2CPacket {
-            keep_alive_id: current_time,
-        });
     }
 }
