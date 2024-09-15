@@ -1,4 +1,4 @@
 pub mod errors;
-pub mod fs;
+pub mod paths;
 pub mod logger;
 pub mod scheduler;

@@ -1,4 +1,4 @@
-use std::fs::{create_dir_all, metadata, rename, OpenOptions};
+use std::fs::{metadata, rename, OpenOptions};
 use std::io::Write;
 
 use crate::utils::errors::Error;
@@ -6,20 +6,20 @@ use chrono::{DateTime, Local};
 use colored::Colorize;
 use log::{Level, Log, Metadata, Record};
 
-use crate::utils::fs::{count_files_with_prefix, get_server_path};
+use crate::utils::paths::{count_files_with_prefix, PATHS};
 
 pub struct Logger;
 
 impl Logger {
     pub fn rename_log_file() -> Result<(), Error> {
-        let logs_path = get_server_path().join("logs");
-        let log_path = logs_path.join("latest.log");
+        let logs_path = &PATHS.logs;
+        let log_path = PATHS.latest_log();
 
         if !log_path.exists() {
             return Ok(());
         }
 
-        let time = metadata(log_path)?.modified()?;
+        let time = metadata(&log_path)?.modified()?;
         let modification_datetime: DateTime<Local> = time.into();
         let formatted_time = modification_datetime.format("%Y-%m-%d").to_string();
 
@@ -27,7 +27,7 @@ impl Logger {
 
         let log_path_str = format!("{formatted_time}-{}.log", file_count + 1);
         let new_log_path = logs_path.join(log_path_str);
-        rename(logs_path.join("latest.log"), new_log_path)?;
+        rename(log_path, new_log_path)?;
 
         Ok(())
     }
@@ -62,12 +62,10 @@ impl Log for Logger {
 }
 
 fn log_to_file(message: String) -> Result<(), Error> {
-    create_dir_all(get_server_path().join("logs"))?;
-
     let file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open(get_server_path().join("logs/latest.log"));
+        .open(PATHS.latest_log());
 
     file?.write_all(format!("{message}\n").as_bytes())?;
     Ok(())

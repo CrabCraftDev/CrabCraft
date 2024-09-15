@@ -10,7 +10,7 @@ use crab_protocol::packets::status::{
 use crab_protocol::raw_packet::RawPacket;
 use log::warn;
 
-use crate::utils::fs::get_server_path;
+use crate::utils::paths::PATHS;
 use crate::{
     mc_server::{SERVER_PROTOCOL_VERSION, SERVER_VERSION},
     network::connection::NetworkConnection,
@@ -32,7 +32,7 @@ pub fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) {
 }
 
 fn handle_status_request(connection: &NetworkConnection) {
-    let server_icon_path = get_server_path().join(SERVER_ICON_PATH);
+    let server_icon_path = PATHS.server_root.join(SERVER_ICON_PATH);
     let mut favicon = String::new();
     if server_icon_path.exists() {
         match fs::read(server_icon_path) {
