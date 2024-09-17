@@ -1,12 +1,12 @@
-use std::panic;
 use std::process::exit;
+use std::{backtrace::Backtrace, panic, thread};
 
 use chrono::Local;
 use crab_registry::{RegistryManager, REGISTRY};
 use crab_world::blocks::init_blocks;
 use crab_world::BLOCKS;
 use log::{error, info, LevelFilter};
-use utils::logger::Logger;
+use utils::{errors::print_error_report_instructions, logger::Logger};
 
 use crate::mc_server::McServer;
 
@@ -23,11 +23,24 @@ pub const DISCORD_INVITE_URL: &str = "https://discord.gg/XZKprmznqP";
 async fn main() {
     let startup_begin = Local::now().timestamp_millis();
 
-    panic::set_hook(Box::new(|panic_info| {
-        error!("Server PANICKED!!! (looks like a crash, that wasn't expected)");
+    let main_thread_id = thread::current().id();
+    panic::set_hook(Box::new(move |panic_info| {
+        if thread::current().id() != main_thread_id {
+            return;
+        }
+        error!("");
+        error!("!!! SERVER PANICKED !!!");
+        error!("");
+        error!("Panic info:");
         for line in panic_info.to_string().split('\n') {
             error!("{line}");
         }
+        error!("");
+        error!("Backtrace:");
+        for line in Backtrace::force_capture().to_string().split('\n') {
+            error!("{line}");
+        }
+        print_error_report_instructions();
         exit(1)
     }));
 

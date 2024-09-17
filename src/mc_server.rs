@@ -4,13 +4,14 @@ use std::time::Duration;
 
 use evenio::world::World;
 use kanal::Receiver;
-use log::{info, warn};
+use log::{error, info, warn};
 use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
 
 use crate::{
     entity::player::network::incoming_connection::IncomingConnection,
     network::tcp_server::TcpServer,
+    utils::errors::{print_error_report_instructions, print_panic},
     world::{self, ServerShutdown},
 };
 use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
@@ -50,13 +51,6 @@ impl McServer {
     }
 
     pub async fn start(mut self) {
-        let tcp_server_arc = Arc::clone(&self.tcp_server);
-        let tcp_server_task = {
-            tokio::spawn(async move {
-                tcp_server_arc.start().await;
-            })
-        };
-
         let ctrl_c = signal::ctrl_c();
 
         select! {
@@ -64,11 +58,28 @@ impl McServer {
                 println!(); // To write new messages after ^C
                 self.shutdown();
             },
-            _ = tcp_server_task => {},
+            _ = McServer::tcp_server_task(Arc::clone(&self.tcp_server)) => {},
             _ = self.tick_loop() => {},
         }
 
         self.do_shutdown().await;
+    }
+
+    async fn tcp_server_task(tcp_server: Arc<TcpServer>) {
+        let task = tokio::spawn(async move {
+            tcp_server.start().await;
+        });
+        let Err(err) = task.await else {
+            return;
+        };
+        if !err.is_panic() {
+            return;
+        }
+        error!("");
+        error!("TcpServer panicked!");
+        error!("");
+        print_panic(err.into_panic());
+        print_error_report_instructions();
     }
 
     pub async fn tick_loop(&mut self) {

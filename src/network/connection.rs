@@ -30,7 +30,10 @@ use tokio::{
     time::sleep,
 };
 
-use crate::{entity::player::network::incoming_connection::IncomingConnection, utils::errors::Error};
+use crate::{
+    entity::player::network::incoming_connection::IncomingConnection,
+    utils::errors::{print_error_report_instructions, print_panic, Error},
+};
 
 use super::{
     handlers::{handshake_handler, keep_alive_handler, login_handler, status_handler},
@@ -91,12 +94,16 @@ impl NetworkConnection {
         let (writer_result, reader_result) = tokio::join!(writer, reader);
         if let Err(err) = writer_result {
             if err.is_panic() {
-                error!("{}Writer task panicked {err:?}", self.prefix())
+                error!("{}Writer task panicked!", self.prefix());
+                print_panic(err.into_panic());
+                print_error_report_instructions();
             }
         }
         if let Err(err) = reader_result {
             if err.is_panic() {
-                error!("{}Reader task panicked {err:?}", self.prefix())
+                error!("{}Reader task panicked!", self.prefix());
+                print_panic(err.into_panic());
+                print_error_report_instructions();
             }
         }
     }

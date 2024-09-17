@@ -1,8 +1,11 @@
 use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
 use crab_world::error::WorldError;
-use std::io;
+use log::error;
+use std::{any::Any, io};
 use thiserror::Error;
+
+use crate::GITHUB_ISSUES_URL;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -16,4 +19,22 @@ pub enum Error {
     InvalidNbt(#[from] CrabNbtError),
     #[error(transparent)]
     World(#[from] WorldError),
+}
+
+pub fn print_panic(panic: Box<dyn Any + Send + 'static>) {
+    if let Some(panic_string) = panic.downcast_ref::<String>() {
+        error!("Panic error: {panic_string}");
+    } else if let Some(panic_string) = panic.downcast_ref::<&'static str>() {
+        error!("Panic error: {panic_string}");
+    } else {
+        error!("Panic error: is not a string and can't be printed");
+    }
+}
+
+pub fn print_error_report_instructions() {
+    error!("");
+    error!("This error should not normally happen!");
+    error!("Please report it at:");
+    error!("{GITHUB_ISSUES_URL}");
+    error!("");
 }

@@ -2,7 +2,7 @@ use std::net::SocketAddr;
 
 use futures::{stream::FuturesUnordered, StreamExt};
 use kanal::Sender;
-use log::{debug, error};
+use log::{debug, error, info};
 
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -28,6 +28,7 @@ impl TcpServer {
 
     pub async fn start(&self) {
         let listener = TcpListener::bind(&self.address).await.unwrap();
+        info!("Listening on {}", self.address);
 
         let mut connections = FuturesUnordered::new();
 
