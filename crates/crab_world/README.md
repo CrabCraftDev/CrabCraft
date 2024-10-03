@@ -3,6 +3,7 @@
 Crate that aims to support all world-related functionalities:
 
 - Minecraft world format - anvil
+- Holding and modifying chunks stored in paletted format
 - System for creating, modifying, etc., blocks
 
 ## Blocks

@@ -1,84 +1,100 @@
+use crate::blocks::Block;
+use crate::chunks::palette::palette_kind::PaletteContentType;
+use crate::chunks::palette::paletted_storage::{Palette, PalettedStorage};
 use crate::error::WorldError;
-use bytes::{BufMut, Bytes, BytesMut};
+use bytes::{BufMut, BytesMut};
 use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_registry::REGISTRY;
-use crab_world::blocks::Air;
-use crab_world::paletted_container::{
-    get_biomes_container, get_blocks_container, AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION,
-};
-use crab_world::{Block, BlockType, BLOCKS};
+use std::fmt::Debug;
+
+pub const CHUNK_SIZE: u8 = 16;
+pub const AMOUNT_OF_BIOMES_IN_CHUNK_SECTION: u16 = 4 * 4 * 4;
+pub const AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION: usize = CHUNK_SIZE as usize * CHUNK_SIZE as usize * CHUNK_SIZE as usize;
 
 /// Chunk section is a 16×16×16 collection of blocks.
 /// It stores blocks and biomes in a [paletted](crab_world::paletted_container::PalettedContainer) format.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ChunkSection {
     pub non_air_block_amount: u16,
-    pub blocks: Box<[Block; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION]>,
-    pub biomes: Box<[u8; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION]>,
-    pub cached_bytes: Option<Bytes>,
+    pub blocks: PalettedStorage,
+    pub biomes: PalettedStorage,
 }
 
 impl ChunkSection {
-    pub fn new(
-        blocks: [Block; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
-        biomes: [u8; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
-    ) -> Self {
-        Self {
-            non_air_block_amount: blocks.iter().filter(|&v| Air::is_same_type_as(v)).count() as u16,
-            blocks: Box::new(blocks),
-            biomes: Box::new(biomes),
-            cached_bytes: None,
-        }
+    pub fn new(blocks: PalettedStorage, biomes: PalettedStorage) -> Self {
+        let mut value = Self {
+            non_air_block_amount: 0,
+            blocks,
+            biomes,
+        };
+        value.count_non_air_blocks();
+        value
     }
 
-    pub fn set_block(&mut self, x: u8, y: u8, z: u8, block: Block) {
-        self.cached_bytes = None;
+    pub fn count_non_air_blocks(&mut self) {
+        let mut air_block_count = 0;
 
-        let index = self.calculate_index(x, y, z);
-        let previous_block = self.blocks[index];
+        match &self.blocks.palette {
+            Palette::Single(value) => {
+                air_block_count = if Block(*value as u16).is_air() {
+                    0
+                } else {
+                    AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION
+                };
+            }
+            Palette::Indirect { storage, .. } | Palette::Direct(storage) => {
+                storage.iter().for_each(|x| {
+                    if let Some(block) = self.blocks.palette.value_for(x as u32) {
+                        if Block(block as u16).is_air() {
+                            air_block_count += 1;
+                        }
+                    }
+                });
+            }
+        };
 
-        if Air::is_same_type_as(&previous_block) && !Air::is_same_type_as(&block) {
-            self.non_air_block_amount += 1;
-        } else if !Air::is_same_type_as(&previous_block) && Air::is_same_type_as(&block) {
-            self.non_air_block_amount -= 1;
-        }
-
-        self.blocks[index] = block
+        self.non_air_block_amount = (AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION - air_block_count) as u16;
     }
 
-    #[allow(dead_code)]
-    pub fn get_block(&self, x: u8, y: u8, z: u8) -> Block {
-        self.blocks[self.calculate_index(x, y, z)]
-    }
-
-    pub fn serialize_to_mc_format(&mut self, chunk_section: &mut BytesMut) -> Result<(), WorldError> {
-        if let Some(cached_bytes) = &self.cached_bytes {
-            chunk_section.put_slice(cached_bytes);
-            return Ok(());
-        }
-
-        let mut bytes = BytesMut::new();
-        bytes.put_i16(self.non_air_block_amount as i16);
-        get_blocks_container(BLOCKS.get().unwrap().last_state_id as usize)
-            .serialize_palette(self.blocks.iter().map(|&v| v.0 as i32).collect(), &mut bytes)?;
-
-        let registry = REGISTRY.get().unwrap();
-        let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome")?;
-        let biomes_amount = registry.get_length(&biome_registry_namespaced_key).unwrap();
-
-        get_biomes_container(biomes_amount)
-            .serialize_palette(self.biomes.iter().map(|&v| v as i32).collect(), &mut bytes)?;
-
-        let bytes = bytes.freeze();
-
-        chunk_section.put(bytes.clone());
-        self.cached_bytes = Some(bytes);
-
+    pub fn serialize_to_mc_format(&self, chunk_section: &mut BytesMut) -> Result<(), WorldError> {
+        chunk_section.put_i16(self.non_air_block_amount as i16);
+        self.blocks.serialize(chunk_section);
+        self.biomes.serialize(chunk_section);
         Ok(())
     }
 
-    fn calculate_index(&self, x: u8, y: u8, z: u8) -> usize {
-        (y as usize * 16 * 16) + (z as usize * 16) + x as usize
+    pub fn set_block(&mut self, x: u8, y: u8, z: u8, block: Block) -> Result<(), WorldError> {
+        let index = self.calculate_index(x, y, z)?;
+        self.update_non_air_block_count(x, y, z, block)?;
+
+        self.blocks.set_at_index(index, block.0 as u32)
+    }
+
+    pub fn get_block(&self, x: u8, y: u8, z: u8) -> Option<Block> {
+        let index = self.calculate_index(x, y, z).ok()?;
+
+        self.blocks.get_at_index(index).map(|block_id| Block(block_id as u16))
+    }
+
+    fn update_non_air_block_count(&mut self, x: u8, y: u8, z: u8, new: Block) -> Result<(), WorldError> {
+        if let Some(old) = self.get_block(x, y, z) {
+            if old.is_air() && !new.is_air() {
+                self.non_air_block_amount += 1;
+            } else if !old.is_air() && new.is_air() {
+                self.non_air_block_amount -= 1;
+            }
+            Ok(())
+        } else {
+            Err(WorldError::MissingBlock(x, y, z))
+        }
+    }
+
+    fn calculate_index(&self, x: u8, y: u8, z: u8) -> Result<usize, WorldError> {
+        if x > 15 || y > 15 || z > 15 {
+            return Err(WorldError::InvalidPositionInChunkSection(x, y, z));
+        }
+
+        Ok((y as usize * 16 * 16) + (z as usize * 16) + x as usize)
     }
 }
 
@@ -90,10 +106,12 @@ impl Default for ChunkSection {
 
         let plains_biome_id = registry
             .get_numeric_id(&biome_registry_namespaced_key, &plains_biome_namespace)
-            .unwrap() as u8;
-        Self::new(
-            [Air::default_state_id().unwrap(); AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION],
-            [plains_biome_id; AMOUNT_OF_BIOMES_IN_CHUNK_SECTION],
-        )
+            .unwrap() as u32;
+
+        ChunkSection {
+            non_air_block_amount: 0,
+            blocks: PalettedStorage::single(PaletteContentType::Blocks, 0),
+            biomes: PalettedStorage::single(PaletteContentType::Biomes, plains_biome_id),
+        }
     }
 }

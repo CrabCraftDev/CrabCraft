@@ -10,6 +10,8 @@ derive_more.workspace = true
 thiserror.workspace = true
 bytes.workspace = true
 crab_nbt.workspace = true
+bitfield-struct.workspace = true
+flate2.workspace = true
 nohash-hasher = "0.2.0"
 
 crab_registry = { path = "../crab_registry" }
@@ -25,3 +27,7 @@ heck = "0.5.0"
 
 [dev-dependencies]
 criterion.workspace = true
+
+[[test]]
+name = "chunks"
+path = "tests/chunks/mod.rs"
