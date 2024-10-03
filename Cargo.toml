@@ -27,6 +27,9 @@ derive_more = { version = "1.0.0", features = ["into", "from"] }
 strum = { version = "0.26.3", features = ["derive"] }
 bitfield-struct = "0.8.0"
 
+# Dev dependencies
+criterion = { version = "0.5.1", features = ["html_reports"] }
+
 # Code generation, macros etc.
 quote = "1.0.37"
 syn = "2.0.77"
