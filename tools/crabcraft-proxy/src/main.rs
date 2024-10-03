@@ -80,9 +80,8 @@ async fn transfer_data(
     receiver: &mut (impl AsyncReadExt + Unpin),
     sender: &mut (impl AsyncWriteExt + Unpin),
 ) -> Result<(), Box<dyn std::error::Error>> {
-    while let Ok(Some(mut buffer)) = packet_from_stream(receiver).await {
-        let id = buffer.get_var_int().unwrap();
-
+    while let Ok(Some(buffer)) = packet_from_stream(receiver).await {
+        let id = buffer.clone().get_var_int().unwrap();
         if buffer.len() >= args.maximum_packet_print_size as usize {
             println!("[{direction}] {id:X}: Packet is too big to be printed!");
         } else {
