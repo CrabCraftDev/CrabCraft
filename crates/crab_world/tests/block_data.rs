@@ -24,7 +24,11 @@ enum ExampleEnum {
 
 #[test]
 fn complex_block_data() {
-    let properties = HashMap::from([("boolean", "true".to_string()), ("number", "3".to_string()), ("enum_value", "b".to_string())]);
+    let properties = HashMap::from([
+        ("boolean", "true".to_string()),
+        ("number", "3".to_string()),
+        ("enum_value", "b".to_string()),
+    ]);
 
     let data: ComplexBlockData = ComplexBlockData::from_properties(properties).unwrap();
     assert!(data.boolean);

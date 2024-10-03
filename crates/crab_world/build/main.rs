@@ -7,7 +7,7 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use serde::Deserialize;
 
-const BLOCKS_OUTPUT_FILE: &str = "blocks.rs";
+const BLOCKS_OUTPUT_FILE: &str = "block";
 const BLOCKS: &str = include_str!("../../../assets/blocks.json");
 
 #[derive(Deserialize, Clone, Debug)]
@@ -24,7 +24,8 @@ struct Property {
 }
 
 pub fn generate() -> TokenStream {
-    println!("cargo::rerun-if-changed=../../../assets/blocks.json");
+    // Current dir is crates/crab_world/ instead of crates/crab_world/build
+    println!("cargo::rerun-if-changed=../../assets/blocks.json");
 
     let content: Vec<Block> = serde_json::from_str(BLOCKS).unwrap();
 
@@ -34,9 +35,9 @@ pub fn generate() -> TokenStream {
     for block in content.iter() {
         let name = format_ident!("{}", &block.name.to_upper_camel_case());
         let default_state_offset = block.default_state_offset;
-        let (mut states_combinations_amount, mut string_to_id, mut id_to_string) = process_states(block);
+        let (mut states_combinations_amounts, mut string_to_id, mut id_to_string) = process_states(block);
 
-        let states_amount = states_combinations_amount.iter().product::<u16>();
+        let states_amount = states_combinations_amounts.iter().product::<u16>();
         let block_name = &block.name;
 
         blocks_initialization.push(quote! {
@@ -48,7 +49,7 @@ pub fn generate() -> TokenStream {
             }).unwrap();
         });
 
-        states_combinations_amount.reverse();
+        states_combinations_amounts.reverse();
         string_to_id.reverse();
         id_to_string.reverse();
 
@@ -71,9 +72,9 @@ pub fn generate() -> TokenStream {
                     let mut current_state = local_state;
 
                     #(
-                        let state_id = current_state % #states_combinations_amount;
+                        let state_id = current_state % #states_combinations_amounts;
                         #id_to_string
-                        current_state /= #states_combinations_amount;
+                        current_state /= #states_combinations_amounts;
                     )*
 
                     Ok(hashmap)
@@ -86,7 +87,7 @@ pub fn generate() -> TokenStream {
                     #(
                         let property_value = #string_to_id?;
                         state_id_offset += property_value as u16 * multiplier;
-                        multiplier *= #states_combinations_amount;
+                        multiplier *= #states_combinations_amounts;
                     )*
                     Ok(::crab_world::blocks::Block(state_id_offset))
                 }
@@ -106,12 +107,12 @@ pub fn generate() -> TokenStream {
 }
 
 fn process_states(block: &Block) -> (Vec<u16>, Vec<TokenStream>, Vec<TokenStream>) {
+    let mut states_combinations_amounts = vec![];
     let mut string_to_id = vec![];
     let mut id_to_string = vec![];
 
-    let mut state_combinations_count = vec![];
     for property in &block.properties {
-        state_combinations_count.push(property.values.len() as u16);
+        states_combinations_amounts.push(property.values.len() as u16);
 
         let property_name = property.name.as_str();
 
@@ -137,12 +138,12 @@ fn process_states(block: &Block) -> (Vec<u16>, Vec<TokenStream>, Vec<TokenStream
         id_to_string.push(quote! {
             hashmap.insert(#property_name, match state_id {
                 #(#id_to_string_matches,)*
-                _ => todo!()
+                _ => unreachable!()
             });
         });
     }
 
-    (state_combinations_count, string_to_id, id_to_string)
+    (states_combinations_amounts, string_to_id, id_to_string)
 }
 
 fn main() {

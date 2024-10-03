@@ -1,6 +1,7 @@
 use crate::{entity::components::name::Name, network::connection::NetworkConnection};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
+use crab_protocol::packets::common::{Tag, UpdateTagsS2CPacket};
 use crab_protocol::{
     packets::play::{
         ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
@@ -12,12 +13,12 @@ use crab_protocol::{
         position::Position,
     },
 };
-use crab_world::blocks::{Bedrock, Dirt, GrassBlock};
+use crab_world::blocks::{Bedrock, BlockType, Dirt, GrassBlock};
 use crab_world::chunks::chunk::{Chunk, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
-use crab_world::paletted_container::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
-use crab_world::BlockType;
+use crab_world::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use evenio::event::{Receiver, TargetedEvent};
 use log::info;
+use std::collections::HashMap;
 
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
@@ -48,7 +49,6 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
     });
 
     // TODO: Temporary implementation of chunk sending
-
     connection.send_packet(SetDefaultSpawnPositionS2CPacket {
         location: BlockPosition { x: 0, y: 0, z: 0 },
         angle: 0.0,
@@ -60,36 +60,63 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
 
     connection.send_packet(ChunkBatchStartS2CPacket);
 
+    let mut tags = HashMap::new();
+    tags.insert(
+        NamespacedKey::minecraft("fluid").unwrap(),
+        vec![
+            Tag {
+                name: NamespacedKey::minecraft("water").unwrap(),
+                entries: vec![2, 1],
+            },
+            Tag {
+                name: NamespacedKey::minecraft("lava").unwrap(),
+                entries: vec![4, 3],
+            },
+        ],
+    );
+    connection.send_packet(UpdateTagsS2CPacket { tags });
+
     let mut normal_chunk = Chunk::default();
     let mut air_chunk = Chunk::default();
 
     let grass_section = &mut normal_chunk.sections[0];
+
     for i in 0..16 {
         for j in 0..16 {
-            grass_section.set_block(i, 4, j, GrassBlock::default_state_id().unwrap());
-            grass_section.set_block(i, 3, j, Dirt::default_state_id().unwrap());
-            grass_section.set_block(i, 2, j, Dirt::default_state_id().unwrap());
-            grass_section.set_block(i, 1, j, Dirt::default_state_id().unwrap());
-            grass_section.set_block(i, 0, j, Bedrock::default_state_id().unwrap());
+            grass_section
+                .set_block(i, 4, j, GrassBlock::default_state_id().unwrap())
+                .unwrap();
+            grass_section
+                .set_block(i, 3, j, Dirt::default_state_id().unwrap())
+                .unwrap();
+            grass_section
+                .set_block(i, 2, j, Dirt::default_state_id().unwrap())
+                .unwrap();
+            grass_section
+                .set_block(i, 1, j, Dirt::default_state_id().unwrap())
+                .unwrap();
+            grass_section
+                .set_block(i, 0, j, Bedrock::default_state_id().unwrap())
+                .unwrap();
         }
     }
 
     let view_distance: i32 = 8;
     for x in -view_distance..view_distance {
         for z in -view_distance..view_distance {
-            let mut data = BytesMut::new();
+            let mut bytes = BytesMut::new();
 
             let chunk = if x.abs() < (view_distance - 2) && z.abs() < (view_distance - 2) {
                 &mut normal_chunk
             } else {
                 &mut air_chunk
             };
-            chunk.serialize_to_mc_format(&mut data).unwrap();
+            chunk.serialize_to_mc_format(&mut bytes).unwrap();
 
-            // TODO: For now we don't have good block system, so I implemented only world surface
             let world_surface_height_map = chunk.serialize_world_surface_height_map();
+            let motion_blocking_height_map = world_surface_height_map.clone();
             let heightmap = nbt!("", {
-                "MOTION_BLOCKING": [L;],
+                "MOTION_BLOCKING": motion_blocking_height_map,
                 "WORLD_SURFACE": world_surface_height_map,
             });
 
@@ -102,7 +129,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
                 chunk_x: x,
                 chunk_z: z,
                 heightmaps: heightmap,
-                data: data.freeze(),
+                data: bytes.freeze(),
                 block_entities: vec![],
                 light_data: LightData {
                     sky_light_mask,

@@ -19,6 +19,16 @@ pub enum WorldError {
     InvalidPropertyName,
     #[error("BlockType with id {0} was already registered")]
     DuplicateBlock(NamespacedKey),
+
+    #[error("Index outside of bounds! Index: {0}, Length: {1}")]
+    IndexOutsideOfBounds(usize, usize),
+    #[error("Value {0} exceeds bit mask {1}")]
+    ValueExceedsMask(i64, i64),
+    #[error("Missing block in chunk section at {0} {1} {2}")]
+    MissingBlock(u8, u8, u8),
+    #[error("Invalid block position inside chunk section {0} {1} {2}")]
+    InvalidPositionInChunkSection(u8, u8, u8),
+
     #[error(transparent)]
     Protocol(#[from] ProtocolError),
 }

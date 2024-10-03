@@ -4,11 +4,12 @@ use std::{backtrace::Backtrace, panic, thread};
 use chrono::Local;
 use crab_registry::{RegistryManager, REGISTRY};
 use crab_world::blocks::init_blocks;
-use crab_world::BLOCKS;
+use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir, BLOCKS};
 use log::{error, info, LevelFilter};
 use utils::{errors::print_error_report_instructions, logger::Logger};
 
 use crate::mc_server::McServer;
+use crate::utils::paths::PATHS;
 
 mod entity;
 mod mc_server;
@@ -50,11 +51,17 @@ async fn main() {
         LevelFilter::Info
     });
 
-    log::set_logger(&Logger).expect("Failed to prepare logger! Exiting!");
-    Logger::rename_log_file().expect("Failed to prepare logger file! Exiting!");
+    PATHS.create_directories().expect("Failed to create server directories");
+
+    log::set_logger(&Logger).expect("Failed to prepare logger");
+    Logger::rename_log_file().expect("Failed to prepare logger file");
 
     REGISTRY.get_or_init(RegistryManager::default);
     BLOCKS.get_or_init(init_blocks);
+
+    assert!(CaveAir::default_state_id().unwrap().is_air());
+    assert!(VoidAir::default_state_id().unwrap().is_air());
+    assert!(Air::default_state_id().unwrap().is_air());
 
     let mc_server = McServer::new("127.0.0.1:25565".to_string());
 

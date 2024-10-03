@@ -1,3 +1,4 @@
+use std::cmp::PartialEq;
 use std::collections::HashMap;
 
 use derive_more::{From, Into};
@@ -6,12 +7,12 @@ use crab_protocol::types::namespaced_key::NamespacedKey;
 
 use crate::blocks::block_data::BlockData;
 use crate::blocks::block_registry::BlockInformation;
-use crate::error::WorldError;
 use crate::blocks::{get_block_registry, BLOCKS};
+use crate::error::WorldError;
 
 /// Represents a block used in our codebase
 /// u16 is block state id (mostly used in protocol), which is unique id for each block state
-#[derive(Debug, Clone, Copy, Into, From)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Into, From)]
 #[repr(transparent)]
 pub struct Block(pub u16);
 
@@ -43,6 +44,11 @@ impl Block {
 
     pub fn is_same_as(&self, other: &Block) -> bool {
         matches!((self.namespaced_key(), other.namespaced_key()), (Ok(own_key), Ok(other_key)) if own_key == other_key)
+    }
+
+    // Checking for air is executed so many times, so it's better to use this
+    pub const fn is_air(&self) -> bool {
+        matches!(self.0, 0 | 12958 | 12959)
     }
 
     pub fn property<P: BlockData>(&self) -> Result<P::Value, WorldError> {
