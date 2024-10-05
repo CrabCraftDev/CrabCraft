@@ -9,7 +9,7 @@ use log::{error, info, LevelFilter};
 use utils::{errors::print_error_report_instructions, logger::Logger};
 
 use crate::mc_server::McServer;
-use crate::utils::paths::PATHS;
+use crate::utils::files::FILES;
 
 mod entity;
 mod mc_server;
@@ -51,7 +51,7 @@ async fn main() {
         LevelFilter::Info
     });
 
-    PATHS.create_directories().expect("Failed to create server directories");
+    FILES.create_directories().expect("Failed to create server directories");
 
     log::set_logger(&Logger).expect("Failed to prepare logger");
     Logger::rename_log_file().expect("Failed to prepare logger file");

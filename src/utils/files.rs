@@ -5,15 +5,15 @@ use std::path::{Path, PathBuf};
 use std::{env, io};
 
 lazy_static! {
-    pub static ref PATHS: ServerPaths = ServerPaths::new();
+    pub static ref FILES: ServerFiles = ServerFiles::new();
 }
 
-pub struct ServerPaths {
+pub struct ServerFiles {
     pub server_root: PathBuf,
     pub logs: PathBuf,
 }
 
-impl ServerPaths {
+impl ServerFiles {
     pub fn new() -> Self {
         let server_root = if let Ok(manifest_str) = env::var("CARGO_MANIFEST_DIR") {
             Path::new(&manifest_str).join("server").to_path_buf()
@@ -25,7 +25,7 @@ impl ServerPaths {
             exe_path
         };
 
-        ServerPaths {
+        ServerFiles {
             logs: server_root.join("logs"),
             server_root,
         }

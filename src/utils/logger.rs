@@ -6,14 +6,14 @@ use chrono::{DateTime, Local};
 use colored::Colorize;
 use log::{Level, Log, Metadata, Record};
 
-use crate::utils::paths::{count_files_with_prefix, PATHS};
+use crate::utils::files::{count_files_with_prefix, FILES};
 
 pub struct Logger;
 
 impl Logger {
     pub fn rename_log_file() -> Result<(), Error> {
-        let logs_dir = &PATHS.logs;
-        let last_log_path = PATHS.latest_log();
+        let logs_dir = &FILES.logs;
+        let last_log_path = FILES.latest_log();
 
         if !last_log_path.exists() {
             return Ok(());
@@ -62,7 +62,7 @@ impl Log for Logger {
 }
 
 fn log_to_file(message: String) -> Result<(), Error> {
-    let file = OpenOptions::new().create(true).append(true).open(PATHS.latest_log());
+    let file = OpenOptions::new().create(true).append(true).open(FILES.latest_log());
 
     file?.write_all(format!("{message}\n").as_bytes())?;
     Ok(())
