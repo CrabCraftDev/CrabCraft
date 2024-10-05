@@ -8,7 +8,7 @@ use crab_protocol::packets::status::{
     PlayersInfo, ServerInfo, ServerVersion, StatusRequestC2SPacket, StatusResponseS2CPacket,
 };
 use crab_protocol::raw_packet::RawPacket;
-use log::warn;
+use tracing::warn;
 
 use crate::utils::files::FILES;
 use crate::{

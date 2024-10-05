@@ -17,8 +17,8 @@ use crab_world::blocks::{Bedrock, BlockType, Dirt, GrassBlock};
 use crab_world::chunks::chunk::{Chunk, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 use crab_world::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use evenio::event::{Receiver, TargetedEvent};
-use log::info;
 use std::collections::HashMap;
+use tracing::info;
 
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;

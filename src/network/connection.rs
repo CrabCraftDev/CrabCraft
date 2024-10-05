@@ -18,7 +18,6 @@ use crab_protocol::{
 use crossbeam::sync::ShardedLock;
 use evenio::component::Component;
 use kanal::{Receiver, Sender};
-use log::{error, warn};
 use serde_json::json;
 use tokio::{
     io::AsyncWriteExt,
@@ -29,6 +28,7 @@ use tokio::{
     select,
     time::sleep,
 };
+use tracing::{error, warn};
 
 use crate::{
     entity::player::network::incoming_connection::IncomingConnection,

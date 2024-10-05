@@ -1,4 +1,4 @@
 pub mod errors;
 pub mod files;
-pub mod logger;
+pub mod log;
 pub mod scheduler;

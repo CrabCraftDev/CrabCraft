@@ -4,7 +4,7 @@ use evenio::{
     event::{Despawn, Receiver, Sender, TargetedEvent},
     fetch::Fetcher,
 };
-use log::info;
+use tracing::info;
 
 use crate::{entity::components::name::Name, network::connection::NetworkConnection, world::WorldTick};
 

@@ -1,6 +1,7 @@
 use crate::utils::errors::Error;
+use chrono::{DateTime, Local};
 use lazy_static::lazy_static;
-use std::fs::read_dir;
+use std::fs::{self};
 use std::path::{Path, PathBuf};
 use std::{env, io};
 
@@ -36,6 +37,26 @@ impl ServerFiles {
         Ok(())
     }
 
+    pub fn rotate_log_files(&self) -> Result<(), Error> {
+        let last_log_path = self.latest_log();
+
+        if !last_log_path.try_exists()? {
+            return Ok(());
+        }
+
+        let time = fs::metadata(&last_log_path)?.modified()?;
+        let modification_datetime: DateTime<Local> = time.into();
+        let formatted_time = modification_datetime.format("%Y-%m-%d").to_string();
+
+        let file_count = count_files_with_prefix(self.logs.as_path(), &formatted_time)?;
+
+        let log_path_str = format!("{formatted_time}-{}.log", file_count + 1);
+        let new_log_path = self.logs.join(log_path_str);
+        fs::rename(last_log_path, new_log_path)?;
+
+        Ok(())
+    }
+
     pub fn latest_log(&self) -> PathBuf {
         self.logs.join("latest.log")
     }
@@ -47,7 +68,7 @@ pub fn count_files_with_prefix(dir: &Path, prefix: &str) -> io::Result<usize> {
         return Ok(count);
     }
 
-    for entry in read_dir(dir)? {
+    for entry in fs::read_dir(dir)? {
         let path = entry?.path();
         count += (path.is_file() && path.file_name().unwrap().to_str().unwrap().starts_with(prefix)) as usize;
     }

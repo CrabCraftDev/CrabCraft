@@ -2,7 +2,7 @@ use std::net::SocketAddr;
 
 use futures::{stream::FuturesUnordered, StreamExt};
 use kanal::Sender;
-use log::{debug, error, info};
+use tracing::{debug, error, info};
 
 use tokio::{
     net::{TcpListener, TcpStream},

@@ -1,9 +1,9 @@
 use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
 use crab_world::error::WorldError;
-use log::error;
 use std::{any::Any, io};
 use thiserror::Error;
+use tracing::error;
 
 use crate::GITHUB_ISSUES_URL;
 

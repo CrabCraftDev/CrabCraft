@@ -4,9 +4,9 @@ use std::time::Duration;
 
 use evenio::world::World;
 use kanal::Receiver;
-use log::{error, info, warn};
 use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
+use tracing::{error, info, warn};
 
 use crate::{
     entity::player::network::incoming_connection::IncomingConnection,
