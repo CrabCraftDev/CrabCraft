@@ -1,5 +1,5 @@
 use crate::blocks::Block;
-use crate::chunks::palette::palette_kind::PaletteContentType;
+use crate::chunks::palette::palette_content_type::PaletteContentType;
 use crate::chunks::palette::paletted_storage::{Palette, PalettedStorage};
 use crate::error::WorldError;
 use bytes::{BufMut, BytesMut};

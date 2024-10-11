@@ -1,3 +1,4 @@
+use std::io;
 use thiserror::Error;
 
 use crab_protocol::error::ProtocolError;
@@ -31,4 +32,12 @@ pub enum WorldError {
 
     #[error(transparent)]
     Protocol(#[from] ProtocolError),
+}
+
+#[derive(Debug, Error)]
+pub enum AnvilError {
+    #[error("Invalid world file compression scheme {0}")]
+    InvalidCompressionScheme(u8),
+    #[error(transparent)]
+    IO(#[from] io::Error),
 }

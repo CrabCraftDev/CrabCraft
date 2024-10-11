@@ -7,7 +7,7 @@ pub mod block_data;
 pub mod block_registry;
 pub use block::*;
 
-include!(concat!(env!("OUT_DIR"), "/block"));
+include!(concat!(env!("OUT_DIR"), "/blocks.rs"));
 
 pub static BLOCKS: OnceLock<BlockRegistry> = OnceLock::new();
 
