@@ -7,7 +7,7 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use serde::Deserialize;
 
-const BLOCKS_OUTPUT_FILE: &str = "block";
+const BLOCKS_OUTPUT_FILE: &str = "blocks.rs";
 const BLOCKS: &str = include_str!("../../../assets/blocks.json");
 
 #[derive(Deserialize, Clone, Debug)]

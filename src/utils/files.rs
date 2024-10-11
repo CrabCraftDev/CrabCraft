@@ -1,5 +1,6 @@
 use crate::utils::errors::Error;
 use chrono::{DateTime, Local};
+use crab_protocol::types::namespaced_key::NamespacedKey;
 use lazy_static::lazy_static;
 use std::fs::{self};
 use std::path::{Path, PathBuf};
@@ -12,6 +13,7 @@ lazy_static! {
 pub struct ServerFiles {
     pub server_root: PathBuf,
     pub logs: PathBuf,
+    pub worlds: PathBuf,
 }
 
 impl ServerFiles {
@@ -28,12 +30,14 @@ impl ServerFiles {
 
         ServerFiles {
             logs: server_root.join("logs"),
+            worlds: server_root.join("worlds"),
             server_root,
         }
     }
 
     pub fn create_directories(&self) -> Result<(), Error> {
         std::fs::create_dir_all(&self.logs)?;
+        std::fs::create_dir_all(&self.worlds)?;
         Ok(())
     }
 
@@ -59,6 +63,17 @@ impl ServerFiles {
 
     pub fn latest_log(&self) -> PathBuf {
         self.logs.join("latest.log")
+    }
+
+    pub fn world_region_path(&self, namespaced_key: &NamespacedKey) -> Result<PathBuf, Error> {
+        let path = self
+            .server_root
+            .join("worlds")
+            .join(&namespaced_key.namespace)
+            .join(&namespaced_key.value)
+            .join("region");
+        std::fs::create_dir_all(&path)?;
+        Ok(path)
     }
 }
 
