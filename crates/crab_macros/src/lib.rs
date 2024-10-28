@@ -1,8 +1,10 @@
 extern crate proc_macro;
 
+use crate::config::config_derive::config_macro;
 use proc_macro::TokenStream;
 
 mod core;
+mod config;
 mod protocol;
 mod world;
 
@@ -117,6 +119,12 @@ pub fn derive_block_property(item: TokenStream) -> TokenStream {
         Err(e) => e.into_compile_error().into(),
     }
 }
+
+#[proc_macro_derive(Config, attributes(default_value))]
+pub fn config_derive(input: TokenStream) -> TokenStream {
+    config_macro(input)
+}
+
 
 /// Derives an implementation of `TryFrom<AsyncEvent>` for the annotated type.
 ///

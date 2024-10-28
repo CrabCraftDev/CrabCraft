@@ -1,0 +1,16 @@
+[package]
+name = "crab_config"
+edition = "2021"
+version.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+uuid.workspace = true
+tokio.workspace = true
+crab_nbt.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yml.workspace = true
+include_dir.workspace = true
+regex = "1.11.1"
+crab_macros = { path = "../crab_macros"}
