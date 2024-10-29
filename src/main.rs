@@ -51,22 +51,28 @@ async fn main() {
 fn set_panic_hook() {
     let main_thread_id = thread::current().id();
     panic::set_hook(Box::new(move |panic_info| {
-        if thread::current().id() != main_thread_id {
-            return;
-        }
+        let is_main_thread = thread::current().id() == main_thread_id;
         error!("");
-        error!("!!! SERVER PANICKED !!!");
+        if is_main_thread {
+            error!("!!! SERVER PANICKED !!!");
+        } else {
+            error!("!!! SERVER SUB-TASK PANICKED !!!");
+        }
         error!("");
         error!("Panic info:");
         for line in panic_info.to_string().split('\n') {
             error!("{line}");
         }
+
         error!("");
         error!("Backtrace:");
-        for line in Backtrace::force_capture().to_string().split('\n') {
+        for line in Backtrace::force_capture().to_string().split("\n") {
             error!("{line}");
         }
-        print_error_report_instructions();
-        exit(1)
+
+        if is_main_thread {
+            print_error_report_instructions();
+            exit(1);
+        }
     }));
 }

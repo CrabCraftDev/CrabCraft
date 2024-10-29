@@ -30,10 +30,7 @@ use tokio::{
 };
 use tracing::{error, warn};
 
-use crate::{
-    entity::player::network::incoming_connection::IncomingConnection,
-    utils::errors::{print_error_report_instructions, print_panic, Error},
-};
+use crate::{entity::player::network::incoming_connection::IncomingConnection, utils::errors::Error};
 
 use super::{
     handlers::{handshake_handler, keep_alive_handler, login_handler, status_handler},
@@ -91,49 +88,38 @@ impl NetworkConnection {
             self.transformer.clone(),
         ));
 
-        let (writer_result, reader_result) = tokio::join!(writer, reader);
-        if let Err(err) = writer_result {
-            if err.is_panic() {
-                error!("{}Writer task panicked!", self.prefix());
-                print_panic(err.into_panic());
-                print_error_report_instructions();
-            }
+        let result = select! {
+             result = reader => result,
+             result = writer => result,
+             _ = self.keep_connection_alive() => Ok(()),
+        };
+
+        if let Err(err) = result {
+            error!("");
+            error!("{}thread completed with error: {:?}", self.prefix(), err);
         }
-        if let Err(err) = reader_result {
-            if err.is_panic() {
-                error!("{}Reader task panicked!", self.prefix());
-                print_panic(err.into_panic());
-                print_error_report_instructions();
-            }
-        }
+
+        self.close();
     }
 
     async fn writer(connection: NetworkConnection, mut read_half: OwnedWriteHalf, transformer: PacketTransformer) {
         let receiver = connection.outgoing_packets_receiver.clone().to_async();
-        let writer_future = async {
-            loop {
-                let Ok(packet) = receiver.recv().await else {
-                    break;
-                };
-                let bytes = match transformer.encode(packet) {
-                    Ok(bytes) => bytes,
-                    Err(err) => {
-                        error!("{}Serialization error: {err}", connection.prefix());
-                        connection.close();
-                        break;
-                    }
-                };
-                if read_half.write_all(&bytes).await.is_err() {
+        loop {
+            let Ok(packet) = receiver.recv().await else {
+                break;
+            };
+            let bytes = match transformer.encode(packet) {
+                Ok(bytes) => bytes,
+                Err(err) => {
+                    error!("{}Serialization error: {err}", connection.prefix());
                     connection.close();
                     break;
                 }
+            };
+            if read_half.write_all(&bytes).await.is_err() {
+                connection.close();
+                break;
             }
-        };
-        select! {
-            _ = writer_future => (),
-            // Writer has a side job of keeping the connection alive (he doesn't get paid enough)
-            _ = connection.keep_connection_alive() => ()
-
         }
     }
 
