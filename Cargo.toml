@@ -23,7 +23,7 @@ tokio = { version = "1.41.1", features = ["full"] }
 crab_nbt = "0.2.4"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
-evenio = "0.6.0"
+evenio = { git = "https://github.com/CrabCraftDev/CrabEvenio.git", rev = "8c9fc59" }
 derive_more = { version = "1.0.0", features = ["into", "from"] }
 strum = { version = "0.26.3", features = ["derive"] }
 bitfield-struct = "0.9.2"
