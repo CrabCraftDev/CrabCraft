@@ -16,9 +16,9 @@ use crate::{
 };
 use crate::{utils::scheduler::ServerScheduler, world::WorldTick};
 
-pub const SERVER_PROTOCOL_VERSION: i32 = 767;
-pub const SERVER_VERSION: &str = "1.21.1";
-pub const COMPATIBLE_SERVER_VERSIONS: &[&str] = &["1.21", "1.21.1"];
+pub const SERVER_PROTOCOL_VERSION: i32 = 768;
+pub const SERVER_VERSION: &str = "1.21.3";
+pub const COMPATIBLE_SERVER_VERSIONS: &[&str] = &["1.21.2", "1.21.3"];
 
 const TPS: u64 = 20;
 const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);

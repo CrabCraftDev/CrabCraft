@@ -15,5 +15,5 @@ pub struct StoreCookieS2CPacket {
 }
 
 impl Packet for StoreCookieS2CPacket {
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x6B), (Configuration, 0x0A)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x72), (Configuration, 0x0A)];
 }

@@ -5,7 +5,7 @@ use crate::types::angle::Angle;
 use crate::types::position::Position;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x31, state = Play)]
+#[packet(id = 0x33, state = Play)]
 pub struct MoveVehicleS2CPacket {
     pub position: Position,
     pub yaw: Angle,

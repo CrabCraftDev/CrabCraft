@@ -3,7 +3,7 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x24, state = Play)]
+#[packet(id = 0x25, state = Play)]
 pub struct HurtAnimationS2CPacket {
     pub window_id: u8,
     pub damage_direction: f32,

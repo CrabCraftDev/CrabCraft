@@ -5,7 +5,7 @@ use crate::types::angle::Angle;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x30, state = Play)]
+#[packet(id = 0x32, state = Play)]
 pub struct UpdateEntityRotationS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

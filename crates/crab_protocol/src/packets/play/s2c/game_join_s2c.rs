@@ -7,7 +7,7 @@ use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2B, state = Play)]
+#[packet(id = 0x2C, state = Play)]
 pub struct GameJoinS2CPacket {
     pub entity_id: i32,
     pub is_hardcore: bool,
@@ -33,6 +33,8 @@ pub struct GameJoinS2CPacket {
     pub last_death_location: Option<LastDeathLocation>,
     #[protocol_attribute(protocol_type = VarInt)]
     pub portal_cooldown: i32,
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub sea_level: i32,
     pub enforces_secure_chat: bool,
 }
 

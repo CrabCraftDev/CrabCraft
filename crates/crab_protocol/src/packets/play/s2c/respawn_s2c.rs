@@ -10,7 +10,7 @@ use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x47, state = Play)]
+#[packet(id = 0x4C, state = Play)]
 pub struct RespawnS2CPacket {
     /// The ID of the type of dimension in the minecraft:dimension_type registry, defined by the Registry Data packet.
     #[protocol_attribute(protocol_type = VarInt)]

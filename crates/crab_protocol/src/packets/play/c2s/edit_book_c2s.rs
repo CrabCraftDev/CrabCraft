@@ -4,14 +4,14 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x14, state = Play)]
+#[packet(id = 0x16, state = Play)]
 pub struct EditBookC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub slot: i32,
     #[protocol_attribute(protocol_type = VarInt)]
     pub count: i32,
-    #[protocol_attribute(bounded = 200)]
+    #[protocol_attribute(bounded = 100)]
     pub entries: Vec<String>,
-    #[protocol_attribute(bounded = 128)]
+    #[protocol_attribute(bounded = 32)]
     pub title: Option<String>,
 }

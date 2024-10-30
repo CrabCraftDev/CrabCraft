@@ -1,5 +1,4 @@
 use bitfield_struct::bitfield;
-
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
@@ -7,24 +6,29 @@ use crate::types::position::Position;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x40, state = Play)]
-pub struct SynchronizePlayerPositionS2CPacket {
-    pub position: Position,
-    pub yaw: f32,
-    pub pitch: f32,
-    pub flags: SynchronizePositionFlags,
+#[packet(id = 0x42, state = Play)]
+pub struct PlayerPositionS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub teleport_id: i32,
+    pub position: Position,
+    pub delta_movement: Position,
+    pub yaw: f32,
+    pub pitch: f32,
+    pub flags: PlayerPositionFlags,
 }
 
-#[bitfield(u8)]
+#[bitfield(u32)]
 #[derive(ProtocolSerializer)]
-pub struct SynchronizePositionFlags {
+pub struct PlayerPositionFlags {
     pub x: bool,
     pub y: bool,
     pub z: bool,
     pub pitch: bool,
     pub yaw: bool,
-    #[bits(3)]
-    __: u8,
+    pub delta_x: bool,
+    pub delta_y: bool,
+    pub delta_z: bool,
+    pub delta_rotation: bool,
+    #[bits(23)]
+    __: u32,
 }

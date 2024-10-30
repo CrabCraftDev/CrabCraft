@@ -1,10 +1,11 @@
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::namespaced_key::NamespacedKey;
+use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x29, state = Play)]
+#[packet(id = 0x2B, state = Play)]
 pub struct SetSeenRecipeC2SPacket {
-    pub recipe: NamespacedKey,
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub recipe: i32,
 }
