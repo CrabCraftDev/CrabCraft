@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varlong::VarLong;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x4E, state = Play)]
+#[packet(id = 0x53, state = Play)]
 pub struct SetBorderLerpSizeS2CPacket {
     pub old_diameter: f64,
     pub new_diameter: f64,

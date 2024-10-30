@@ -1,4 +1,4 @@
-use crab_protocol::packets::login::LoginSuccessS2CPacket;
+use crab_protocol::packets::login::LoginFinishedS2CPacket;
 use evenio::{
     event::{EventMut, GlobalEvent, Insert, ReceiverMut, Sender, Spawn},
     fetch::Fetcher,
@@ -47,11 +47,10 @@ pub fn on_incoming_connection(
     }
 
     connection.set_prefix(&player_name);
-    connection.send_packet(LoginSuccessS2CPacket {
+    connection.send_packet(LoginFinishedS2CPacket {
         uuid: player_uuid,
         username: player_name.clone(),
         properties: Vec::new(),
-        strict_protocol_error_handling: true,
     });
 
     let player = sender.spawn();

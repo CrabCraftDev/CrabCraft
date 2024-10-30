@@ -15,7 +15,7 @@ pub struct ServerLinksS2CPacket {
 }
 
 impl Packet for ServerLinksS2CPacket {
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x7B), (Configuration, 0x10)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x82), (Configuration, 0x10)];
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]

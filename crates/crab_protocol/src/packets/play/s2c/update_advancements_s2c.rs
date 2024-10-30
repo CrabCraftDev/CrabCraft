@@ -10,7 +10,7 @@ use crate::types::namespaced_key::NamespacedKey;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x74, state = Play)]
+#[packet(id = 0x7B, state = Play)]
 pub struct UpdateAdvancementsS2CPacket {
     pub should_reset: bool,
     pub advancement_mapping: HashMap<NamespacedKey, Advancement>,

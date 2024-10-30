@@ -13,5 +13,5 @@ pub struct TransferS2CPacket {
 }
 
 impl Packet for TransferS2CPacket {
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x73), (Configuration, 0x0B)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x7A), (Configuration, 0x0B)];
 }

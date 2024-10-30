@@ -10,5 +10,5 @@ pub struct PingRequestC2SPacket {
 }
 
 impl Packet for PingRequestC2SPacket {
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x21), (Status, 0x01)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x23), (Status, 0x01)];
 }

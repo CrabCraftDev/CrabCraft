@@ -116,6 +116,25 @@
     "default_state_offset": 0
   },
   {
+    "name": "pale_oak_wood",
+    "properties": [
+      {
+        "name": "axis",
+        "values": [
+          "x",
+          "y",
+          "z"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
+    "name": "pale_oak_planks",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
     "name": "mangrove_planks",
     "properties": [],
     "default_state_offset": 0
@@ -210,6 +229,19 @@
   },
   {
     "name": "dark_oak_sapling",
+    "properties": [
+      {
+        "name": "stage",
+        "values": [
+          "0",
+          "1"
+        ]
+      }
+    ],
+    "default_state_offset": 0
+  },
+  {
+    "name": "pale_oak_sapling",
     "properties": [
       {
         "name": "stage",
@@ -496,6 +528,20 @@
     "default_state_offset": 1
   },
   {
+    "name": "pale_oak_log",
+    "properties": [
+      {
+        "name": "axis",
+        "values": [
+          "x",
+          "y",
+          "z"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
     "name": "mangrove_log",
     "properties": [
       {
@@ -622,6 +668,20 @@
   },
   {
     "name": "stripped_dark_oak_log",
+    "properties": [
+      {
+        "name": "axis",
+        "values": [
+          "x",
+          "y",
+          "z"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
+    "name": "stripped_pale_oak_log",
     "properties": [
       {
         "name": "axis",
@@ -887,6 +947,20 @@
     "default_state_offset": 1
   },
   {
+    "name": "stripped_pale_oak_wood",
+    "properties": [
+      {
+        "name": "axis",
+        "values": [
+          "x",
+          "y",
+          "z"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
     "name": "stripped_mangrove_wood",
     "properties": [
       {
@@ -1094,6 +1168,38 @@
   },
   {
     "name": "dark_oak_leaves",
+    "properties": [
+      {
+        "name": "distance",
+        "values": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7"
+        ]
+      },
+      {
+        "name": "persistent",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 27
+  },
+  {
+    "name": "pale_oak_leaves",
     "properties": [
       {
         "name": "distance",
@@ -2380,6 +2486,28 @@
     "default_state_offset": 0
   },
   {
+    "name": "creaking_heart",
+    "properties": [
+      {
+        "name": "axis",
+        "values": [
+          "x",
+          "y",
+          "z"
+        ]
+      },
+      {
+        "name": "creaking",
+        "values": [
+          "disabled",
+          "dormant",
+          "active"
+        ]
+      }
+    ],
+    "default_state_offset": 3
+  },
+  {
     "name": "oak_stairs",
     "properties": [
       {
@@ -2826,6 +2954,40 @@
     "default_state_offset": 1
   },
   {
+    "name": "pale_oak_sign",
+    "properties": [
+      {
+        "name": "rotation",
+        "values": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
     "name": "mangrove_sign",
     "properties": [
       {
@@ -3180,6 +3342,28 @@
     "default_state_offset": 1
   },
   {
+    "name": "pale_oak_wall_sign",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
     "name": "mangrove_wall_sign",
     "properties": [
       {
@@ -3471,6 +3655,47 @@
   },
   {
     "name": "dark_oak_hanging_sign",
+    "properties": [
+      {
+        "name": "attached",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "rotation",
+        "values": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 33
+  },
+  {
+    "name": "pale_oak_hanging_sign",
     "properties": [
       {
         "name": "attached",
@@ -3829,6 +4054,28 @@
     "default_state_offset": 1
   },
   {
+    "name": "pale_oak_wall_hanging_sign",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
     "name": "mangrove_wall_hanging_sign",
     "properties": [
       {
@@ -4082,6 +4329,19 @@
   },
   {
     "name": "dark_oak_pressure_plate",
+    "properties": [
+      {
+        "name": "powered",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
+    "name": "pale_oak_pressure_plate",
     "properties": [
       {
         "name": "powered",
@@ -4859,6 +5119,49 @@
   },
   {
     "name": "dark_oak_trapdoor",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "half",
+        "values": [
+          "top",
+          "bottom"
+        ]
+      },
+      {
+        "name": "open",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "powered",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 15
+  },
+  {
+    "name": "pale_oak_trapdoor",
     "properties": [
       {
         "name": "facing",
@@ -6337,6 +6640,11 @@
     "default_state_offset": 0
   },
   {
+    "name": "potted_pale_oak_sapling",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
     "name": "potted_mangrove_propagule",
     "properties": [],
     "default_state_offset": 0
@@ -6651,6 +6959,36 @@
   },
   {
     "name": "dark_oak_button",
+    "properties": [
+      {
+        "name": "face",
+        "values": [
+          "floor",
+          "wall",
+          "ceiling"
+        ]
+      },
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "powered",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 9
+  },
+  {
+    "name": "pale_oak_button",
     "properties": [
       {
         "name": "face",
@@ -8328,6 +8666,45 @@
     "default_state_offset": 11
   },
   {
+    "name": "pale_oak_stairs",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "half",
+        "values": [
+          "top",
+          "bottom"
+        ]
+      },
+      {
+        "name": "shape",
+        "values": [
+          "straight",
+          "inner_left",
+          "inner_right",
+          "outer_left",
+          "outer_right"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 11
+  },
+  {
     "name": "mangrove_stairs",
     "properties": [
       {
@@ -9800,6 +10177,27 @@
     "default_state_offset": 3
   },
   {
+    "name": "pale_oak_slab",
+    "properties": [
+      {
+        "name": "type",
+        "values": [
+          "top",
+          "bottom",
+          "double"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 3
+  },
+  {
     "name": "mangrove_slab",
     "properties": [
       {
@@ -10393,6 +10791,42 @@
     "default_state_offset": 7
   },
   {
+    "name": "pale_oak_fence_gate",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "in_wall",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "open",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "powered",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 7
+  },
+  {
     "name": "mangrove_fence_gate",
     "properties": [
       {
@@ -10671,6 +11105,47 @@
   },
   {
     "name": "dark_oak_fence",
+    "properties": [
+      {
+        "name": "east",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "north",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "south",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "west",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 31
+  },
+  {
+    "name": "pale_oak_fence",
     "properties": [
       {
         "name": "east",
@@ -11009,6 +11484,49 @@
   },
   {
     "name": "dark_oak_door",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "half",
+        "values": [
+          "upper",
+          "lower"
+        ]
+      },
+      {
+        "name": "hinge",
+        "values": [
+          "left",
+          "right"
+        ]
+      },
+      {
+        "name": "open",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "powered",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 11
+  },
+  {
+    "name": "pale_oak_door",
     "properties": [
       {
         "name": "facing",
@@ -20207,5 +20725,68 @@
       }
     ],
     "default_state_offset": 1
+  },
+  {
+    "name": "pale_moss_block",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "pale_moss_carpet",
+    "properties": [
+      {
+        "name": "bottom",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "east",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      },
+      {
+        "name": "north",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      },
+      {
+        "name": "south",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      },
+      {
+        "name": "west",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      }
+    ],
+    "default_state_offset": 0
+  },
+  {
+    "name": "pale_hanging_moss",
+    "properties": [
+      {
+        "name": "tip",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 0
   }
 ]

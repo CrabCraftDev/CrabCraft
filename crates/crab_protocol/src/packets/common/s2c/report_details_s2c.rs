@@ -10,7 +10,7 @@ pub struct ReportDetailsS2CPacket {
 }
 
 impl Packet for ReportDetailsS2CPacket {
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x7A), (Configuration, 0x0F)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x81), (Configuration, 0x0F)];
 }
 
 #[derive(ProtocolSerializer, Debug, Clone)]

@@ -1,23 +1,19 @@
 use crate::{entity::components::name::Name, network::connection::NetworkConnection};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
-use crab_protocol::packets::common::{Tag, UpdateTagsS2CPacket};
+use crab_protocol::packets::play::PlayerPositionS2CPacket;
+use crab_protocol::types::position::Position;
 use crab_protocol::{
     packets::play::{
         ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
         GameJoinS2CPacket, LightData, SetCenterChunkS2CPacket, SetDefaultSpawnPositionS2CPacket,
-        SynchronizePlayerPositionS2CPacket, SynchronizePositionFlags,
     },
-    types::{
-        bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, namespaced_key::NamespacedKey,
-        position::Position,
-    },
+    types::{bit_set::BitSet, block_position::BlockPosition, game_mode::GameMode, namespaced_key::NamespacedKey},
 };
 use crab_world::blocks::{Bedrock, BlockType, Dirt, GrassBlock};
 use crab_world::chunks::chunk::{Chunk, CHUNK_SECTIONS_PER_WORLD_HEIGHT};
 use crab_world::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use evenio::event::{Receiver, TargetedEvent};
-use std::collections::HashMap;
 use tracing::info;
 
 #[derive(TargetedEvent)]
@@ -45,6 +41,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         is_flat_world: true,
         last_death_location: None,
         portal_cooldown: 20,
+        sea_level: 64,
         enforces_secure_chat: false,
     });
 
@@ -59,22 +56,6 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
     connection.send_packet(GameEventS2CPacket { event: 13, value: 0.0 });
 
     connection.send_packet(ChunkBatchStartS2CPacket);
-
-    let mut tags = HashMap::new();
-    tags.insert(
-        NamespacedKey::minecraft("fluid").unwrap(),
-        vec![
-            Tag {
-                name: NamespacedKey::minecraft("water").unwrap(),
-                entries: vec![2, 1],
-            },
-            Tag {
-                name: NamespacedKey::minecraft("lava").unwrap(),
-                entries: vec![4, 3],
-            },
-        ],
-    );
-    connection.send_packet(UpdateTagsS2CPacket { tags });
 
     let mut normal_chunk = Chunk::default();
     let mut air_chunk = Chunk::default();
@@ -147,12 +128,13 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         number_of_chunks: (view_distance * 2 + 1).pow(2),
     });
 
-    connection.send_packet(SynchronizePlayerPositionS2CPacket {
+    connection.send_packet(PlayerPositionS2CPacket {
+        teleport_id: 2137,
         position: Position::new(0.0, -59.0, 0.0),
+        delta_movement: Position::new(0.0, 0.0, 0.0),
         yaw: 0.0,
         pitch: 0.0,
-        flags: SynchronizePositionFlags::new(),
-        teleport_id: 2137,
+        flags: Default::default(),
     });
 
     info!("{name} joined!");
