@@ -6,7 +6,7 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x07, state = Play)]
+#[packet(id = 0x08, state = Play)]
 pub struct PlayerSessionC2SPacket {
     pub session_id: Uuid,
     pub expires_at: i64,

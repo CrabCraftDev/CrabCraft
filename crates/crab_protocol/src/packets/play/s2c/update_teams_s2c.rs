@@ -10,7 +10,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x60, state = Play)]
+#[packet(id = 0x67, state = Play)]
 pub struct UpdateTeamsS2CPacket {
     pub team_name: String,
     pub method: UpdateTeamsMethod,

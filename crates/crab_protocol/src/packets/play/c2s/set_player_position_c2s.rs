@@ -1,12 +1,13 @@
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
+use crate::types::player_movement_flags::PlayerMovementFlags;
 use crate::types::position::Position;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x1A, state = Play)]
+#[packet(id = 0x1C, state = Play)]
 pub struct SetPlayerPositionC2SPacket {
     /// Y is feet position
     pub position: Position,
-    pub on_ground: bool,
+    pub flags: PlayerMovementFlags,
 }

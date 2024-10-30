@@ -36,6 +36,17 @@ impl ProtocolSerializer for i32 {
     }
 }
 
+impl ProtocolSerializer for u32 {
+    fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
+        buf.put_u32(*self);
+        Ok(())
+    }
+
+    fn deserialize(buf: &mut impl ReadByteBuf) -> Result<u32, ProtocolError> {
+        Ok(buf.get_u32())
+    }
+}
+
 impl ProtocolSerializer for i64 {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_i64(*self);

@@ -18,6 +18,7 @@ pub struct ClientInformationC2SPacket {
     pub main_hand: MainHand,
     pub enable_text_filtering: bool,
     pub allow_server_listings: bool,
+    pub particle_status: bool,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
@@ -48,5 +49,5 @@ pub struct DisplayedSkinParts {
 }
 
 impl Packet for ClientInformationC2SPacket {
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x0A), (Configuration, 0x00)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x0C), (Configuration, 0x00)];
 }

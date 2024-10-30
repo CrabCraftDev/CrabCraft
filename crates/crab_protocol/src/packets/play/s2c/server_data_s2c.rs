@@ -6,7 +6,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x4B, state = Play)]
+#[packet(id = 0x50, state = Play)]
 pub struct ServerDataS2CPacket {
     pub motd: TextComponent,
     pub icon: Option<Bytes>,

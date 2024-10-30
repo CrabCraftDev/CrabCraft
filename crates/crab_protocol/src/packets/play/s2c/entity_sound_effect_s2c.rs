@@ -6,7 +6,7 @@ use crate::types::sound::{SoundCategory, SoundEffect};
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x67, state = Play)]
+#[packet(id = 0x6E, state = Play)]
 pub struct EntitySoundEffectS2CPacket {
     pub sound_effect: SoundEffect,
     pub position: Position,
