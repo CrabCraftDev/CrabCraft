@@ -10,12 +10,13 @@ use crab_world::chunks::palette::paletted_storage::{Palette, PalettedStorage};
 use flate2::read::{GzDecoder, ZlibDecoder};
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::Read;
+use std::io::{Error, Read};
 use std::path::PathBuf;
 use std::str::FromStr;
 use strum::FromRepr;
 
 use crate::chunks::section::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
+use crate::error::AnvilError::ChunkNotGenerated;
 use lz4::Decoder;
 
 #[bitfield(u32)]
@@ -42,10 +43,10 @@ pub struct Region {
 }
 
 impl Region {
-    pub fn new(path: PathBuf) -> Self {
-        let mut file = File::open(path).unwrap();
+    pub fn new(path: PathBuf) -> Result<Self, Error> {
+        let mut file = File::open(path)?;
         let mut buffer = Vec::new();
-        file.read_to_end(&mut buffer).unwrap();
+        file.read_to_end(&mut buffer)?;
         let bytes = BytesMut::from_iter(buffer);
 
         let mut tmp_bytes = BytesMut::clone(&bytes);
@@ -56,10 +57,10 @@ impl Region {
         }
         let _timestamps = tmp_bytes.copy_to_bytes(4096);
 
-        Self {
+        Ok(Self {
             locations,
             bytes: bytes.freeze(),
-        }
+        })
     }
 
     pub fn read_chunk(
@@ -69,7 +70,11 @@ impl Region {
         get_biome: impl Fn(&str) -> u64,
     ) -> Result<Vec<(PalettedStorage, PalettedStorage)>, AnvilError> {
         let index: usize = (x as usize % 32) + (z as usize % 32) * 32;
-        let start = self.locations[index].offset() as usize * 4096;
+        let location = self.locations[index];
+        if location.offset() == 0 && location.count() == 0 {
+            return Err(ChunkNotGenerated { x, z });
+        }
+        let start = location.offset() as usize * 4096;
 
         let mut bytes = self.bytes.slice(start..(start + 4));
         let compressed_len = bytes.get_u32();
