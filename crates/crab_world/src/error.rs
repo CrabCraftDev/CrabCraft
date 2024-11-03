@@ -40,4 +40,6 @@ pub enum AnvilError {
     InvalidCompressionScheme(u8),
     #[error(transparent)]
     IO(#[from] io::Error),
+    #[error("Chunk {x} {z} has not been generated yet")]
+    ChunkNotGenerated { x: u8, z: u8 },
 }

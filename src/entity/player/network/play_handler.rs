@@ -17,7 +17,7 @@ use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
 use crab_world::chunks::section::{ChunkSection, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
 use evenio::event::{Receiver, TargetedEvent};
 use std::str::FromStr;
-use tracing::info;
+use tracing::{info, warn};
 
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
@@ -64,20 +64,29 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         .world_region_path(&NamespacedKey::minecraft("overworld").unwrap())
         .unwrap();
 
-    let region = Region::new(region_folder_path.join("r.0.0.mca"));
-    let view_distance: i32 = 8;
+    const DEFAULT_REGION_FILE_NAME: &str = "r.0.0.mca";
+    let Ok(region) = Region::new(region_folder_path.join(DEFAULT_REGION_FILE_NAME)) else {
+        warn!("CrabCraft doesn't have world generator yet!");
+        warn!("Please provide world files in worlds/overworld/region/r.0.0.mca");
+        info!("{name} joined!");
+        return;
+    };
+
     let registry = REGISTRY.get().unwrap();
     let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
 
+    let mut number_of_chunks = 0;
     for x in 0..17 {
         for z in 0..17 {
-            let blocks_ids_vec = region
-                .read_chunk(x, z, |b| {
-                    registry
-                        .get_numeric_id(&biome_registry_namespaced_key, &NamespacedKey::from_str(b).unwrap())
-                        .unwrap() as u64
-                })
-                .expect("Anvil format error");
+            let Ok(blocks_ids_vec) = region.read_chunk(x, z, |b| {
+                registry
+                    .get_numeric_id(&biome_registry_namespaced_key, &NamespacedKey::from_str(b).unwrap())
+                    .unwrap() as u64
+            }) else {
+                continue;
+            };
+
+            number_of_chunks += 1;
 
             let mut bytes = BytesMut::new();
 
@@ -114,9 +123,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         }
     }
 
-    connection.send_packet(ChunkBatchFinishedS2CPacket {
-        number_of_chunks: (view_distance * 2 + 1).pow(2),
-    });
+    connection.send_packet(ChunkBatchFinishedS2CPacket { number_of_chunks });
 
     connection.send_packet(PlayerPositionS2CPacket {
         teleport_id: 2137,
