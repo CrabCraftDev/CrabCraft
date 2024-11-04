@@ -1,10 +1,9 @@
+use crate::{entity::player, network::connection::NetworkConnection};
 use evenio::{
     event::{GlobalEvent, Receiver},
     fetch::Fetcher,
     world::World,
 };
-
-use crate::{entity::player, network::connection::NetworkConnection};
 
 /// Creates a new World with all the defualt systems (handlers)
 pub fn new() -> World {
@@ -18,6 +17,9 @@ pub fn new() -> World {
     world.add_handler(player::network::play_handler::on_world_join);
 
     world.add_handler(server_shutdown);
+
+    // World
+    world.add_handler(player::network::play_handler::move_packet_receiver);
 
     world
 }

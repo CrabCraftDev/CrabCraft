@@ -2,7 +2,7 @@ use bitfield_struct::bitfield;
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::position::Position;
+use crate::types::position::{Position, Rotation, Vec3Double};
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
@@ -11,9 +11,8 @@ pub struct PlayerPositionS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub teleport_id: i32,
     pub position: Position,
-    pub delta_movement: Position,
-    pub yaw: f32,
-    pub pitch: f32,
+    pub delta_movement: Vec3Double,
+    pub rotation: Rotation,
     pub flags: PlayerPositionFlags,
 }
 

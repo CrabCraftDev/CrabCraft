@@ -359,6 +359,7 @@ dependencies = [
  "crab_macros",
  "crab_nbt",
  "derive_more",
+ "evenio",
  "serde",
  "serde_json",
  "strum",

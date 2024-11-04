@@ -1,9 +1,14 @@
+use crate::entity::player::network::connection::PacketEvent;
+use crate::entity::player::LastTeleport;
 use crate::utils::files::FILES;
 use crate::{entity::components::name::Name, network::connection::NetworkConnection};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
-use crab_protocol::packets::play::PlayerPositionS2CPacket;
-use crab_protocol::types::position::Position;
+use crab_protocol::packets::play::{
+    ConfirmTeleportationC2SPacket, PlayerPositionS2CPacket, SetPlayerPositionAndRotationC2SPacket,
+    SetPlayerPositionC2SPacket, SetPlayerRotationC2SPacket,
+};
+use crab_protocol::types::position::{Position, Rotation, Vec3Double, Velocity};
 use crab_protocol::{
     packets::play::{
         ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
@@ -15,15 +20,25 @@ use crab_registry::REGISTRY;
 use crab_world::anvil::region::Region;
 use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
 use crab_world::chunks::section::{ChunkSection, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
-use evenio::event::{Receiver, TargetedEvent};
+use evenio::entity::EntityId;
+use evenio::event::{Insert, Receiver, Sender, TargetedEvent};
 use std::str::FromStr;
-use tracing::info;
+use tracing::{debug, info};
 
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
 
-pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnection, &Name)>) {
-    let (connection, name) = receiver.query;
+#[allow(clippy::type_complexity)]
+pub fn on_world_join(
+    receiver: Receiver<PlayerJoinWorldEvent, (EntityId, &NetworkConnection, &Name)>,
+    mut sender: Sender<(
+        Insert<Position>,
+        Insert<Velocity>,
+        Insert<Rotation>,
+        Insert<LastTeleport>,
+    )>,
+) {
+    let (entity, connection, name) = receiver.query;
 
     connection.send_packet(GameJoinS2CPacket {
         entity_id: 0,
@@ -48,15 +63,32 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         enforces_secure_chat: false,
     });
 
+    sender.insert::<Velocity>(entity, Vec3Double::new(0., 0., 0.).into());
+    let position = Vec3Double::new(0.5, -59., 0.5).into();
+    let rotation = Rotation::of(0., 0.);
+
+    sender.insert(entity, position);
+    sender.insert(entity, rotation);
+
+    sender.insert(entity, LastTeleport(0, false));
+
+    connection.send_packet(PlayerPositionS2CPacket {
+        teleport_id: 0,
+        position,
+        delta_movement: Vec3Double::new(0.0, 0.0, 0.0),
+        rotation,
+        flags: Default::default(),
+    });
+
     // TODO: Temporary implementation of chunk sending
     connection.send_packet(SetDefaultSpawnPositionS2CPacket {
         location: BlockPosition { x: 0, y: 0, z: 0 },
         angle: 0.0,
     });
 
-    connection.send_packet(SetCenterChunkS2CPacket { x: 0, z: 0 });
-
     connection.send_packet(GameEventS2CPacket { event: 13, value: 0.0 });
+
+    connection.send_packet(SetCenterChunkS2CPacket { x: 0, z: 0 });
 
     connection.send_packet(ChunkBatchStartS2CPacket);
 
@@ -118,14 +150,77 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         number_of_chunks: (view_distance * 2 + 1).pow(2),
     });
 
-    connection.send_packet(PlayerPositionS2CPacket {
-        teleport_id: 2137,
-        position: Position::new(100.0, 70.0, 100.0),
-        delta_movement: Position::new(0.0, 0.0, 0.0),
-        yaw: 0.0,
-        pitch: 0.0,
-        flags: Default::default(),
-    });
-
     info!("{name} joined!");
+}
+
+pub fn move_packet_receiver(
+    receiver: Receiver<PacketEvent, (&NetworkConnection, &mut Position, &mut Rotation, &mut LastTeleport)>,
+) {
+    let (connection, pos, rotation, last_teleport) = receiver.query;
+
+    let state = receiver.event.protocol_state;
+    let packet = &receiver.event.packet;
+
+    if let Some(confirm_teleport) = packet.decode::<ConfirmTeleportationC2SPacket>(state) {
+        if last_teleport.0 == confirm_teleport.teleport_id {
+            debug!("Confirm tp {}", last_teleport.0);
+            last_teleport.1 = true;
+        }
+    }
+
+    if let Some(packet) = packet.decode::<SetPlayerPositionC2SPacket>(state) {
+        on_move(pos, packet.position, connection, *rotation, last_teleport);
+    };
+
+    if let Some(packet) = packet.decode::<SetPlayerPositionAndRotationC2SPacket>(state) {
+        on_move(pos, packet.position, connection, *rotation, last_teleport);
+        rotation.yaw = packet.rotation.yaw;
+        rotation.pitch = packet.rotation.pitch;
+    }
+
+    if let Some(packet) = packet.decode::<SetPlayerRotationC2SPacket>(state) {
+        rotation.yaw = packet.rotation.yaw;
+        rotation.pitch = packet.rotation.pitch;
+    }
+}
+
+pub fn on_move(
+    old_pos: &mut Position,
+    new_pos: Position,
+    connection: &NetworkConnection,
+    rotation: Rotation,
+    last_teleport: &mut LastTeleport,
+) {
+    if !last_teleport.1 {
+        return;
+    }
+    let delta_x = new_pos.0.x - old_pos.0.x;
+    let delta_y = new_pos.0.y - old_pos.0.y;
+    let delta_z = new_pos.0.z - old_pos.0.z;
+    let delta_sq = delta_x.powi(2) * delta_y.powi(2) * delta_z.powi(2);
+    if delta_sq > 100. {
+        teleport(connection, old_pos, &old_pos.clone(), rotation, last_teleport)
+    }
+
+    old_pos.0 = new_pos.0;
+}
+
+fn teleport(
+    connection: &NetworkConnection,
+    current_pos: &mut Position,
+    new_pos: &Position,
+    rotation: Rotation,
+    last_teleport: &mut LastTeleport,
+) {
+    current_pos.0 = new_pos.0;
+    connection.send_packet(PlayerPositionS2CPacket {
+        position: *current_pos,
+        delta_movement: Vec3Double::new(0., 0., 0.),
+        rotation,
+        flags: Default::default(),
+        teleport_id: last_teleport.0 + 1,
+    });
+    debug!("tp {:?}", current_pos);
+    last_teleport.0 += 1;
+    last_teleport.1 = false;
 }
