@@ -20,6 +20,8 @@ pub fn new() -> World {
 
     // World
     world.add_handler(player::network::play_handler::move_packet_receiver);
+    world.add_handler(player::world::position_handler::on_teleport);
+    world.add_handler(player::world::position_handler::on_move);
 
     world
 }
