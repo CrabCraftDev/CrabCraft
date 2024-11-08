@@ -18,10 +18,10 @@ pub fn on_teleport(receiver: Receiver<TeleportEvent, (&NetworkConnection, &mut P
         delta_movement: Vec3Double::new(0., 0., 0.),
         rotation,
         flags: Default::default(),
-        teleport_id: last_teleport.0 + 1,
+        teleport_id: last_teleport.id + 1,
     });
-    last_teleport.0 += 1;
-    last_teleport.1 = false;
+    last_teleport.id += 1;
+    last_teleport.confirmed = false;
 }
 
 pub fn on_move(
@@ -31,7 +31,7 @@ pub fn on_move(
     let MoveEvent { position, rotation } = *receiver.event;
     let (entity, old_pos, last_teleport, name) = receiver.query;
 
-    if !last_teleport.1 {
+    if !last_teleport.confirmed {
         return;
     }
     let delta_x = (position.0.x - old_pos.0.x).abs();

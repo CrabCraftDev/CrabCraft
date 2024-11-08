@@ -12,12 +12,12 @@ pub struct Rotation {
 }
 
 impl Rotation {
-    pub fn of(yaw: f32, pitch: f32) -> Self {
+    pub fn new(yaw: f32, pitch: f32) -> Self {
         Self { yaw, pitch }
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Debug, ProtocolSerializer)]
+#[derive(Clone, Copy, PartialEq, Debug, ProtocolSerializer, Default)]
 pub struct Vec3Double {
     pub x: f64,
     pub y: f64,
@@ -33,28 +33,31 @@ impl Vec3Double {
 #[repr(transparent)]
 #[derive(ProtocolSerializer, Debug, Clone, Component, From, Into, Copy)]
 pub struct Position(pub Vec3Double);
+
 #[repr(transparent)]
 #[derive(Debug, Clone, Component, From, Into, Copy)]
 pub struct Velocity(pub Vec3Double);
 
-/// > Velocity is in units of 1/8000 of a block per server tick (50ms);
+const VELOCITY_PROTOCOL_MULTIPLIER: f64 = 8000.;
+
+/// > Velocity is in units of 1/8000 of a block per server tick (50ms normal);
 /// > for example, -1343 would move (-1343 / 8000) = −0.167875 blocks per tick (or −3.3575 blocks per second).
 ///
 /// Description taken from https://wiki.vg/Protocol#Set_Entity_Velocity
 impl ProtocolSerializer for Velocity {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         let vec = self.0;
-        buf.put_i16((vec.x * 8000.) as i16);
-        buf.put_i16((vec.y * 8000.) as i16);
-        buf.put_i16((vec.z * 8000.) as i16);
+        buf.put_i16((vec.x * VELOCITY_PROTOCOL_MULTIPLIER) as i16);
+        buf.put_i16((vec.y * VELOCITY_PROTOCOL_MULTIPLIER) as i16);
+        buf.put_i16((vec.z * VELOCITY_PROTOCOL_MULTIPLIER) as i16);
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
         Ok(Vec3Double {
-            x: buf.get_i16() as f64 / 8000.0,
-            y: buf.get_i16() as f64 / 8000.0,
-            z: buf.get_i16() as f64 / 8000.0,
+            x: buf.get_i16() as f64 / VELOCITY_PROTOCOL_MULTIPLIER,
+            y: buf.get_i16() as f64 / VELOCITY_PROTOCOL_MULTIPLIER,
+            z: buf.get_i16() as f64 / VELOCITY_PROTOCOL_MULTIPLIER,
         }
         .into())
     }

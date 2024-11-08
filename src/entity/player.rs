@@ -8,8 +8,11 @@ pub mod world;
 #[derive(Component)]
 pub struct Player;
 
-#[derive(Component)]
-pub struct LastTeleport(pub i32, pub bool);
+#[derive(Component, Default)]
+pub struct LastTeleport {
+    pub id: i32,
+    pub confirmed: bool,
+}
 
 #[derive(TargetedEvent)]
 pub struct TeleportEvent {

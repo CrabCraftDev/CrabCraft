@@ -8,6 +8,7 @@ use crab_protocol::packets::play::{
     ConfirmTeleportationC2SPacket, PlayerPositionS2CPacket, SetPlayerPositionAndRotationC2SPacket,
     SetPlayerPositionC2SPacket, SetPlayerRotationC2SPacket,
 };
+use crab_protocol::types::player_movement_flags::PlayerMovementFlags;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double, Velocity};
 use crab_protocol::{
     packets::play::{
@@ -63,19 +64,19 @@ pub fn on_world_join(
         enforces_secure_chat: false,
     });
 
-    sender.insert::<Velocity>(entity, Vec3Double::new(0., 0., 0.).into());
-    let position = Vec3Double::new(40., -48., 40.).into();
-    let rotation = Rotation::of(0., 0.);
+    sender.insert::<Velocity>(entity, Vec3Double::default().into());
+    let position = Vec3Double::default().into();
+    let rotation = Rotation::default();
 
     sender.insert(entity, position);
     sender.insert(entity, rotation);
 
-    sender.insert(entity, LastTeleport(0, false));
+    sender.insert(entity, LastTeleport::default());
 
     connection.send_packet(PlayerPositionS2CPacket {
         teleport_id: 0,
         position,
-        delta_movement: Vec3Double::new(0.0, 0.0, 0.0),
+        delta_movement: Vec3Double::default(),
         rotation,
         flags: Default::default(),
     });
@@ -155,7 +156,7 @@ pub fn on_world_join(
 
 pub fn move_packet_receiver(
     receiver: Receiver<PacketEvent, (&mut Rotation, &mut LastTeleport, EntityId)>,
-    mut sender: Sender<MoveEvent>,
+    mut sender: Sender<(MoveEvent, Insert<PlayerMovementFlags>)>,
 ) {
     let (rot, last_teleport, entity) = receiver.query;
 
@@ -163,8 +164,8 @@ pub fn move_packet_receiver(
     let packet = &receiver.event.packet;
 
     if let Some(confirm_teleport) = packet.decode::<ConfirmTeleportationC2SPacket>(state) {
-        if last_teleport.0 == confirm_teleport.teleport_id {
-            last_teleport.1 = true;
+        if last_teleport.id == confirm_teleport.teleport_id {
+            last_teleport.confirmed = true;
         }
     }
 
@@ -176,6 +177,7 @@ pub fn move_packet_receiver(
                 rotation: *rot,
             },
         );
+        sender.insert(entity, packet.flags)
     };
 
     if let Some(packet) = packet.decode::<SetPlayerPositionAndRotationC2SPacket>(state) {
@@ -188,10 +190,12 @@ pub fn move_packet_receiver(
         );
         rot.yaw = packet.rotation.yaw;
         rot.pitch = packet.rotation.pitch;
+        sender.insert(entity, packet.flags)
     }
 
     if let Some(packet) = packet.decode::<SetPlayerRotationC2SPacket>(state) {
         rot.yaw = packet.rotation.yaw;
         rot.pitch = packet.rotation.pitch;
+        sender.insert(entity, packet.flags)
     }
 }
