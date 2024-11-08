@@ -17,7 +17,7 @@ pub struct InteractC2SPacket {
     pub is_sneaking: bool,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug, Clone)]
 pub enum InteractActionType {
     Interact { hand: Hand },
     Attack,

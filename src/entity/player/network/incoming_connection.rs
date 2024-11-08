@@ -1,10 +1,4 @@
-use crab_protocol::packets::login::LoginFinishedS2CPacket;
-use evenio::{
-    event::{EventMut, GlobalEvent, Insert, ReceiverMut, Sender, Spawn},
-    fetch::Fetcher,
-};
-use uuid::Uuid as ActualUuid;
-
+use crate::entity::player::LastTeleport;
 use crate::{
     entity::{
         components::{name::Name, uuid::Uuid},
@@ -12,6 +6,13 @@ use crate::{
     },
     network::connection::NetworkConnection,
 };
+use crab_protocol::packets::login::LoginFinishedS2CPacket;
+use crab_protocol::types::position::{Position, Rotation, Vec3Double, Velocity};
+use evenio::{
+    event::{EventMut, GlobalEvent, Insert, ReceiverMut, Sender, Spawn},
+    fetch::Fetcher,
+};
+use uuid::Uuid as ActualUuid;
 
 #[derive(Debug, GlobalEvent)]
 pub struct IncomingConnection {
@@ -29,6 +30,10 @@ pub fn on_incoming_connection(
         Insert<NetworkConnection>,
         Insert<Name>,
         Insert<Uuid>,
+        Insert<Velocity>,
+        Insert<Position>,
+        Insert<Rotation>,
+        Insert<LastTeleport>,
     )>,
     fetcher: Fetcher<(&Player, &Name, &Uuid)>,
 ) {
@@ -58,4 +63,9 @@ pub fn on_incoming_connection(
     sender.insert(player, connection);
     sender.insert(player, Uuid(player_uuid));
     sender.insert(player, Name(player_name));
+
+    sender.insert::<Velocity>(player, Vec3Double::default().into());
+    sender.insert(player, Position::new(100.0, 70.0, 100.0));
+    sender.insert(player, Rotation::default());
+    sender.insert(player, LastTeleport::default());
 }

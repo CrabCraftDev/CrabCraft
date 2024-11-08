@@ -17,7 +17,7 @@ impl Rotation {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Debug, ProtocolSerializer, Default)]
+#[derive(ProtocolSerializer, Debug, Clone, PartialEq, Default)]
 pub struct Vec3Double {
     pub x: f64,
     pub y: f64,
@@ -31,12 +31,24 @@ impl Vec3Double {
 }
 
 #[repr(transparent)]
-#[derive(ProtocolSerializer, Debug, Clone, Component, From, Into, Copy)]
+#[derive(ProtocolSerializer, Debug, Clone, Component, From, Into, Default)]
 pub struct Position(pub Vec3Double);
 
+impl Position {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self(Vec3Double::new(x, y, z))
+    }
+}
+
 #[repr(transparent)]
-#[derive(Debug, Clone, Component, From, Into, Copy)]
+#[derive(Debug, Clone, Component, From, Into, Default)]
 pub struct Velocity(pub Vec3Double);
+
+impl Velocity {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self(Vec3Double::new(x, y, z))
+    }
+}
 
 const VELOCITY_PROTOCOL_MULTIPLIER: f64 = 8000.;
 
@@ -46,7 +58,7 @@ const VELOCITY_PROTOCOL_MULTIPLIER: f64 = 8000.;
 /// Description taken from https://wiki.vg/Protocol#Set_Entity_Velocity
 impl ProtocolSerializer for Velocity {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        let vec = self.0;
+        let vec = &self.0;
         buf.put_i16((vec.x * VELOCITY_PROTOCOL_MULTIPLIER) as i16);
         buf.put_i16((vec.y * VELOCITY_PROTOCOL_MULTIPLIER) as i16);
         buf.put_i16((vec.z * VELOCITY_PROTOCOL_MULTIPLIER) as i16);
@@ -60,11 +72,5 @@ impl ProtocolSerializer for Velocity {
             z: buf.get_i16() as f64 / VELOCITY_PROTOCOL_MULTIPLIER,
         }
         .into())
-    }
-}
-
-impl Default for Velocity {
-    fn default() -> Self {
-        Self(Vec3Double::new(0f64, 0f64, 0f64))
     }
 }

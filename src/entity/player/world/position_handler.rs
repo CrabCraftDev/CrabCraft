@@ -11,12 +11,12 @@ pub const MAX_SINGLE_PACKET_MOVE_SQ: f64 = 100f64;
 
 pub fn on_teleport(receiver: Receiver<TeleportEvent, (&NetworkConnection, &mut Position, &mut LastTeleport)>) {
     let (connection, current_pos, last_teleport) = receiver.query;
-    let TeleportEvent { position, rotation } = *receiver.event;
-    current_pos.0 = position.0;
+    let TeleportEvent { position, rotation } = receiver.event;
+    current_pos.0 = position.0.clone();
     connection.send_packet(PlayerPositionS2CPacket {
-        position,
+        position: position.clone(),
         delta_movement: Vec3Double::new(0., 0., 0.),
-        rotation,
+        rotation: *rotation,
         flags: Default::default(),
         teleport_id: last_teleport.id + 1,
     });
@@ -28,7 +28,7 @@ pub fn on_move(
     receiver: Receiver<MoveEvent, (EntityId, &mut Position, &mut LastTeleport, &Name)>,
     mut teleport: Sender<TeleportEvent>,
 ) {
-    let MoveEvent { position, rotation } = *receiver.event;
+    let MoveEvent { position, rotation } = receiver.event;
     let (entity, old_pos, last_teleport, name) = receiver.query;
 
     if !last_teleport.confirmed {
@@ -47,11 +47,11 @@ pub fn on_move(
         teleport.send_to(
             entity,
             TeleportEvent {
-                position: *old_pos,
-                rotation,
+                position: old_pos.clone(),
+                rotation: *rotation,
             },
         );
     }
 
-    old_pos.0 = position.0;
+    old_pos.0 = position.0.clone();
 }

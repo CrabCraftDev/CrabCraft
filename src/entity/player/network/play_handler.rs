@@ -9,7 +9,7 @@ use crab_protocol::packets::play::{
     SetPlayerPositionC2SPacket, SetPlayerRotationC2SPacket,
 };
 use crab_protocol::types::player_movement_flags::PlayerMovementFlags;
-use crab_protocol::types::position::{Position, Rotation, Vec3Double, Velocity};
+use crab_protocol::types::position::{Position, Rotation, Vec3Double};
 use crab_protocol::{
     packets::play::{
         ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
@@ -30,16 +30,8 @@ use tracing::info;
 pub struct PlayerJoinWorldEvent;
 
 #[allow(clippy::type_complexity)]
-pub fn on_world_join(
-    receiver: Receiver<PlayerJoinWorldEvent, (EntityId, &NetworkConnection, &Name)>,
-    mut sender: Sender<(
-        Insert<Position>,
-        Insert<Velocity>,
-        Insert<Rotation>,
-        Insert<LastTeleport>,
-    )>,
-) {
-    let (entity, connection, name) = receiver.query;
+pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnection, &Name, &Position, &Rotation)>) {
+    let (connection, name, position, rotation) = receiver.query;
 
     connection.send_packet(GameJoinS2CPacket {
         entity_id: 0,
@@ -62,23 +54,6 @@ pub fn on_world_join(
         portal_cooldown: 20,
         sea_level: 64,
         enforces_secure_chat: false,
-    });
-
-    sender.insert::<Velocity>(entity, Vec3Double::default().into());
-    let position = Vec3Double::default().into();
-    let rotation = Rotation::default();
-
-    sender.insert(entity, position);
-    sender.insert(entity, rotation);
-
-    sender.insert(entity, LastTeleport::default());
-
-    connection.send_packet(PlayerPositionS2CPacket {
-        teleport_id: 0,
-        position,
-        delta_movement: Vec3Double::default(),
-        rotation,
-        flags: Default::default(),
     });
 
     // TODO: Temporary implementation of chunk sending
@@ -149,6 +124,14 @@ pub fn on_world_join(
 
     connection.send_packet(ChunkBatchFinishedS2CPacket {
         number_of_chunks: (view_distance * 2 + 1).pow(2),
+    });
+
+    connection.send_packet(PlayerPositionS2CPacket {
+        teleport_id: 0,
+        position: position.clone(),
+        delta_movement: Vec3Double::default(),
+        rotation: *rotation,
+        flags: Default::default(),
     });
 
     info!("{name} joined!");
