@@ -13,7 +13,7 @@ pub struct PlayerPositionS2CPacket {
     pub position: Position,
     pub delta_movement: Vec3Double,
     pub rotation: Rotation,
-    pub flags: PlayerPositionFlags,
+    pub position_flags: PlayerPositionFlags,
 }
 
 #[bitfield(u32)]

@@ -131,7 +131,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         position: position.clone(),
         delta_movement: Vec3Double::default(),
         rotation: *rotation,
-        flags: Default::default(),
+        position_flags: Default::default(),
     });
 
     info!("{name} joined!");
@@ -160,7 +160,7 @@ pub fn move_packet_receiver(
                 rotation: *rot,
             },
         );
-        sender.insert(entity, packet.flags)
+        sender.insert(entity, packet.movement_flags)
     };
 
     if let Some(packet) = packet.decode::<SetPlayerPositionAndRotationC2SPacket>(state) {
@@ -173,12 +173,12 @@ pub fn move_packet_receiver(
         );
         rot.yaw = packet.rotation.yaw;
         rot.pitch = packet.rotation.pitch;
-        sender.insert(entity, packet.flags)
+        sender.insert(entity, packet.movement_flags)
     }
 
     if let Some(packet) = packet.decode::<SetPlayerRotationC2SPacket>(state) {
         rot.yaw = packet.rotation.yaw;
         rot.pitch = packet.rotation.pitch;
-        sender.insert(entity, packet.flags)
+        sender.insert(entity, packet.movement_flags)
     }
 }

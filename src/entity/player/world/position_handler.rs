@@ -13,15 +13,16 @@ pub fn on_teleport(receiver: Receiver<TeleportEvent, (&NetworkConnection, &mut P
     let (connection, current_pos, last_teleport) = receiver.query;
     let TeleportEvent { position, rotation } = receiver.event;
     current_pos.0 = position.0.clone();
+
+    last_teleport.id += 1;
+    last_teleport.confirmed = false;
     connection.send_packet(PlayerPositionS2CPacket {
         position: position.clone(),
         delta_movement: Vec3Double::new(0., 0., 0.),
         rotation: *rotation,
-        flags: Default::default(),
-        teleport_id: last_teleport.id + 1,
+        position_flags: Default::default(),
+        teleport_id: last_teleport.id,
     });
-    last_teleport.id += 1;
-    last_teleport.confirmed = false;
 }
 
 pub fn on_move(

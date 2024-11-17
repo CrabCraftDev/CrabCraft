@@ -10,5 +10,5 @@ pub struct SetPlayerPositionAndRotationC2SPacket {
     /// Position is located at player's feet
     pub position: Position,
     pub rotation: Rotation,
-    pub flags: PlayerMovementFlags,
+    pub movement_flags: PlayerMovementFlags,
 }

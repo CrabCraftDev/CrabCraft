@@ -9,5 +9,5 @@ use crate::types::position::Position;
 pub struct SetPlayerPositionC2SPacket {
     /// Position is located at player's feet
     pub position: Position,
-    pub flags: PlayerMovementFlags,
+    pub movement_flags: PlayerMovementFlags,
 }

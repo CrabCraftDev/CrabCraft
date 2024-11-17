@@ -8,5 +8,5 @@ use crate::types::position::Rotation;
 #[packet(id = 0x1E, state = Play)]
 pub struct SetPlayerRotationC2SPacket {
     pub rotation: Rotation,
-    pub flags: PlayerMovementFlags,
+    pub movement_flags: PlayerMovementFlags,
 }
