@@ -1,9 +1,15 @@
+use crate::entity::player::network::connection::PacketEvent;
+use crate::entity::player::{LastTeleport, MoveEvent};
 use crate::utils::files::FILES;
 use crate::{entity::components::name::Name, network::connection::NetworkConnection};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
-use crab_protocol::packets::play::PlayerPositionS2CPacket;
-use crab_protocol::types::position::Position;
+use crab_protocol::packets::play::{
+    ConfirmTeleportationC2SPacket, PlayerPositionS2CPacket, SetPlayerPositionAndRotationC2SPacket,
+    SetPlayerPositionC2SPacket, SetPlayerRotationC2SPacket,
+};
+use crab_protocol::types::player_movement_flags::PlayerMovementFlags;
+use crab_protocol::types::position::{Position, Rotation, Vec3Double};
 use crab_protocol::{
     packets::play::{
         ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
@@ -15,15 +21,17 @@ use crab_registry::REGISTRY;
 use crab_world::anvil::region::Region;
 use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
 use crab_world::chunks::section::{ChunkSection, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
-use evenio::event::{Receiver, TargetedEvent};
+use evenio::entity::EntityId;
+use evenio::event::{Insert, Receiver, Sender, TargetedEvent};
 use std::str::FromStr;
 use tracing::{info, warn};
 
 #[derive(TargetedEvent)]
 pub struct PlayerJoinWorldEvent;
 
-pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnection, &Name)>) {
-    let (connection, name) = receiver.query;
+#[allow(clippy::type_complexity)]
+pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnection, &Name, &Position, &Rotation)>) {
+    let (connection, name, position, rotation) = receiver.query;
 
     connection.send_packet(GameJoinS2CPacket {
         entity_id: 0,
@@ -54,9 +62,9 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         angle: 0.0,
     });
 
-    connection.send_packet(SetCenterChunkS2CPacket { x: 0, z: 0 });
-
     connection.send_packet(GameEventS2CPacket { event: 13, value: 0.0 });
+
+    connection.send_packet(SetCenterChunkS2CPacket { x: 0, z: 0 });
 
     connection.send_packet(ChunkBatchStartS2CPacket);
 
@@ -126,13 +134,58 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
     connection.send_packet(ChunkBatchFinishedS2CPacket { number_of_chunks });
 
     connection.send_packet(PlayerPositionS2CPacket {
-        teleport_id: 2137,
-        position: Position::new(100.0, 70.0, 100.0),
-        delta_movement: Position::new(0.0, 0.0, 0.0),
-        yaw: 0.0,
-        pitch: 0.0,
-        flags: Default::default(),
+        teleport_id: 0,
+        position: position.clone(),
+        delta_movement: Vec3Double::default(),
+        rotation: *rotation,
+        position_flags: Default::default(),
     });
 
     info!("{name} joined!");
+}
+
+pub fn move_packet_receiver(
+    receiver: Receiver<PacketEvent, (&mut Rotation, &mut LastTeleport, EntityId)>,
+    mut sender: Sender<(MoveEvent, Insert<PlayerMovementFlags>)>,
+) {
+    let (rot, last_teleport, entity) = receiver.query;
+
+    let state = receiver.event.protocol_state;
+    let packet = &receiver.event.packet;
+
+    if let Some(confirm_teleport) = packet.decode::<ConfirmTeleportationC2SPacket>(state) {
+        if last_teleport.id == confirm_teleport.teleport_id {
+            last_teleport.confirmed = true;
+        }
+    }
+
+    if let Some(packet) = packet.decode::<SetPlayerPositionC2SPacket>(state) {
+        sender.send_to(
+            entity,
+            MoveEvent {
+                position: packet.position,
+                rotation: *rot,
+            },
+        );
+        sender.insert(entity, packet.movement_flags)
+    };
+
+    if let Some(packet) = packet.decode::<SetPlayerPositionAndRotationC2SPacket>(state) {
+        sender.send_to(
+            entity,
+            MoveEvent {
+                position: packet.position,
+                rotation: packet.rotation,
+            },
+        );
+        rot.yaw = packet.rotation.yaw;
+        rot.pitch = packet.rotation.pitch;
+        sender.insert(entity, packet.movement_flags)
+    }
+
+    if let Some(packet) = packet.decode::<SetPlayerRotationC2SPacket>(state) {
+        rot.yaw = packet.rotation.yaw;
+        rot.pitch = packet.rotation.pitch;
+        sender.insert(entity, packet.movement_flags)
+    }
 }
