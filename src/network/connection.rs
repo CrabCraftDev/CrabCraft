@@ -1,8 +1,12 @@
-use std::{
-    sync::{Arc, Mutex},
-    time::Duration,
+use super::{
+    handlers::{handshake_handler, keep_alive_handler, login_handler, status_handler},
+    keep_alive_state::KeepAliveState,
+    packet_transformer::PacketTransformer,
 };
-
+use crate::events::asynchronous::{AsyncEvent, AsyncEventHolder};
+use crate::events::player::packet::PacketEvent;
+use crate::events::player::player_quit::{PlayerQuitEvent, PlayerQuitReason};
+use crate::utils::errors::Error;
 use chrono::Local;
 use crab_nbt::NbtTag;
 use crab_protocol::{
@@ -17,8 +21,14 @@ use crab_protocol::{
 };
 use crossbeam::sync::ShardedLock;
 use evenio::component::Component;
-use kanal::{Receiver, Sender};
+use evenio::entity::EntityId;
+use evenio::prelude::{GlobalEvent, TargetedEvent};
+use kanal::{AsyncSender, Receiver, Sender};
 use serde_json::json;
+use std::fmt::Debug;
+use std::net::IpAddr;
+use std::{panic, sync::Arc, time::Duration};
+use tokio::sync::Mutex;
 use tokio::{
     io::AsyncWriteExt,
     net::{
@@ -30,46 +40,38 @@ use tokio::{
 };
 use tracing::{error, warn};
 
-use crate::{entity::player::network::incoming_connection::IncomingConnection, utils::errors::Error};
-
-use super::{
-    handlers::{handshake_handler, keep_alive_handler, login_handler, status_handler},
-    keep_alive_state::KeepAliveState,
-    packet_transformer::PacketTransformer,
-};
-
 const KEEPALIVE_INTERVAL: Duration = Duration::from_millis(15_000);
 
 /// Represents a network connection between player and the server.
 /// Used to send packets, receive and manage connection
 #[derive(Debug, Clone, Component)]
 pub struct NetworkConnection {
+    pub ip_address: IpAddr,
+    pub entity_id: Arc<ShardedLock<Option<EntityId>>>,
+    /// State is accessed from the main thread and connection thread
     pub state: Arc<ShardedLock<ProtocolState>>,
     pub keep_alive_state: Arc<Mutex<KeepAliveState>>,
     pub transformer: PacketTransformer,
-    pub incoming_connection_sender: Sender<IncomingConnection>,
+    pub event_sender: AsyncSender<AsyncEventHolder>,
     pub outgoing_packets_sender: Sender<RawPacket>,
     pub outgoing_packets_receiver: Receiver<RawPacket>,
-    pub incoming_packets_sender: Sender<RawPacket>,
-    pub incoming_packets_receiver: Receiver<RawPacket>,
     prefix: Arc<ShardedLock<String>>,
 }
 
 impl NetworkConnection {
-    pub fn new(incoming_connection_sender: Sender<IncomingConnection>) -> Self {
+    pub fn new(event_sender: AsyncSender<AsyncEventHolder>, ip_address: IpAddr) -> Self {
         let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
-        let (incoming_packets_sender, incoming_packets_receiver) = kanal::unbounded::<RawPacket>();
 
         NetworkConnection {
+            ip_address,
+            entity_id: Arc::new(ShardedLock::default()),
             state: Arc::new(ShardedLock::new(ProtocolState::Handshake)),
             keep_alive_state: Arc::new(Mutex::new(KeepAliveState::default())),
             transformer: PacketTransformer::new(),
-            incoming_connection_sender,
+            event_sender,
             outgoing_packets_sender,
             outgoing_packets_receiver,
-            incoming_packets_sender,
-            incoming_packets_receiver,
-            prefix: Arc::new("Unknown player's connection: ".to_owned().into()),
+            prefix: Arc::new(format!("{ip_address} connection: ").to_owned().into()),
         }
     }
 
@@ -99,7 +101,11 @@ impl NetworkConnection {
             error!("{}thread completed with error: {:?}", self.prefix(), err);
         }
 
-        self.close();
+        if !self.is_closed() {
+            self.send_target_event(PlayerQuitEvent::new(PlayerQuitReason::Disconnected))
+                .unwrap();
+            self.close();
+        }
     }
 
     async fn writer(connection: NetworkConnection, mut read_half: OwnedWriteHalf, transformer: PacketTransformer) {
@@ -124,23 +130,24 @@ impl NetworkConnection {
     }
 
     async fn reader(connection: NetworkConnection, mut read_half: OwnedReadHalf, mut transformer: PacketTransformer) {
-        loop {
-            if connection.is_closed() {
-                break;
-            }
+        while !connection.is_closed() {
             let packet = match NetworkConnection::next_packet(&mut read_half, &mut transformer).await {
                 Ok(Some(packet)) => packet,
-                Ok(None) => {
-                    connection.close();
-                    break;
-                }
-                Err(err) => {
-                    warn!("{}Error decoding packet {err:?}!", connection.prefix());
+                Ok(None) => break,
+                Err(error) => {
+                    warn!("{}Error decoding packet {error:?}!", connection.prefix());
                     connection.disconnect("Invalid packet received!".to_owned());
                     break;
                 }
             };
-            connection.process_packet(packet).await;
+
+            let process_packet_result = connection.process_packet(packet).await;
+            if let Err(error) = process_packet_result {
+                panic!(
+                    "{}Unexpected error while handling packet {error:?}!",
+                    connection.prefix()
+                );
+            }
         }
     }
 
@@ -154,9 +161,7 @@ impl NetworkConnection {
 
             let current_time;
             {
-                let Ok(mut keep_alive_state) = self.keep_alive_state.lock() else {
-                    continue;
-                };
+                let mut keep_alive_state = self.keep_alive_state.lock().await;
 
                 if keep_alive_state.keep_alive_pending {
                     self.disconnect("Timeout!".to_owned());
@@ -184,23 +189,24 @@ impl NetworkConnection {
             .transpose()?)
     }
 
-    pub async fn process_packet(&self, raw_packet: RawPacket) {
+    pub async fn process_packet(&self, raw_packet: RawPacket) -> Result<(), Error> {
         let state = self.get_state();
         match state {
-            ProtocolState::Status => status_handler::handle_packet(self, raw_packet),
-            ProtocolState::Handshake => handshake_handler::handle_packet(self, raw_packet),
-            ProtocolState::Login => login_handler::handle_packet(self, raw_packet),
+            ProtocolState::Status => status_handler::handle_packet(self, raw_packet).await,
+            ProtocolState::Handshake => handshake_handler::handle_packet(self, raw_packet).await,
+            ProtocolState::Login => login_handler::handle_packet(self, raw_packet).await?,
             ProtocolState::Configuration | ProtocolState::Play => {
                 if let Some(keep_alive_packet) = raw_packet.decode::<KeepAliveResponseC2SPacket>(state) {
-                    keep_alive_handler::handle_packet(self, keep_alive_packet);
-                } else if self.incoming_packets_sender.send(raw_packet).is_err() {
-                    warn!(
-                        "{}Tried to send received packet to main while channel already closed",
-                        self.prefix()
-                    )
+                    keep_alive_handler::handle_packet(self, keep_alive_packet).await;
+                } else {
+                    self.send_target_event(PacketEvent {
+                        packet: raw_packet,
+                        protocol_state: self.get_state(),
+                    })?;
                 }
             }
         };
+        Ok(())
     }
 
     pub fn send_packet<P: Packet>(&self, packet: P) {
@@ -216,33 +222,39 @@ impl NetworkConnection {
         };
     }
 
-    pub fn disconnect(&self, reason: String) {
+    pub fn disconnect(&self, message: String) {
+        self.disconnect_with_reason(message, PlayerQuitReason::Kicked);
+    }
+
+    pub fn disconnect_with_reason(&self, message: String, reason_type: PlayerQuitReason) {
         if self.is_closed() {
             warn!("Called disconnect() on a closed connection");
             return;
         }
+
+        self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
         match self.get_state() {
             ProtocolState::Configuration | ProtocolState::Play => {
                 self.send_packet(DisconnectS2CPacket {
-                    reason: NbtTag::String(reason.clone()).into(),
+                    reason: NbtTag::String(message.clone()).into(),
                 });
             }
             ProtocolState::Login => {
                 self.send_packet(LoginDisconnectS2CPacket {
-                    reason: json!({"text": reason}).to_string().into(),
+                    reason: json!({"text": message}).to_string().into(),
                 });
             }
             _ => {}
         }
+
         self.close();
     }
 
     pub fn is_closed(&self) -> bool {
-        self.incoming_packets_sender.is_closed() || self.outgoing_packets_sender.is_closed()
+        self.outgoing_packets_sender.is_closed()
     }
 
-    fn close(&self) {
-        self.incoming_packets_sender.close();
+    pub fn close(&self) {
         self.outgoing_packets_sender.close();
     }
 
@@ -260,5 +272,24 @@ impl NetworkConnection {
 
     pub fn set_prefix(&self, player_name: &str) {
         *self.prefix.write().unwrap() = format!("{player_name}'s connection: ")
+    }
+
+    pub fn send_event<E: GlobalEvent + TryFrom<AsyncEvent> + Into<AsyncEvent>>(&self, event: E) -> Result<(), Error> {
+        AsyncEvent::send_event(event, &self.event_sender)
+    }
+
+    pub fn send_target_event<E: TargetedEvent + Debug + TryFrom<AsyncEvent> + Into<AsyncEvent>>(
+        &self,
+        event: E,
+    ) -> Result<(), Error> {
+        let id = *self.entity_id.clone().read().unwrap();
+        AsyncEvent::send_target_event(event, &self.event_sender, id)
+    }
+
+    pub async fn send_event_with_response<E: GlobalEvent + Debug + TryFrom<AsyncEvent> + Into<AsyncEvent>>(
+        &self,
+        event: E,
+    ) -> Result<E, Error> {
+        AsyncEvent::send_event_with_response(event, &self.event_sender).await
     }
 }
