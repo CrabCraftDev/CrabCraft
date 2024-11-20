@@ -1,6 +1,7 @@
 use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
 use crab_world::error::WorldError;
+use kanal::{OneshotReceiveError, SendError};
 use std::{any::Any, io};
 use thiserror::Error;
 use tracing::error;
@@ -19,6 +20,14 @@ pub enum Error {
     InvalidNbt(#[from] CrabNbtError),
     #[error(transparent)]
     World(#[from] WorldError),
+
+    #[error(transparent)]
+    SendChannel(#[from] SendError),
+    #[error(transparent)]
+    OneshotReceive(#[from] OneshotReceiveError),
+
+    #[error("Invalid async event type")]
+    InvalidAsyncEventType,
 }
 
 pub fn print_panic(panic: Box<dyn Any + Send + 'static>) {
