@@ -29,7 +29,7 @@ impl BitStorage {
         };
 
         let numbers_in_long = this.amount_of_values_in_long();
-        let needed_numbers = (amount_of_entries + numbers_in_long - 1) / numbers_in_long;
+        let needed_numbers = amount_of_entries.div_ceil(numbers_in_long);
         this.data = vec![0i64; needed_numbers];
         this
     }
