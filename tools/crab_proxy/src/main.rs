@@ -30,7 +30,7 @@ struct Args {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let args_arc = Arc::new(args);
-    println!("CrabCraft proxy started...");
+    println!("CrabProxy has started...");
 
     let proxy_server = TcpListener::bind(&args_arc.listen_ip).await?;
 
