@@ -334,14 +334,14 @@ dependencies = [
 
 [[package]]
 name = "crab_nbt"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2ad4dda301b7fd07bcb6aebf34245e83fd586bbc6d8057e676ea2017302ca04"
+checksum = "760e4de0b3bc54188041c8d00cd4c70fc51149fd48c3e5356766880963ced2a2"
 dependencies = [
  "bytes",
  "cesu8",
  "derive_more",
- "thiserror 1.0.69",
+ "thiserror 2.0.3",
 ]
 
 [[package]]
@@ -370,6 +370,9 @@ dependencies = [
  "clap",
  "crab_protocol",
  "tokio",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -750,9 +753,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.6.0"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "707907fe3c25f5424cce2cb7e1cbcafee6bdbe735ca90ef77c29e84591e5b9da"
+checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.2",

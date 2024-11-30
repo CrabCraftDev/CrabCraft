@@ -32,6 +32,11 @@ flate2 = { version = "1.0.35", features = ["zlib"] }
 # Dev dependencies
 criterion = { version = "0.5.1", features = ["html_reports"] }
 
+# Tracing
+tracing = { version = "0.1.41", features = ["attributes"] }
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tracing-appender = "0.2.3"
+
 # Code generation, macros etc.
 quote = "1.0.37"
 syn = "2.0.90"
@@ -57,9 +62,9 @@ crossbeam = "0.8.4"
 kanal = "0.1.0-pre8"
 lazy_static = "1.5.0"
 futures = { version = "0.3.31", default-features = false, features = ["std"] }
-tracing = { version = "0.1.41", features = ["attributes"] }
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-tracing-appender = "0.2.3"
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender.workspace = true
 
 crab_protocol = { path = "crates/crab_protocol" }
 crab_registry = { path = "crates/crab_registry" }
