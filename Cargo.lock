@@ -363,6 +363,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "crab_proxy"
+version = "0.2.0"
+dependencies = [
+ "bytes",
+ "clap",
+ "crab_protocol",
+ "tokio",
+]
+
+[[package]]
 name = "crab_registry"
 version = "0.0.5"
 dependencies = [
@@ -394,17 +404,6 @@ dependencies = [
  "serde_json",
  "strum",
  "thiserror 2.0.3",
-]
-
-[[package]]
-name = "crabcraft-proxy"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "clap",
- "crab_protocol",
- "tokio",
- "uuid",
 ]
 
 [[package]]
