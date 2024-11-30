@@ -2,13 +2,13 @@ use std::sync::Arc;
 
 use bytes::BytesMut;
 use clap::Parser;
+use crab_protocol::buf::{packet_from_stream, ReadByteBuf, WriteByteBuf};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::{
     net::{TcpListener, TcpStream},
     select,
 };
-
-use crab_protocol::buf::{packet_from_stream, ReadByteBuf, WriteByteBuf};
+use tracing::info;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -28,14 +28,22 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
-    let args_arc = Arc::new(args);
-    println!("CrabProxy has started...");
+    let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
+    tracing_subscriber::fmt()
+        .with_writer(non_blocking)
+        .with_target(false)
+        .init();
 
-    let proxy_server = TcpListener::bind(&args_arc.listen_ip).await?;
+    let args = Arc::new(Args::parse());
+
+    info!("Starting CrabProxy...");
+    info!("Listening on {}", args.listen_ip);
+    info!("Forwarding to {}", args.target_server_ip);
+
+    let proxy_server = TcpListener::bind(&args.listen_ip).await?;
 
     while let Ok((client, _)) = proxy_server.accept().await {
-        let args_clone = Arc::clone(&args_arc);
+        let args_clone = Arc::clone(&args);
         tokio::spawn(async move {
             handle_client_connection(client, args_clone).await.unwrap();
         });
@@ -48,7 +56,7 @@ async fn handle_client_connection(
     mut client_conn: TcpStream,
     args: Arc<Args>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    println!("Connection established!");
+    info!("Connection established");
 
     let mut main_server_conn = TcpStream::connect(&args.target_server_ip).await?;
     let (mut client_recv, mut client_send) = client_conn.split();
@@ -70,7 +78,7 @@ async fn handle_client_connection(
         _ = handle_s2c => {}
     }
 
-    println!("Connection closed!");
+    info!("Connection closed");
     Ok(())
 }
 
@@ -83,9 +91,9 @@ async fn transfer_data(
     while let Ok(Some(buffer)) = packet_from_stream(receiver).await {
         let id = buffer.clone().get_var_int().unwrap();
         if buffer.len() >= args.maximum_packet_print_size as usize {
-            println!("[{direction}] {id:X}: Packet is too big to be printed!");
+            info!("[{direction}] {id:X}: Packet is too big to be printed!");
         } else {
-            println!("[{direction}] {id:X}: {buffer:?}");
+            info!("[{direction}] {id:X}: {buffer:?}");
         }
 
         let mut full_packet = BytesMut::new();
