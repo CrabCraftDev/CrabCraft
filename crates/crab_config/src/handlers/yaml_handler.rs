@@ -113,7 +113,7 @@ impl ConfigFormatHandler for YamlHandler {
 
         let read_result = serde_yml::from_reader::<File, Value>(file);
 
-        return match read_result {
+        match read_result {
             Ok(result) => {
                 if !result.is_mapping() {
                     return Err(Error::UndefinedBehavior);
@@ -123,7 +123,7 @@ impl ConfigFormatHandler for YamlHandler {
                 Self::map_values_to_configuration_entry(mapping)
             }
             Err(error) => Err(Serde(error)),
-        };
+        }
     }
 
     fn write(&self, file_path: String, contents: ConfigurationEntry) -> Result<(), Error> {
