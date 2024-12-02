@@ -23,7 +23,7 @@ impl Chunk {
     }
 
     /// Serializes the section to format used in [Chunk Data packet](crab_protocol::packets::play::ChunkDataAndUpdateLightS2CPacket).
-    /// For more information about the format, see [wiki.vg/Chunk_Format](https://wiki.vg/Chunk_Format).
+    /// For more information about the format, see [Minecraft Wiki](https://minecraft.wiki/w/Chunk_format).
     pub fn serialize_to_mc_format(&mut self, chunk: &mut BytesMut) -> Result<(), WorldError> {
         for section in &mut self.sections {
             section.serialize_to_mc_format(chunk)?;
@@ -40,7 +40,7 @@ impl Chunk {
         NbtTag::LongArray(encoded_heightmap.data)
     }
 
-    /// Calculates the [heightmap](https://wiki.vg/Chunk_Format#Heightmaps_structure) of the chunk.
+    /// Calculates the [heightmap](https://web.archive.org/web/20241129083318/https://wiki.vg/Chunk_Format#Heightmaps_structure) of the chunk.
     /// The world surface heightmap is a 16×16 array of u16 data, where each value represents the height of the highest non-air block at that position.
     pub fn get_world_surface_height_map(&self) -> Vec<u16> {
         let mut heightmap = vec![0; 16 * 16];

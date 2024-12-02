@@ -24,7 +24,7 @@ impl BlockPosition {
     }
 }
 
-/// [Position](https://wiki.vg/Protocol#Position) protocol type
+/// Position protocol type is a 64-bit value split into 3 signed integer parts
 /// X as a 26-bit integer, followed by z as a 26-bit integer, followed by y as a 12-bit integer (all signed, two's complement).
 impl ProtocolSerializer for BlockPosition {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
