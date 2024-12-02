@@ -10,7 +10,7 @@ use nohash_hasher::IntMap;
 ///
 /// In Minecraft, palettes are used to store block and biome data within chunks.
 ///
-/// Minecraft utilizes three [types of palettes](https://wiki.vg/Chunk_Format#Palette_formats):
+/// Minecraft utilizes three [types of palettes](https://web.archive.org/web/20241129083318/https://wiki.vg/Chunk_Format#Palette_formats):
 /// - **Direct**: Stores IDs for all elements directly.
 /// - **Indirect**: Maps IDs to unique data in the palette for efficient storage.
 /// - **Single valued**: Stores a single value for all elements in the palette.

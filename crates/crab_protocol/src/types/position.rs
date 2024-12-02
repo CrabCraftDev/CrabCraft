@@ -54,8 +54,6 @@ const VELOCITY_PROTOCOL_MULTIPLIER: f64 = 8000.;
 
 /// > Velocity is in units of 1/8000 of a block per server tick (50ms normal);
 /// > for example, -1343 would move (-1343 / 8000) = −0.167875 blocks per tick (or −3.3575 blocks per second).
-///
-/// Description taken from https://wiki.vg/Protocol#Set_Entity_Velocity
 impl ProtocolSerializer for Velocity {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         let vec = &self.0;
