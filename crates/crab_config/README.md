@@ -41,8 +41,8 @@ fn main() {
     );
 }
 ```
-Why use proxies?  
-Proxies will allow to modify current configs on the server to newer format and therefore will allow to load different typed configs into server whilst converting them
+Why use processors?  
+processors will allow to modify current configs on the server to newer format and therefore will allow to load different typed configs into server whilst converting them
 
 Using Configs is fairly simple all you need to do is to use `Configurable` struct like in the following  
 Example:
@@ -92,7 +92,7 @@ fn main() {
     
     let my_config = configurable
         // Will read config and verify 
-        // it's latest version converting it using proxies
+        // it's latest version converting it using processors
         .read_config_and_verify(vec![
             example_processor 
         ]);

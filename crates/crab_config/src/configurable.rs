@@ -32,10 +32,10 @@ impl<T: Config> Configurable<T> {
         }
     }
 
-    pub fn read_and_save_default_if_config_doesnt_exists(&self, proxies: Vec<Processor>) -> Result<T, Error> {
+    pub fn read_and_save_default_if_config_doesnt_exists(&self, processors: Vec<Processor>) -> Result<T, Error> {
         let config_path = self.config_file_path.clone();
         if Path::new(&config_path).exists() {
-            return self.read_config_and_verify(proxies);
+            return self.read_config_and_verify(processors);
         }
         let default_config = T::default();
 
@@ -54,15 +54,20 @@ impl<T: Config> Configurable<T> {
         }
     }
 
-    pub fn read_config_and_verify(&self, proxies: Vec<Processor>) -> Result<T, Error> {
+    pub fn read_config_and_verify(&self, processors: Vec<Processor>) -> Result<T, Error> {
         let maybe_unverified_config = self.read_config();
 
         match maybe_unverified_config {
-            Ok(entry) => self.verify_config(&mut entry.clone(), proxies),
+            Ok(entry) => self.verify_config(&mut entry.clone(), processors),
             Err(error) => Err(error),
         }
     }
-    fn verify_config(&self, configuration_entry: &mut ConfigurationEntry, proxies: Vec<Processor>) -> Result<T, Error> {
+
+    fn verify_config(
+        &self,
+        configuration_entry: &mut ConfigurationEntry,
+        processors: Vec<Processor>,
+    ) -> Result<T, Error> {
         // !IMPORTANT
         // There's no physical way to know where the config_version is so we just assume it's
         // going to be in root node if it ain't there we just panic
@@ -77,7 +82,7 @@ impl<T: Config> Configurable<T> {
             .map_err(|_| Error::InvalidConfigVersion)?;
 
         let modified_result =
-            Self::apply_changelogs_to_configuration_entry(configuration_entry, config_version, proxies);
+            Self::apply_changelogs_to_configuration_entry(configuration_entry, config_version, processors);
 
         modified_result.map(|modified_configuration_entry| T::map(modified_configuration_entry.clone()))
     }
@@ -113,11 +118,11 @@ impl<T: Config> Configurable<T> {
     fn apply_changelogs_to_configuration_entry(
         mut configuration_entry: &mut ConfigurationEntry,
         config_version: u32,
-        proxies: Vec<Processor>,
+        processors: Vec<Processor>,
     ) -> Result<&ConfigurationEntry, Error> {
         let mut changelog_version_to_processor: HashMap<u32, Processor> = HashMap::new();
 
-        for processor in proxies {
+        for processor in processors {
             if processor.get_config_applied_version() < config_version {
                 continue;
             }
