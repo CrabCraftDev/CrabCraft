@@ -1,12 +1,13 @@
-use super::{connection::PacketEvent, play_handler::PlayerJoinWorldEvent};
+use crate::events::player::packet::PacketEvent;
+use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::{
     mc_server::COMPATIBLE_SERVER_VERSIONS, network::connection::NetworkConnection, DISCORD_INVITE_URL,
     GITHUB_ISSUES_URL,
 };
 use bytes::BytesMut;
 use crab_protocol::packets::common::{
-    ClientInformationC2SPacket, KnownServerLinkType, PluginMessageS2CPacket, ReportDetail, ReportDetailsS2CPacket,
-    ServerLink, ServerLinksS2CPacket, Tag, UpdateTagsS2CPacket,
+    ClientInformation, ClientInformationC2SPacket, KnownServerLinkType, PluginMessageS2CPacket, ReportDetail,
+    ReportDetailsS2CPacket, ServerLink, ServerLinksS2CPacket, Tag, UpdateTagsS2CPacket,
 };
 use crab_protocol::packets::configuration::RegistryDataEntry;
 use crab_protocol::types::namespaced_key::MINECRAFT_NAMESPACE;
@@ -20,6 +21,7 @@ use crab_protocol::{
     types::{known_pack::KnownPack, namespaced_key::NamespacedKey},
 };
 use crab_registry::REGISTRY;
+use evenio::event::Insert;
 use evenio::{
     entity::EntityId,
     event::{Receiver, Sender},
@@ -28,7 +30,7 @@ use std::collections::HashMap;
 
 pub fn configuration_packets(
     receiver: Receiver<PacketEvent, (EntityId, &NetworkConnection)>,
-    mut world_join_sender: Sender<PlayerJoinWorldEvent>,
+    sender: Sender<(PlayerJoinWorldEvent, Insert<ClientInformation>)>,
 ) {
     let (entity, connection) = receiver.query;
     let PacketEvent {
@@ -39,7 +41,9 @@ pub fn configuration_packets(
         return;
     }
 
-    if let Some(_packet) = packet.decode::<ClientInformationC2SPacket>(*state) {
+    if let Some(packet) = packet.decode::<ClientInformationC2SPacket>(*state) {
+        sender.insert(entity, packet as ClientInformation);
+
         let crabcraft_version = env!("CARGO_PKG_VERSION");
         connection.send_packet(ReportDetailsS2CPacket {
             details: vec![ReportDetail {
@@ -136,6 +140,6 @@ pub fn configuration_packets(
 
     if let Some(_packet) = packet.decode::<AcknowledgeFinishConfigurationC2SPacket>(*state) {
         connection.set_state(ProtocolState::Play);
-        world_join_sender.send_to(entity, PlayerJoinWorldEvent);
+        sender.send_to(entity, PlayerJoinWorldEvent);
     }
 }

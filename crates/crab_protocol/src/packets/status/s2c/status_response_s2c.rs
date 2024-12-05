@@ -1,6 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 use crab_macros::{Packet, ProtocolSerializer};
+use serde::{Deserialize, Serialize};
 
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
@@ -52,5 +51,5 @@ pub struct PlayersInfo {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PlayerSample {
     pub name: String,
-    pub id: String,
+    pub uuid: String,
 }

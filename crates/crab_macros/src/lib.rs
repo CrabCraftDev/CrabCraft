@@ -2,6 +2,7 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 
+mod core;
 mod protocol;
 mod world;
 
@@ -112,6 +113,28 @@ pub fn derive_packet(item: TokenStream) -> TokenStream {
 #[proc_macro_derive(BlockData)]
 pub fn derive_block_property(item: TokenStream) -> TokenStream {
     match world::block_property_derive::derive_block_property_impl(item.into()) {
+        Ok(tokens) => tokens.into(),
+        Err(e) => e.into_compile_error().into(),
+    }
+}
+
+/// Derives an implementation of `TryFrom<AsyncEvent>` for the annotated type.
+///
+/// This macro allows converting an `AsyncEvent` into the annotated struct or enum,
+/// provided the `AsyncEvent` contains a matching variant.
+///
+/// The matching variant is determined by stripping the `Event` suffix from the annotated type's name.
+///
+/// # Example
+/// ```ignore
+/// use crab_macros::AsyncEvent;
+///
+/// #[derive(AsyncEvent)]
+/// struct MyEvent;
+/// ```
+#[proc_macro_derive(AsyncEvent)]
+pub fn async_event(item: TokenStream) -> TokenStream {
+    match core::async_event::async_event_impl(item.into()) {
         Ok(tokens) => tokens.into(),
         Err(e) => e.into_compile_error().into(),
     }

@@ -11,11 +11,12 @@ use utils::{errors::print_error_report_instructions, log};
 use crate::mc_server::McServer;
 use crate::utils::files::FILES;
 
-mod entity;
+mod components;
+mod events;
+mod handlers;
 mod mc_server;
 mod network;
 mod utils;
-mod world;
 
 pub const GITHUB_ISSUES_URL: &str = "https://github.com/CrabCraftDev/CrabCraft/issues/new/choose";
 pub const DISCORD_INVITE_URL: &str = "https://discord.gg/XZKprmznqP";

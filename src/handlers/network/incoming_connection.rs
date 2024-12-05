@@ -1,28 +1,30 @@
 use crate::components::player::{LastTeleport, Player};
-use crate::components::{name::Name, uuid::Uuid};
-use crate::events::global::incoming_connection::IncomingConnection;
-use crate::events::player::player_pre_login::PlayerPreLoginEvent;
-use crate::events::player::player_pre_login::PlayerPreLoginStatus::KickAnotherLocation;
+use crate::components::{name::Name, uuid::UuidComponent};
+use crate::events::player::player_login::{PlayerLoginEvent, PlayerLoginStatus};
 use crate::network::connection::NetworkConnection;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double, Velocity};
 use evenio::{
-    event::{EventMut, ReceiverMut, Sender, Spawn},
+    event::{Receiver, ReceiverMut, Sender, Spawn},
     fetch::Fetcher,
 };
 use std::sync::Arc;
 
-pub fn on_pre_login_event(mut receiver: ReceiverMut<PlayerPreLoginEvent>, fetcher: Fetcher<(&Player, &Name, &Uuid)>) {
+pub fn player_login_checks(
+    mut receiver: ReceiverMut<PlayerLoginEvent>,
+    fetcher: Fetcher<(&Player, &Name, &UuidComponent)>,
+) {
     if fetcher
         .iter()
         .any(|(_, name, uuid)| name.0 == receiver.event.username() || uuid.0 == receiver.event.uuid())
     {
-        receiver.event.status = KickAnotherLocation;
+        receiver.event.status =
+            PlayerLoginStatus::Disallowed("You are already logged in from another location".to_string());
     }
 }
 
 #[allow(clippy::type_complexity)]
-pub fn on_incoming_connection(
-    receiver: ReceiverMut<IncomingConnection>,
+pub fn on_player_login_event(
+    receiver: Receiver<PlayerLoginEvent>,
     sender: Sender<
         Spawn<(
             Name,
@@ -30,29 +32,29 @@ pub fn on_incoming_connection(
             Player,
             Position,
             Rotation,
-            Uuid,
+            UuidComponent,
             Velocity,
             LastTeleport,
         )>,
     >,
 ) {
-    let IncomingConnection {
-        connection,
-        player_name,
-        player_uuid,
-    } = EventMut::take(receiver.event);
+    let event = receiver.event;
 
-    let entity_id = Arc::clone(&connection.entity_id);
+    if let PlayerLoginStatus::Disallowed(status) = &event.status {
+        event.connection.disconnect(status.clone());
+        return;
+    }
+
+    let entity_id = Arc::clone(&event.connection.entity_id);
     let id = sender.spawn((
-        Name(player_name),
-        connection,
+        Name(event.username().to_string()),
+        event.connection.clone(),
         Player,
         Position::new(100.0, 70.0, 100.0),
         Rotation::default(),
-        Uuid(player_uuid),
+        UuidComponent(event.uuid()),
         Velocity(Vec3Double::default()),
         LastTeleport::default(),
     ));
-    let mut lock = entity_id.write().unwrap();
-    *lock = Some(id);
+    *entity_id.write().unwrap() = Some(id);
 }
