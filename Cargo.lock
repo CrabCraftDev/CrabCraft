@@ -299,6 +299,7 @@ dependencies = [
  "bytes",
  "cargo-husky",
  "chrono",
+ "crab_macros",
  "crab_nbt",
  "crab_protocol",
  "crab_registry",
@@ -312,6 +313,7 @@ dependencies = [
  "lazy_static",
  "nohash-hasher",
  "nu-ansi-term 0.50.1",
+ "parking_lot",
  "serde",
  "serde_json",
  "supports-color",
@@ -560,8 +562,7 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 [[package]]
 name = "evenio"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ead7361e14542019e9f883d2022399ef419ac240085b29ed23715f7746094e78"
+source = "git+https://github.com/CrabCraftDev/CrabEvenio.git?rev=8c9fc59#8c9fc595a776a9187c355db78e02600de36962a6"
 dependencies = [
  "ahash",
  "bumpalo",
@@ -574,8 +575,7 @@ dependencies = [
 [[package]]
 name = "evenio_macros"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5aa8c1192efdb4d5734fbdb3cbab6f018807c335eb52b01b3d1b964467cf0097"
+source = "git+https://github.com/CrabCraftDev/CrabEvenio.git?rev=8c9fc59#8c9fc595a776a9187c355db78e02600de36962a6"
 dependencies = [
  "proc-macro2",
  "quote",

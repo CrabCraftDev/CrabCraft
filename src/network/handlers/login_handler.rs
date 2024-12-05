@@ -1,24 +1,64 @@
-use crab_protocol::packets::login::{LoginAcknowledgedC2SPacket, LoginStartC2SPacket};
-use crab_protocol::protocol_state::ProtocolState;
+use crab_protocol::packets::login::{LoginAcknowledgedC2SPacket, LoginFinishedS2CPacket, LoginStartC2SPacket};
 use crab_protocol::raw_packet::RawPacket;
 
-use crate::{entity::player::network::incoming_connection::IncomingConnection, network::connection::NetworkConnection};
+use crate::events::player::player_login::{PlayerLoginEvent, PlayerLoginStatus};
+use crate::events::player::player_pre_login::{PlayerPreLoginEvent, PlayerPreLoginStatus};
+use crate::network::connection::NetworkConnection;
+use crate::utils::errors::Error;
+use crab_protocol::protocol_state::ProtocolState;
 
-pub fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) {
+pub async fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) -> Result<(), Error> {
     let state = connection.get_state();
     if let Some(packet) = raw_packet.decode::<LoginStartC2SPacket>(state) {
-        // Note: Login success packet is sent from the main thread, so that we can check for duplicate player names
-        connection
-            .incoming_connection_sender
-            .send(IncomingConnection {
-                connection: connection.clone(),
-                player_name: packet.username,
-                player_uuid: packet.player_uuid,
-            })
-            .unwrap();
+        connection.set_prefix(&packet.username);
+
+        let event = connection
+            .send_event_with_response(PlayerPreLoginEvent::new(
+                packet.username.to_string(),
+                connection.ip_address,
+                packet.player_uuid,
+            ))
+            .await?;
+
+        match event.status {
+            PlayerPreLoginStatus::Allowed => {
+                let event = connection
+                    .send_event_with_response(PlayerLoginEvent::new(
+                        packet.username.clone(),
+                        packet.player_uuid,
+                        connection.clone(),
+                    ))
+                    .await?;
+
+                if let PlayerLoginStatus::Disallowed(_) = event.status {
+                    return Ok(());
+                }
+
+                connection.send_packet(LoginFinishedS2CPacket {
+                    uuid: event.uuid(),
+                    username: event.username().to_string(),
+                    properties: Vec::new(),
+                });
+            }
+            PlayerPreLoginStatus::KickBanned => {
+                connection.disconnect("You are banned from this server".to_string());
+            }
+            PlayerPreLoginStatus::KickFull => {
+                connection.disconnect("The server is full".to_string());
+            }
+            PlayerPreLoginStatus::KickWhitelist => {
+                connection.disconnect("You are not whitelisted on this server".to_string());
+            }
+            PlayerPreLoginStatus::KickOther(_) => {
+                // TODO: Waiting for text components for proper implementation
+                connection.disconnect("Other kick reason".to_string());
+            }
+        }
     }
 
     if let Some(_packet) = raw_packet.decode::<LoginAcknowledgedC2SPacket>(state) {
         connection.set_state(ProtocolState::Configuration);
     }
+
+    Ok(())
 }

@@ -24,11 +24,11 @@ use evenio::component::Component;
 use evenio::entity::EntityId;
 use evenio::prelude::{GlobalEvent, TargetedEvent};
 use kanal::{AsyncSender, Receiver, Sender};
+use parking_lot::Mutex;
 use serde_json::json;
 use std::fmt::Debug;
 use std::net::IpAddr;
 use std::{panic, sync::Arc, time::Duration};
-use tokio::sync::Mutex;
 use tokio::{
     io::AsyncWriteExt,
     net::{
@@ -52,14 +52,14 @@ pub struct NetworkConnection {
     pub state: Arc<ShardedLock<ProtocolState>>,
     pub keep_alive_state: Arc<Mutex<KeepAliveState>>,
     pub transformer: PacketTransformer,
-    pub event_sender: AsyncSender<AsyncEventHolder>,
     pub outgoing_packets_sender: Sender<RawPacket>,
     pub outgoing_packets_receiver: Receiver<RawPacket>,
+    pub event_sender: AsyncSender<AsyncEventHolder>,
     prefix: Arc<ShardedLock<String>>,
 }
 
 impl NetworkConnection {
-    pub fn new(event_sender: AsyncSender<AsyncEventHolder>, ip_address: IpAddr) -> Self {
+    pub fn new(ip_address: IpAddr, event_sender: AsyncSender<AsyncEventHolder>) -> Self {
         let (outgoing_packets_sender, outgoing_packets_receiver) = kanal::unbounded::<RawPacket>();
 
         NetworkConnection {
@@ -161,7 +161,7 @@ impl NetworkConnection {
 
             let current_time;
             {
-                let mut keep_alive_state = self.keep_alive_state.lock().await;
+                let mut keep_alive_state = self.keep_alive_state.lock();
 
                 if keep_alive_state.keep_alive_pending {
                     self.disconnect("Timeout!".to_owned());
@@ -193,7 +193,7 @@ impl NetworkConnection {
         let state = self.get_state();
         match state {
             ProtocolState::Status => status_handler::handle_packet(self, raw_packet).await,
-            ProtocolState::Handshake => handshake_handler::handle_packet(self, raw_packet).await,
+            ProtocolState::Handshake => handshake_handler::handle_packet(self, raw_packet),
             ProtocolState::Login => login_handler::handle_packet(self, raw_packet).await?,
             ProtocolState::Configuration | ProtocolState::Play => {
                 if let Some(keep_alive_packet) = raw_packet.decode::<KeepAliveResponseC2SPacket>(state) {
@@ -232,11 +232,15 @@ impl NetworkConnection {
             return;
         }
 
-        self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
+        // Don't send event if there is no entity spawned in ECS
+        if self.entity_id.read().unwrap().is_some() {
+            self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
+        }
+
         match self.get_state() {
             ProtocolState::Configuration | ProtocolState::Play => {
                 self.send_packet(DisconnectS2CPacket {
-                    reason: NbtTag::String(message.clone()).into(),
+                    reason: NbtTag::String(message).into(),
                 });
             }
             ProtocolState::Login => {
@@ -274,7 +278,10 @@ impl NetworkConnection {
         *self.prefix.write().unwrap() = format!("{player_name}'s connection: ")
     }
 
+    #[allow(unused)]
     pub fn send_event<E: GlobalEvent + TryFrom<AsyncEvent> + Into<AsyncEvent>>(&self, event: E) -> Result<(), Error> {
+        debug_assert!(!self.is_closed(), "Tried to send event on closed connection");
+
         AsyncEvent::send_event(event, &self.event_sender)
     }
 
@@ -282,6 +289,8 @@ impl NetworkConnection {
         &self,
         event: E,
     ) -> Result<(), Error> {
+        debug_assert!(!self.is_closed(), "Tried to send target event on closed connection");
+
         let id = *self.entity_id.clone().read().unwrap();
         AsyncEvent::send_target_event(event, &self.event_sender, id)
     }
@@ -290,6 +299,11 @@ impl NetworkConnection {
         &self,
         event: E,
     ) -> Result<E, Error> {
+        debug_assert!(
+            !self.is_closed(),
+            "Tried to send event with response on closed connection"
+        );
+
         AsyncEvent::send_event_with_response(event, &self.event_sender).await
     }
 }

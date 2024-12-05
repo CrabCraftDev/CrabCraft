@@ -1,4 +1,5 @@
 use bitfield_struct::bitfield;
+use evenio::component::Component;
 use strum::FromRepr;
 
 use crab_macros::ProtocolSerializer;
@@ -7,8 +8,8 @@ use crate::packet::Packet;
 use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
-pub struct ClientInformationC2SPacket {
+#[derive(ProtocolSerializer, Component, Debug, Clone)]
+pub struct ClientInformation {
     #[protocol_attribute(bounded = 16)]
     pub locale: String,
     pub render_distance: i8,
@@ -20,6 +21,8 @@ pub struct ClientInformationC2SPacket {
     pub allow_server_listings: bool,
     pub particle_status: bool,
 }
+
+pub type ClientInformationC2SPacket = ClientInformation;
 
 #[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]
 pub enum ChatMode {

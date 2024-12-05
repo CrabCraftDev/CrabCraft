@@ -2,13 +2,13 @@ use std::fmt::{Display, Error, Formatter};
 
 use derive_more::From;
 use evenio::prelude::Component;
-use uuid::Uuid as ActualUuid;
+use uuid::Uuid;
 
 #[derive(Component, Clone, Copy, From, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 #[repr(transparent)]
-pub struct Uuid(pub ActualUuid);
+pub struct UuidComponent(pub Uuid);
 
-impl Display for Uuid {
+impl Display for UuidComponent {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         self.0.fmt(f)
     }
