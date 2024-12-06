@@ -4,8 +4,9 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "pick_item", id = 0x22, state = Play)]
-pub struct PickItemC2SPacket {
+#[packet(name = "pick_item_from_entity", id = 0x23, state = Play)]
+pub struct PickItemFromEntityC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
-    pub slot_to_use: i32,
+    pub id: i32,
+    pub include_data: bool,
 }

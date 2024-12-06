@@ -18,9 +18,9 @@ use crate::{
     utils::errors::{print_error_report_instructions, print_panic},
 };
 
-pub const SERVER_PROTOCOL_VERSION: i32 = 768;
-pub const SERVER_VERSION: &str = "1.21.3";
-pub const COMPATIBLE_SERVER_VERSIONS: &[&str] = &["1.21.2", "1.21.3"];
+pub const SERVER_PROTOCOL_VERSION: i32 = 769;
+pub const SERVER_VERSION: &str = "1.21.4";
+pub const COMPATIBLE_SERVER_VERSIONS: &[&str] = &["1.21.4"];
 
 const TPS: u64 = 20;
 const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);

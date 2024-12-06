@@ -49,7 +49,7 @@ impl Block {
     // Checking for air is executed so many times, so it's better to use this
     pub const fn is_air(&self) -> bool {
         // For efficiency, those are hardcoded IDs of air, cave air and void air blocks
-        matches!(self.0, 0 | 13427 | 13428)
+        matches!(self.0, 0 | 13971 | 13972)
     }
 
     pub fn property<P: BlockData>(&self) -> Result<P::Value, WorldError> {

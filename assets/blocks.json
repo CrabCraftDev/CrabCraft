@@ -2489,6 +2489,13 @@
     "name": "creaking_heart",
     "properties": [
       {
+        "name": "active",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
         "name": "axis",
         "values": [
           "x",
@@ -2497,15 +2504,14 @@
         ]
       },
       {
-        "name": "creaking",
+        "name": "natural",
         "values": [
-          "disabled",
-          "dormant",
-          "active"
+          "true",
+          "false"
         ]
       }
     ],
-    "default_state_offset": 3
+    "default_state_offset": 9
   },
   {
     "name": "oak_stairs",
@@ -5771,6 +5777,61 @@
     "default_state_offset": 127
   },
   {
+    "name": "resin_clump",
+    "properties": [
+      {
+        "name": "down",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "east",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "north",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "south",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "up",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "west",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 127
+  },
+  {
     "name": "oak_fence_gate",
     "properties": [
       {
@@ -5938,6 +5999,133 @@
   },
   {
     "name": "lily_pad",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "resin_block",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "resin_bricks",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "resin_brick_stairs",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "half",
+        "values": [
+          "top",
+          "bottom"
+        ]
+      },
+      {
+        "name": "shape",
+        "values": [
+          "straight",
+          "inner_left",
+          "inner_right",
+          "outer_left",
+          "outer_right"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 11
+  },
+  {
+    "name": "resin_brick_slab",
+    "properties": [
+      {
+        "name": "type",
+        "values": [
+          "top",
+          "bottom",
+          "double"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 3
+  },
+  {
+    "name": "resin_brick_wall",
+    "properties": [
+      {
+        "name": "east",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      },
+      {
+        "name": "north",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      },
+      {
+        "name": "south",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      },
+      {
+        "name": "up",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      {
+        "name": "west",
+        "values": [
+          "none",
+          "low",
+          "tall"
+        ]
+      }
+    ],
+    "default_state_offset": 3
+  },
+  {
+    "name": "chiseled_resin_bricks",
     "properties": [],
     "default_state_offset": 0
   },
@@ -20787,6 +20975,26 @@
         ]
       }
     ],
+    "default_state_offset": 0
+  },
+  {
+    "name": "open_eyeblossom",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "closed_eyeblossom",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "potted_open_eyeblossom",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "potted_closed_eyeblossom",
+    "properties": [],
     "default_state_offset": 0
   }
 ]
