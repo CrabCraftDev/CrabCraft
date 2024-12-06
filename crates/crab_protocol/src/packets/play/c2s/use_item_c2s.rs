@@ -6,7 +6,7 @@ use crate::types::position::Rotation;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x3B, state = Play)]
+#[packet(name = "use_item", id = 0x3B, state = Play)]
 pub struct UseItemC2SPacket {
     pub hand: Hand,
     #[protocol_attribute(protocol_type = VarInt)]

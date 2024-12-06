@@ -7,6 +7,7 @@ pub(crate) struct RootPacketArgs {
     pub(crate) span: Span,
     pub(crate) id: Option<Expr>,
     pub(crate) state: Option<Expr>,
+    pub(crate) name: Option<Expr>,
 }
 
 pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootPacketArgs>> {
@@ -19,6 +20,7 @@ pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootP
             span: attr.span(),
             id: None,
             state: None,
+            name: None,
         };
 
         attr.parse_nested_meta(|meta| {
@@ -27,6 +29,9 @@ pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootP
                 Ok(())
             } else if meta.path.is_ident("state") {
                 res.state = Some(meta.value()?.parse::<Expr>()?);
+                Ok(())
+            } else if meta.path.is_ident("name") {
+                res.name = Some(meta.value()?.parse::<Expr>()?);
                 Ok(())
             } else {
                 Err(meta.error("Unrecognized packet argument"))

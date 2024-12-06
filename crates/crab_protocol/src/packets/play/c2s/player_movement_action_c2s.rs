@@ -6,7 +6,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x27, state = Play)]
+#[packet(name = "player_command", id = 0x27, state = Play)]
 pub struct PlayerMovementActionC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub player_id: i32,

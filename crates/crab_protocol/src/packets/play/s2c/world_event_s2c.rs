@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::block_position::BlockPosition;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x29, state = Play)]
+#[packet(name = "level_event", id = 0x29, state = Play)]
 pub struct WorldEventS2CPacket {
     pub event: i32,
     pub position: BlockPosition,

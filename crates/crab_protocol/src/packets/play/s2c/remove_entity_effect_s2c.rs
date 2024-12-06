@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x48, state = Play)]
+#[packet(name = "remove_mob_effect", id = 0x48, state = Play)]
 pub struct RemoveEntityEffectS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

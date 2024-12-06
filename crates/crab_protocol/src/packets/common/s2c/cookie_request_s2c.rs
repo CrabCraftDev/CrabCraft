@@ -11,5 +11,6 @@ pub struct CookieRequestS2CPacket {
 }
 
 impl Packet for CookieRequestS2CPacket {
+    const NAME: &'static str = "cookie_request";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x00), (Login, 0x05), (Play, 0x16)];
 }

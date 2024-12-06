@@ -5,7 +5,7 @@ use crate::types::text::TextComponent;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x1E, state = Play)]
+#[packet(name = "disguised_chat", id = 0x1E, state = Play)]
 pub struct DisguisedChatMessageS2CPacket {
     pub message: TextComponent,
     #[protocol_attribute(protocol_type = VarInt)]

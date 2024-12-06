@@ -7,7 +7,7 @@ use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2C, state = Play)]
+#[packet(name = "login", id = 0x2C, state = Play)]
 pub struct GameJoinS2CPacket {
     pub entity_id: i32,
     pub is_hardcore: bool,

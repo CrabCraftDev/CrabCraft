@@ -6,7 +6,7 @@ use crate::types::bytes::FixedBytes;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x07, state = Play)]
+#[packet(name = "chat", id = 0x07, state = Play)]
 pub struct ChatMessageC2SPacket {
     #[protocol_attribute(bounded = 256)]
     pub message: String,

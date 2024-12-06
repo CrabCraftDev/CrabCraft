@@ -3,7 +3,7 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x5E, state = Play)]
+#[packet(name = "set_entity_link", id = 0x5E, state = Play)]
 pub struct LinkEntitiesS2CPacket {
     pub attached_entity_id: i32,
     /// Set -1 to detach

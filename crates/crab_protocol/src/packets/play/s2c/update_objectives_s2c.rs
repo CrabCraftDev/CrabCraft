@@ -10,7 +10,7 @@ use crate::types::number_format::NumberFormat;
 use crate::types::text::TextComponent;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x64, state = Play)]
+#[packet(name = "set_objective", id = 0x64, state = Play)]
 pub struct UpdateObjectivesS2CPacket {
     pub objective_name: String,
     pub mode: UpdateObjectiveMode,

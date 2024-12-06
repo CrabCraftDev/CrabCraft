@@ -6,7 +6,7 @@ use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x04, state = Login)]
+#[packet(name = "custom_query", id = 0x04, state = Login)]
 pub struct LoginPluginRequestS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub message_id: i32,

@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x3C, state = Play)]
+#[packet(name = "player_combat_end", id = 0x3C, state = Play)]
 /// Unused by the Minecraft client.
 pub struct EndCombatS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]

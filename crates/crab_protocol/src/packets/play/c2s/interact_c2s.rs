@@ -9,7 +9,7 @@ use crate::types::position::Position;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x18, state = Play)]
+#[packet(name = "interact", id = 0x18, state = Play)]
 pub struct InteractC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

@@ -7,7 +7,7 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x00, state = Status)]
+#[packet(name = "status_response", id = 0x00, state = Status)]
 pub struct StatusResponseS2CPacket {
     pub server_info: ServerInfo,
 }

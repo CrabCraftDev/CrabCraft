@@ -10,7 +10,7 @@ use crate::types::namespaced_key::NamespacedKey;
 use crate::types::sound::SoundCategory;
 
 #[derive(Packet, Debug, Clone)]
-#[packet(id = 0x71, state = Play)]
+#[packet(name = "stop_sound", id = 0x71, state = Play)]
 pub struct StopSoundS2CPacket {
     pub sound_category: Option<SoundCategory>,
     pub sound_name: Option<NamespacedKey>,

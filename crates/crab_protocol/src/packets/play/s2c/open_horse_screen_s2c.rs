@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x24, state = Play)]
+#[packet(name = "horse_screen_open", id = 0x24, state = Play)]
 pub struct OpenHorseScreenS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub window_id: i32,

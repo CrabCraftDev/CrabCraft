@@ -9,6 +9,7 @@ pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
     let packet_args = parse_packet_args(&input.attrs)?.expect("Packet attribute missing!");
     let name = input.ident;
 
+    let packet_name: Expr = packet_args.name.unwrap();
     let packet_id: Expr = packet_args.id.unwrap();
     let state = packet_args
         .state
@@ -20,6 +21,7 @@ pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
         impl #impl_generics ::crab_protocol::packet::Packet for #name #type_generics
         #where_clause
         {
+            const NAME: &'static str = #packet_name;
             const STATE_IDS: &'static [(::crab_protocol::protocol_state::ProtocolState, i32)] = &[(#state, #packet_id)];
         }
     })

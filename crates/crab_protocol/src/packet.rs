@@ -4,6 +4,9 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState;
 
 pub trait Packet: Sized + Debug + ProtocolSerializer {
+    /// Name of packet used in Notchian server
+    /// Used for debugging, updating to newer Minecraft versions etc
+    const NAME: &'static str;
     const STATE_IDS: &'static [(ProtocolState, i32)];
 }
 

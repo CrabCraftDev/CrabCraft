@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x12, state = Play)]
+#[packet(name = "container_slot_state_changed", id = 0x12, state = Play)]
 /// Used only for [Crafter block](https://minecraft.wiki/w/Crafter)
 pub struct ChangeContainerSlotStateC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]

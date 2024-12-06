@@ -21,5 +21,6 @@ pub struct Tag {
 }
 
 impl Packet for UpdateTagsS2CPacket {
+    const NAME: &'static str = "update_tags";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x7F), (Configuration, 0x0D)];
 }

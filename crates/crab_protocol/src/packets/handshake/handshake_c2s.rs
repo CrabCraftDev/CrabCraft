@@ -6,7 +6,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x00, state = Handshake)]
+#[packet(name = "intention", id = 0x00, state = Handshake)]
 pub struct HandshakeC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub protocol_version: i32,

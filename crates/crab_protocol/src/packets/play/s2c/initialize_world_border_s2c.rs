@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x26, state = Play)]
+#[packet(name = "initialize_border", id = 0x26, state = Play)]
 pub struct InitializeWorldBorderS2CPacket {
     pub x: f64,
     pub z: f64,

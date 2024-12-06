@@ -6,7 +6,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::property::Property;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x02, state = Login)]
+#[packet(name = "login_finished", id = 0x02, state = Login)]
 pub struct LoginFinishedS2CPacket {
     pub uuid: Uuid,
     #[protocol_attribute(bounded = 16)]

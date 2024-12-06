@@ -7,7 +7,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x2E, state = Play)]
+#[packet(name = "seen_advancements", id = 0x2E, state = Play)]
 pub struct SeenAdvancementsC2SPacket {
     pub action: SeenAdvancementsAction,
 }

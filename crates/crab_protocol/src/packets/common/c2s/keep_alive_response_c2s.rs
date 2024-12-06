@@ -10,5 +10,6 @@ pub struct KeepAliveResponseC2SPacket {
 }
 
 impl Packet for KeepAliveResponseC2SPacket {
+    const NAME: &'static str = "keep_alive";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x04), (Play, 0x1A)];
 }

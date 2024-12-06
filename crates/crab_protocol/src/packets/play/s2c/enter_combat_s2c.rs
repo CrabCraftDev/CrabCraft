@@ -3,6 +3,6 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x3D, state = Play)]
+#[packet(name = "player_combat_enter", id = 0x3D, state = Play)]
 /// Unused by the Minecraft client.
 pub struct EnterCombatS2CPacket;

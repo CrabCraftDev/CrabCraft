@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::block_position::BlockPosition;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x37, state = Play)]
+#[packet(name = "sign_update", id = 0x37, state = Play)]
 pub struct UpdateSignC2SPacket {
     pub position: BlockPosition,
     pub is_front_text: bool,

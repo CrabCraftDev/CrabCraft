@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::block_position::BlockPosition;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x36, state = Play)]
+#[packet(name = "open_sign_editor", id = 0x36, state = Play)]
 pub struct OpenSignEditorS2CPacket {
     pub position: BlockPosition,
     pub is_front_text: bool,

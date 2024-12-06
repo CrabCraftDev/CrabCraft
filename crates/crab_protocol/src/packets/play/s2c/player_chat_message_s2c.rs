@@ -13,7 +13,7 @@ use crate::types::text::TextComponent;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x3B, state = Play)]
+#[packet(name = "player_chat", id = 0x3B, state = Play)]
 pub struct PlayerChatMessageS2CPacket {
     pub sender: Uuid,
     #[protocol_attribute(protocol_type = VarInt)]

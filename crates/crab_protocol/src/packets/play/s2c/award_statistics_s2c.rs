@@ -3,7 +3,7 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x04, state = Play)]
+#[packet(name = "award_stats", id = 0x04, state = Play)]
 pub struct AwardStatisticsS2CPacket {
     pub statistics: Vec<Statistic>,
 }

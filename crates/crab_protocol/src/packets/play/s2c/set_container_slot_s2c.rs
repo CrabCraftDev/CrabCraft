@@ -5,7 +5,7 @@ use crate::types::item_stack::ItemStack;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x15, state = Play)]
+#[packet(name = "container_set_slot", id = 0x15, state = Play)]
 pub struct SetContainerSlotS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub window_id: i32,

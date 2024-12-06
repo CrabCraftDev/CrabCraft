@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::recipe_book::RecipeBook;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x28, state = Play)]
+#[packet(name = "player_input", id = 0x28, state = Play)]
 pub struct ChangeRecipeBookSettingsC2SPacket {
     pub book: RecipeBook,
     pub is_opened: bool,

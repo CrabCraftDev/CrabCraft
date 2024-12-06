@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x0C, state = Configuration)]
+#[packet(name = "update_enabled_features", id = 0x0C, state = Configuration)]
 pub struct FeatureFlagsS2CPacket {
     pub feature_flags: Vec<NamespacedKey>,
 }
