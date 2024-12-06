@@ -5,7 +5,7 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x3A, state = Play)]
+#[packet(name = "player_abilities", id = 0x3A, state = Play)]
 pub struct PlayerAbilitiesS2CPacket {
     pub flags: PlayerAbilitiesFlags,
     pub flying_speed: f32,

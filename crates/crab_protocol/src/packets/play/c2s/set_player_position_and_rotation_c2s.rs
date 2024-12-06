@@ -5,7 +5,7 @@ use crate::types::player_movement_flags::PlayerMovementFlags;
 use crate::types::position::{Position, Rotation};
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x1D, state = Play)]
+#[packet(name = "move_player_pos_rot", id = 0x1D, state = Play)]
 pub struct SetPlayerPositionAndRotationC2SPacket {
     /// Position is located at player's feet
     pub position: Position,

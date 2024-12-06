@@ -4,7 +4,7 @@ use crate::types::varint::VarInt;
 use crab_macros::{Packet, ProtocolSerializer};
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x5F, state = Play)]
+#[packet(name = "set_entity_motion", id = 0x5F, state = Play)]
 pub struct SetEntityVelocityS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

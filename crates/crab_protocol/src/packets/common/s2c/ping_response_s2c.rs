@@ -10,5 +10,6 @@ pub struct PingResponseS2CPacket {
 }
 
 impl Packet for PingResponseS2CPacket {
+    const NAME: &'static str = "pong_response";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x38), (Status, 0x01)];
 }

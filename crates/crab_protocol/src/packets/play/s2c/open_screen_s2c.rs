@@ -5,7 +5,7 @@ use crate::types::text::TextComponent;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x35, state = Play)]
+#[packet(name = "open_screen", id = 0x35, state = Play)]
 pub struct OpenScreenS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub window_id: i32,

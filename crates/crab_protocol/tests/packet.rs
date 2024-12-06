@@ -13,6 +13,7 @@ pub struct TestC2S {
 }
 
 impl Packet for TestC2S {
+    const NAME: &'static str = "test";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(ProtocolState::Handshake, 0)];
 }
 

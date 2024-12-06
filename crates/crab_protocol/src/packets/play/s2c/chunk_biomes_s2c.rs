@@ -5,7 +5,7 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x0E, state = Play)]
+#[packet(name = "chunks_biomes", id = 0x0E, state = Play)]
 pub struct ChunkBiomesS2CPacket {
     pub chunk_biomes_data: Vec<ChunkBiomeData>,
 }

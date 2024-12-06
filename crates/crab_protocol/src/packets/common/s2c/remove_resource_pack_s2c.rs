@@ -12,5 +12,6 @@ pub struct RemoveResourcePackS2CPacket {
 }
 
 impl Packet for RemoveResourcePackS2CPacket {
+    const NAME: &'static str = "resource_pack_pop";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x4A), (Configuration, 0x08)];
 }

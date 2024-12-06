@@ -5,7 +5,7 @@ use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x17, state = Play)]
+#[packet(name = "cooldown", id = 0x17, state = Play)]
 pub struct SetCooldownS2CPacket {
     pub cooldown_group: NamespacedKey,
     #[protocol_attribute(protocol_type = VarInt)]

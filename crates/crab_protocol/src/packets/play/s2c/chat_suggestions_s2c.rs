@@ -5,7 +5,7 @@ use crab_macros::{Packet, ProtocolSerializer};
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x18, state = Play)]
+#[packet(name = "custom_chat_completions", id = 0x18, state = Play)]
 pub struct ChatSuggestionsS2CPacket {
     pub action: ChatSuggestionAction,
     pub suggestions: Vec<String>,

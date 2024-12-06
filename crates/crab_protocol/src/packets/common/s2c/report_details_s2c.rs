@@ -10,6 +10,7 @@ pub struct ReportDetailsS2CPacket {
 }
 
 impl Packet for ReportDetailsS2CPacket {
+    const NAME: &'static str = "custom_report_details";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x81), (Configuration, 0x0F)];
 }
 

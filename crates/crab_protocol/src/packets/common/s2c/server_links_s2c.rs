@@ -15,6 +15,7 @@ pub struct ServerLinksS2CPacket {
 }
 
 impl Packet for ServerLinksS2CPacket {
+    const NAME: &'static str = "server_links";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x82), (Configuration, 0x10)];
 }
 

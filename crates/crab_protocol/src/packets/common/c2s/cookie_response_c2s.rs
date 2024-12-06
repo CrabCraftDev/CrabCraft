@@ -15,5 +15,6 @@ pub struct CookieResponseC2SPacket {
 }
 
 impl Packet for CookieResponseC2SPacket {
+    const NAME: &'static str = "cookie_response";
     const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x01), (Login, 0x04), (Play, 0x13)];
 }

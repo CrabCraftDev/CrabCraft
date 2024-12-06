@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::hand::Hand;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x34, state = Play)]
+#[packet(name = "open_book", id = 0x34, state = Play)]
 pub struct OpenBookS2CPacket {
     pub hand: Hand,
 }

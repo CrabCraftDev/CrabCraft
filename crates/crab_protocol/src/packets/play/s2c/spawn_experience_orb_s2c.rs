@@ -5,7 +5,7 @@ use crate::types::position::Position;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x02, state = Play)]
+#[packet(name = "add_experience_orb", id = 0x02, state = Play)]
 pub struct SpawnExperienceOrbS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

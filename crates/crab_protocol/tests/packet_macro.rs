@@ -8,7 +8,7 @@ use crab_protocol::raw_packet::RawPacket;
 use crab_protocol::types::varint::VarInt;
 
 #[derive(Debug, PartialEq, Packet, ProtocolSerializer)]
-#[packet(id = 0, state = Handshake)]
+#[packet(name = "test", id = 0, state = Handshake)]
 pub struct TestC2S {
     pub name: String,
     #[protocol_attribute(protocol_type = VarInt)]

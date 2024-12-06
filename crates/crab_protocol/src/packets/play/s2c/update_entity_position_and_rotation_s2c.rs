@@ -5,7 +5,7 @@ use crate::types::angle::Angle;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(id = 0x30, state = Play)]
+#[packet(name = "move_entity_pos_rot", id = 0x30, state = Play)]
 pub struct UpdateEntityPositionAndRotationS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,
