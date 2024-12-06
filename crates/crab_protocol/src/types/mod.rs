@@ -14,6 +14,7 @@ pub mod nbt;
 pub mod number_format;
 pub mod optional;
 pub mod player_movement_flags;
+pub mod player_spawn_information;
 pub mod position;
 pub mod primitives;
 pub mod property;
