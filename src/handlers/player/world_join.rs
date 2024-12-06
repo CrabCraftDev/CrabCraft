@@ -12,6 +12,7 @@ use crab_protocol::types::bit_set::BitSet;
 use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
 use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_protocol::types::player_spawn_information::PlayerSpawnInformation;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double};
 use crab_registry::REGISTRY;
 use crab_world::anvil::region::Region;
@@ -35,16 +36,18 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         reduced_debug_info: false,
         enable_respawn_screen: true,
         do_limited_crafting: false,
-        dimension_type: 0,
-        dimension_name: NamespacedKey::minecraft("overworld").unwrap(),
-        hashed_seed: 99887766,
-        game_mode: GameMode::Creative,
-        previous_game_mode: None.into(),
-        is_debug_world: false,
-        is_flat_world: true,
-        last_death_location: None,
-        portal_cooldown: 20,
-        sea_level: 64,
+        spawn_information: PlayerSpawnInformation {
+            dimension_type: 0,
+            dimension_name: NamespacedKey::minecraft("overworld").unwrap(),
+            hashed_seed: 99887766,
+            game_mode: GameMode::Creative,
+            previous_game_mode: None,
+            is_debug_world: false,
+            is_flat_world: true,
+            last_death_location: None,
+            portal_cooldown: 20,
+            sea_level: 64,
+        },
         enforces_secure_chat: false,
     });
 
