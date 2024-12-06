@@ -8,7 +8,7 @@ use crate::types::block_position::BlockPosition;
 use crate::types::varlong::VarLong;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "set_structure_block", id = 0x36, state = Play)]
+#[packet(name = "set_structure_block", id = 0x38, state = Play)]
 pub struct ProgramStructureBlockC2SPacket {
     pub position: BlockPosition,
     pub structure_block_action: StructureBlockAction,
