@@ -71,6 +71,7 @@ crab_protocol = { path = "crates/crab_protocol" }
 crab_registry = { path = "crates/crab_registry" }
 crab_world = { path = "crates/crab_world" }
 crab_macros = { path = "crates/crab_macros" }
+dashmap = "6.1.0"
 
 [dev-dependencies]
 cargo-husky = { version = "1.5.0", features = [

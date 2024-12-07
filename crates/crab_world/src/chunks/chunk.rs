@@ -17,9 +17,9 @@ pub struct Chunk {
 }
 
 impl Chunk {
-    pub fn get_block(&self, x: u8, y: u8, z: u8) -> Option<Block> {
-        let local_y = y % CHUNK_SIZE;
-        self.sections[(y / CHUNK_SIZE) as usize].get_block(x, local_y, z)
+    pub fn get_block(&self, x: u8, y: u16, z: u8) -> Option<Block> {
+        let local_y = (y % CHUNK_SIZE as u16) as u8;
+        self.sections[(y / CHUNK_SIZE as u16) as usize].get_block(x, local_y, z)
     }
 
     /// Serializes the section to format used in [Chunk Data packet](crab_protocol::packets::play::ChunkDataAndUpdateLightS2CPacket).
@@ -47,7 +47,7 @@ impl Chunk {
         for z in 0..16 {
             for x in 0..16 {
                 for y in (0..self.world_height()).rev() {
-                    let block = self.get_block(x, y as u8, z);
+                    let block = self.get_block(x, y as u16, z);
                     if let Some(block) = block {
                         if !block.is_air() {
                             heightmap[(z * 16 + x) as usize] = y as u16;

@@ -1,3 +1,14 @@
+use crate::events::asynchronous::{AsyncEvent, AsyncEventHolder};
+use crate::events::global::server::ServerShutdownEvent;
+use crate::events::global::world::WorldTickEvent;
+use crate::handlers::init_handlers::init_handlers;
+use crate::utils::scheduler::ServerScheduler;
+use crate::world::chunk_loader::WORLD_LOADER;
+use crate::{
+    network::tcp_server::TcpServer,
+    utils::errors::{print_error_report_instructions, print_panic},
+};
+use crab_protocol::types::namespaced_key::NamespacedKey;
 use evenio::world::World;
 use kanal::{AsyncReceiver, AsyncSender};
 use std::ops::Add;
@@ -8,22 +19,12 @@ use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
 use tracing::{error, info, warn};
 
-use crate::events::asynchronous::{AsyncEvent, AsyncEventHolder};
-use crate::events::global::server::ServerShutdownEvent;
-use crate::events::global::world::WorldTickEvent;
-use crate::handlers::init_handlers::init_handlers;
-use crate::utils::scheduler::ServerScheduler;
-use crate::{
-    network::tcp_server::TcpServer,
-    utils::errors::{print_error_report_instructions, print_panic},
-};
-
-pub const SERVER_PROTOCOL_VERSION: i32 = 769;
+pub const SERVER_PROTOCOL_VERSION: i32 = 768;
 pub const SERVER_VERSION: &str = "1.21.4";
 pub const COMPATIBLE_SERVER_VERSIONS: &[&str] = &["1.21.4"];
 
 const TPS: u64 = 20;
-const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);
+pub const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);
 const SERVER_OVERLOAD_WARNING_COOLDOWN: Duration = Duration::from_secs(20);
 
 pub struct McServer {
@@ -57,6 +58,11 @@ impl McServer {
     }
 
     pub async fn start(mut self) {
+        WORLD_LOADER
+            .write()
+            .unwrap()
+            .init_dimension(NamespacedKey::minecraft("overworld").unwrap());
+
         let ctrl_c = signal::ctrl_c();
 
         let event_channel = self.event_sender.clone();
@@ -101,7 +107,7 @@ impl McServer {
         loop {
             let tick_start = Instant::now();
 
-            AsyncEvent::send_event_with_response(WorldTickEvent, &event_sender)
+            AsyncEvent::send_event_with_response(WorldTickEvent { tick_start }, &event_sender)
                 .await
                 .unwrap();
 

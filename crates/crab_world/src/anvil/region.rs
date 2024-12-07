@@ -43,6 +43,12 @@ pub struct Region {
 }
 
 impl Region {
+    pub fn create() -> Result<Self, Error> {
+        Ok(Self {
+            locations: vec![],
+            bytes: Bytes::new(),
+        })
+    }
     pub fn new(path: PathBuf) -> Result<Self, Error> {
         let mut file = File::open(path)?;
         let mut buffer = Vec::new();

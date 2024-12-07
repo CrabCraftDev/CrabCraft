@@ -1,4 +1,4 @@
-use crate::handlers::{network, player, server};
+use crate::handlers::{network, player, server, world};
 use evenio::handler::IntoHandler;
 use evenio::prelude::World;
 
@@ -15,6 +15,11 @@ pub fn init_handlers(world: &mut World) {
     world.add_handler(player::position_handler::on_teleport);
     world.add_handler(player::position_handler::move_packet_receiver);
     world.add_handler(player::world_join::on_world_join);
+
+    // Chunk loading
+    world.add_handler(world::chunk_load::load_chunks_on_move);
+    world.add_handler(world::chunk_load::prepare_chunk_send);
+    world.add_handler(world::chunk_load::tick);
 
     // Server
     world.add_handler(server::server_shutdown);

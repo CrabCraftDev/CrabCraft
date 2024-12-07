@@ -38,6 +38,13 @@ impl Position {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self(Vec3Double::new(x, y, z))
     }
+
+    pub fn chunk_x(&self) -> i32 {
+        (self.0.x / 16.) as i32
+    }
+    pub fn chunk_z(&self) -> i32 {
+        (self.0.z / 16.) as i32
+    }
 }
 
 #[repr(transparent)]

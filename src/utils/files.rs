@@ -36,8 +36,8 @@ impl ServerFiles {
     }
 
     pub fn create_directories(&self) -> Result<(), Error> {
-        std::fs::create_dir_all(&self.logs)?;
-        std::fs::create_dir_all(&self.worlds)?;
+        fs::create_dir_all(&self.logs)?;
+        fs::create_dir_all(&self.worlds)?;
         Ok(())
     }
 
@@ -72,7 +72,7 @@ impl ServerFiles {
             .join(&namespaced_key.namespace)
             .join(&namespaced_key.value)
             .join("region");
-        std::fs::create_dir_all(&path)?;
+        fs::create_dir_all(&path)?;
         Ok(path)
     }
 }
