@@ -70,7 +70,9 @@ impl FromStr for NamespacedKey {
 
 impl Display for NamespacedKey {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(formatter, "{}:{}", self.namespace, self.value)
+        formatter.write_str(&self.namespace)?;
+        formatter.write_str(":")?;
+        formatter.write_str(&self.value)
     }
 }
 
