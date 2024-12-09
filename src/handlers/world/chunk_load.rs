@@ -21,10 +21,8 @@ pub fn tick(receiver: Receiver<WorldTickEvent>, sender: Sender<ChunksLoadedEvent
     let WorldTickEvent { tick_start } = receiver.event;
 
     let dimension = NamespacedKey::minecraft("overworld").unwrap();
-
-    let world_loader_clone = WORLD_LOADER.clone();
-    let world_loader = world_loader_clone.read().unwrap();
-    let chunk_loader = &mut world_loader.chunk_loaders.get_mut(&dimension).unwrap();
+    
+    let chunk_loader = &mut WORLD_LOADER.chunk_loaders.get_mut(&dimension).unwrap();
 
     let tickets_map = chunk_loader.value().tickets.clone();
     let mut priority = 0;
@@ -65,9 +63,7 @@ pub fn prepare_chunk_send(receiver: Receiver<ChunksLoadedEvent>, fetcher: Fetche
     let ChunksLoadedEvent { dimension, chunks } = receiver.event;
 
     let players = fetcher.iter();
-    let world_loader_clone = WORLD_LOADER.clone();
-    let world_loader = world_loader_clone.read().unwrap();
-    let chunk_loader = &mut world_loader.chunk_loaders.get_mut(dimension).unwrap();
+    let chunk_loader = &mut WORLD_LOADER.chunk_loaders.get_mut(dimension).unwrap();
 
     for (connection, position) in players {
         let mut number_of_chunks = 0;
@@ -121,10 +117,8 @@ pub fn prepare_chunk_send(receiver: Receiver<ChunksLoadedEvent>, fetcher: Fetche
 pub fn load_chunks_on_move(receiver: Receiver<PlayerMoveEvent, (EntityId, &Position)>) {
     let PlayerMoveEvent { .. } = receiver.event;
     let (entity, position) = receiver.query;
-
-    let world_loader_clone = WORLD_LOADER.clone();
-    let world_loader = world_loader_clone.read().unwrap();
-    let chunk_loader = world_loader
+    
+    let chunk_loader = WORLD_LOADER
         .chunk_loaders
         .get(&NamespacedKey::minecraft("overworld").unwrap())
         .unwrap();

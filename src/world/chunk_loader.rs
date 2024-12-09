@@ -18,9 +18,9 @@ use tracing::warn;
 pub const VIEW_DISTANCE: u8 = 10;
 
 lazy_static! {
-    pub static ref WORLD_LOADER: Arc<RwLock<WorldLoader>> = Arc::new(RwLock::new(WorldLoader {
+    pub static ref WORLD_LOADER: WorldLoader = WorldLoader {
         chunk_loaders: Arc::new(DashMap::new())
-    }));
+    };
 }
 
 pub struct WorldLoader {
@@ -28,7 +28,7 @@ pub struct WorldLoader {
 }
 
 impl WorldLoader {
-    pub fn init_dimension(&mut self, dimension: NamespacedKey) {
+    pub fn init_dimension(&self, dimension: NamespacedKey) {
         self.chunk_loaders
             .insert(dimension.clone(), ChunkLoader::new(dimension));
     }

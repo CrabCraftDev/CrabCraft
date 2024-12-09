@@ -19,7 +19,7 @@ use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
 use tracing::{error, info, warn};
 
-pub const SERVER_PROTOCOL_VERSION: i32 = 768;
+pub const SERVER_PROTOCOL_VERSION: i32 = 769;
 pub const SERVER_VERSION: &str = "1.21.4";
 pub const COMPATIBLE_SERVER_VERSIONS: &[&str] = &["1.21.4"];
 
@@ -58,10 +58,7 @@ impl McServer {
     }
 
     pub async fn start(mut self) {
-        WORLD_LOADER
-            .write()
-            .unwrap()
-            .init_dimension(NamespacedKey::minecraft("overworld").unwrap());
+        WORLD_LOADER.init_dimension(NamespacedKey::minecraft("overworld").unwrap());
 
         let ctrl_c = signal::ctrl_c();
 

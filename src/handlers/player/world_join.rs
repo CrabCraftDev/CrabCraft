@@ -55,10 +55,8 @@ pub fn on_world_join(
     connection.send_packet(GameEventS2CPacket { event: 13, value: 0.0 });
 
     connection.send_packet(SetCenterChunkS2CPacket { x: 0, z: 0 });
-
-    let world_loader_clone = &WORLD_LOADER.clone();
-    let world_loader = world_loader_clone.read().unwrap();
-    let chunk_loader = &mut world_loader
+    
+    let chunk_loader = &mut WORLD_LOADER
         .chunk_loaders
         .get_mut(&NamespacedKey::minecraft("overworld").unwrap())
         .unwrap();
