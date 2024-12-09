@@ -1,13 +1,16 @@
+use bytes::BytesMut;
 use crab_world::anvil::region::Region;
 use crab_world::blocks::init_blocks;
 use crab_world::blocks::BLOCKS;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use std::path::PathBuf;
+use std::fs::{self};
 
 pub fn read_chunk(c: &mut Criterion) {
     c.bench_function("chunk", |b| {
         BLOCKS.get_or_init(init_blocks);
-        let region = Region::new(PathBuf::from("./r.0.0.mca")).unwrap();
+
+        let bytes = BytesMut::from_iter(fs::read("./r.0.0.mca").unwrap());
+        let region = Region::new(bytes);
 
         b.iter(|| {
             let region = region.read_chunk(0, 0, |_| 0).unwrap();

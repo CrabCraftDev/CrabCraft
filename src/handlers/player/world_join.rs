@@ -1,7 +1,7 @@
-use crate::components::name::Name;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::network::connection::NetworkConnection;
 use crate::utils::files::FILES;
+use crate::{components::name::Name, utils::files::read_to_bytes};
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::packets::play::{
@@ -68,12 +68,14 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         .unwrap();
 
     const DEFAULT_REGION_FILE_NAME: &str = "r.0.0.mca";
-    let Ok(region) = Region::new(region_folder_path.join(DEFAULT_REGION_FILE_NAME)) else {
+    let Ok(bytes) = read_to_bytes(region_folder_path.join(DEFAULT_REGION_FILE_NAME)) else {
         warn!("CrabCraft doesn't have world generator yet!");
         warn!("Please provide world files in worlds/overworld/region/r.0.0.mca");
         info!("{name} joined!");
         return;
     };
+
+    let region = Region::new(bytes);
 
     let registry = REGISTRY.get().unwrap();
     let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();

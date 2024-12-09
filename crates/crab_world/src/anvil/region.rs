@@ -9,9 +9,7 @@ use crab_world::chunks::palette::palette_content_type::PaletteContentType;
 use crab_world::chunks::palette::paletted_storage::{Palette, PalettedStorage};
 use flate2::read::{GzDecoder, ZlibDecoder};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{Error, Read};
-use std::path::PathBuf;
+use std::io::Read;
 use std::str::FromStr;
 use strum::FromRepr;
 
@@ -43,12 +41,7 @@ pub struct Region {
 }
 
 impl Region {
-    pub fn new(path: PathBuf) -> Result<Self, Error> {
-        let mut file = File::open(path)?;
-        let mut buffer = Vec::new();
-        file.read_to_end(&mut buffer)?;
-        let bytes = BytesMut::from_iter(buffer);
-
+    pub fn new(bytes: BytesMut) -> Self {
         let mut tmp_bytes = BytesMut::clone(&bytes);
         let mut locations = Vec::new();
         for _ in 0..1024 {
@@ -57,10 +50,10 @@ impl Region {
         }
         let _timestamps = tmp_bytes.copy_to_bytes(4096);
 
-        Ok(Self {
+        Self {
             locations,
             bytes: bytes.freeze(),
-        })
+        }
     }
 
     pub fn read_chunk(

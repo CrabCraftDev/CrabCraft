@@ -1,13 +1,12 @@
-use crate::events::asynchronous::AsyncEvent;
 use crate::mc_server::{SERVER_PROTOCOL_VERSION, SERVER_VERSION};
 use crate::utils::errors::Error;
 use crate::utils::files::FILES;
+use crate::{events::asynchronous::AsyncEvent, utils::files::read_to_bytes};
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 use crab_macros::AsyncEvent;
 use crab_protocol::packets::status::{PlayersInfo, ServerInfo, ServerVersion};
 use evenio::event::GlobalEvent;
-use std::fs;
 use std::net::IpAddr;
 use tracing::warn;
 
@@ -36,7 +35,7 @@ impl ServerListPingEvent {
         let server_icon_path = FILES.server_root.join(SERVER_ICON_PATH);
         let mut favicon = String::new();
         if server_icon_path.exists() {
-            match fs::read(server_icon_path) {
+            match read_to_bytes(server_icon_path) {
                 Ok(png_data) => {
                     favicon = format!("{BASE64_ENCODING_PREFIX}{}", BASE64_STANDARD.encode(png_data));
                 }

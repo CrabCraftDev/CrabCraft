@@ -1,8 +1,9 @@
 use crate::utils::errors::Error;
+use bytes::{BufMut, BytesMut};
 use chrono::{DateTime, Local};
 use crab_protocol::types::namespaced_key::NamespacedKey;
 use lazy_static::lazy_static;
-use std::fs::{self};
+use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 use std::{env, io};
 
@@ -88,4 +89,17 @@ pub fn count_files_with_prefix(dir: &Path, prefix: &str) -> io::Result<usize> {
         count += (path.is_file() && path.file_name().unwrap().to_str().unwrap().starts_with(prefix)) as usize;
     }
     Ok(count)
+}
+
+/// Reads the entire contents of a file into BytesMut
+/// Inspired by [std::fs::read]
+pub fn read_to_bytes<P: AsRef<Path>>(path: P) -> io::Result<BytesMut> {
+    fn inner(path: &Path) -> io::Result<BytesMut> {
+        let mut file = File::open(path)?;
+        let size = file.metadata().map(|m| m.len() as usize).ok();
+        let mut bytes = BytesMut::with_capacity(size.unwrap_or(0)).writer();
+        io::copy(&mut file, &mut bytes)?;
+        Ok(bytes.into_inner())
+    }
+    inner(path.as_ref())
 }
