@@ -7,7 +7,7 @@ use std::path::PathBuf;
 pub fn read_chunk(c: &mut Criterion) {
     c.bench_function("chunk", |b| {
         BLOCKS.get_or_init(init_blocks);
-        let region = Region::new(PathBuf::from("./r.0.0.mca")).unwrap();
+        let region = Region::new(PathBuf::from("./benches/r.0.0.mca")).unwrap();
 
         b.iter(|| {
             let region = region.read_chunk(0, 0, |_| 0).unwrap();
