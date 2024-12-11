@@ -3,8 +3,8 @@ extern crate proc_macro;
 use crate::config::config_derive::config_macro;
 use proc_macro::TokenStream;
 
-mod core;
 mod config;
+mod core;
 mod protocol;
 mod world;
 
@@ -120,11 +120,31 @@ pub fn derive_block_property(item: TokenStream) -> TokenStream {
     }
 }
 
+/// Procedural macro that derives the `Config` trait for a struct.
+///
+/// This macro generates implementations for configuration management,
+/// allowing structs to be used as configuration entries with optional default values.
+///
+/// # Attributes
+///
+/// * `#[default_value = "..."]`: Specifies a default value for a field when the configuration is created.
+///
+/// # Example
+///
+/// ```ignore
+/// #[derive(Config)]
+/// pub struct ServerConfig {
+///     #[default_value = "25565"]
+///     pub port: u16,
+///     /// Comment
+///     #[default_value = "127.0.0.1"]
+///     pub host: String,
+/// }
+/// ```
 #[proc_macro_derive(Config, attributes(default_value))]
 pub fn config_derive(input: TokenStream) -> TokenStream {
     config_macro(input)
 }
-
 
 /// Derives an implementation of `TryFrom<AsyncEvent>` for the annotated type.
 ///
