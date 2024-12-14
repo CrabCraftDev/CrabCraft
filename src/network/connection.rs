@@ -102,8 +102,14 @@ impl NetworkConnection {
         }
 
         if !self.is_closed() {
-            self.send_target_event(PlayerQuitEvent::new(PlayerQuitReason::Disconnected))
-                .unwrap();
+            if self.get_state().should_entity_be_spawned() {
+                if self.entity_id.read().unwrap().is_none() {
+                    error!("Player entity is not spawned!")
+                } else {
+                    self.send_target_event(PlayerQuitEvent::new(PlayerQuitReason::Disconnected))
+                        .unwrap();
+                }
+            }
             self.close();
         }
     }
@@ -235,6 +241,8 @@ impl NetworkConnection {
         // Don't send event if there is no entity spawned in ECS
         if self.entity_id.read().unwrap().is_some() {
             self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
+        } else if self.get_state().should_entity_be_spawned() {
+            panic!("Entity is not spawned in {:?} protocol state", self.get_state());
         }
 
         match self.get_state() {
