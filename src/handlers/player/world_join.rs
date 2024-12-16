@@ -19,6 +19,7 @@ use crab_world::anvil::region::Region;
 use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
 use crab_world::chunks::section::{ChunkSection, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
 use evenio::event::Receiver;
+use std::fs;
 use std::str::FromStr;
 use tracing::{info, warn};
 
@@ -68,11 +69,15 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         .unwrap();
 
     const DEFAULT_REGION_FILE_NAME: &str = "r.0.0.mca";
-    let Ok(region) = Region::new(region_folder_path.join(DEFAULT_REGION_FILE_NAME)) else {
-        warn!("CrabCraft doesn't have world generator yet!");
-        warn!("Please provide world files in worlds/overworld/region/r.0.0.mca");
-        info!("{name} joined!");
-        return;
+
+    let region = match fs::read(region_folder_path.join(DEFAULT_REGION_FILE_NAME)) {
+        Ok(bytes) => Region::from(Bytes::from(bytes)),
+        Err(_) => {
+            warn!("World generator is not implemented in CrabCraft!");
+            warn!("Ensure the required world files exist in: worlds/overworld/region/r.0.0.mca");
+            info!("{name} joined, but no valid region file was loaded!");
+            return;
+        }
     };
 
     let registry = REGISTRY.get().unwrap();
