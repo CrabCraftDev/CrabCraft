@@ -1,7 +1,9 @@
+use crate::components::current_world::CurrentWorld;
 use crate::components::player::{LastTeleport, Player};
 use crate::components::{name::Name, uuid::UuidComponent};
 use crate::events::player::player_login::{PlayerLoginEvent, PlayerLoginStatus};
 use crate::network::connection::NetworkConnection;
+use crate::world::OVERWORLD_IDENTIFIER;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double, Velocity};
 use evenio::{
     event::{Receiver, ReceiverMut, Sender, Spawn},
@@ -35,6 +37,7 @@ pub fn on_player_login_event(
             UuidComponent,
             Velocity,
             LastTeleport,
+            CurrentWorld,
         )>,
     >,
 ) {
@@ -55,6 +58,7 @@ pub fn on_player_login_event(
         UuidComponent(event.uuid()),
         Velocity(Vec3Double::default()),
         LastTeleport::default(),
+        CurrentWorld(OVERWORLD_IDENTIFIER.clone()),
     ));
     *entity_id.write().unwrap() = Some(id);
 }

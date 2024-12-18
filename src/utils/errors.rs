@@ -1,6 +1,6 @@
 use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
-use crab_world::error::WorldError;
+use crab_world::error::{AnvilError, WorldError};
 use kanal::{OneshotReceiveError, SendError};
 use std::{any::Any, io};
 use thiserror::Error;
@@ -20,11 +20,22 @@ pub enum Error {
     InvalidNbt(#[from] CrabNbtError),
     #[error(transparent)]
     World(#[from] WorldError),
+    #[error(transparent)]
+    Anvil(#[from] AnvilError),
 
     #[error(transparent)]
     SendChannel(#[from] SendError),
     #[error(transparent)]
     OneshotReceive(#[from] OneshotReceiveError),
+
+    #[error("Missing world file {0}")]
+    MissingWorldFile(String),
+    #[error("Failed to load chunk ({x}, {z})")]
+    FailedToLoadChunk { x: i32, z: i32 },
+    #[error("Trying to access not loaded tried ({x}, {z})")]
+    AccessUnloadedChunk { x: i32, z: i32 },
+    #[error("Invalid position in chunk")]
+    InvalidPositionInChunk,
 
     #[error("Invalid async event type")]
     InvalidAsyncEventType,

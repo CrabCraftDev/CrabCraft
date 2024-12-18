@@ -67,6 +67,7 @@ futures = { version = "0.3.31", default-features = false, features = ["std"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true
 tracing-appender.workspace = true
+dashmap = "6.1.0"
 
 crab_protocol = { path = "crates/crab_protocol" }
 crab_registry = { path = "crates/crab_registry" }
