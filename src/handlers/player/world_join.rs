@@ -1,7 +1,8 @@
 use crate::components::name::Name;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::network::connection::NetworkConnection;
-use crate::utils::files::FILES;
+use crate::world::worlds_storage::WORLDS_STORAGE;
+use crate::world::OVERWORLD_IDENTIFIER;
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::packets::play::{
@@ -11,17 +12,12 @@ use crab_protocol::packets::play::{
 use crab_protocol::types::bit_set::BitSet;
 use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
-use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_protocol::types::player_spawn_information::PlayerSpawnInformation;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double};
-use crab_registry::REGISTRY;
-use crab_world::anvil::region::Region;
 use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
-use crab_world::chunks::section::{ChunkSection, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
+use crab_world::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use evenio::event::Receiver;
-use std::fs;
-use std::str::FromStr;
-use tracing::{info, warn};
+use tracing::info;
 
 #[allow(clippy::type_complexity)]
 pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnection, &Name, &Position, &Rotation)>) {
@@ -30,7 +26,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
     connection.send_packet(GameJoinS2CPacket {
         entity_id: 0,
         is_hardcore: false,
-        dimension_names: vec![NamespacedKey::minecraft("overworld").unwrap()],
+        dimension_names: vec![OVERWORLD_IDENTIFIER.clone()],
         max_players: 100,
         view_distance: 16,
         simulation_distance: 20,
@@ -39,7 +35,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         do_limited_crafting: false,
         spawn_information: PlayerSpawnInformation {
             dimension_type: 0,
-            dimension_name: NamespacedKey::minecraft("overworld").unwrap(),
+            dimension_name: OVERWORLD_IDENTIFIER.clone(),
             hashed_seed: 99887766,
             game_mode: GameMode::Creative,
             previous_game_mode: None,
@@ -64,44 +60,15 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
 
     connection.send_packet(ChunkBatchStartS2CPacket);
 
-    let region_folder_path = FILES
-        .world_region_path(&NamespacedKey::minecraft("overworld").unwrap())
-        .unwrap();
+    let dimension = WORLDS_STORAGE.worlds.get_mut(&OVERWORLD_IDENTIFIER).unwrap();
 
-    const DEFAULT_REGION_FILE_NAME: &str = "r.0.0.mca";
-
-    let region = match fs::read(region_folder_path.join(DEFAULT_REGION_FILE_NAME)) {
-        Ok(bytes) => Region::from(Bytes::from(bytes)),
-        Err(_) => {
-            warn!("World generator is not implemented in CrabCraft!");
-            warn!("Ensure the required world files exist in: worlds/overworld/region/r.0.0.mca");
-            info!("{name} joined, but no valid region file was loaded!");
-            return;
-        }
-    };
-
-    let registry = REGISTRY.get().unwrap();
-    let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
-
-    let mut number_of_chunks = 0;
+    let mut number_of_sent_chunks = 0;
     for x in 0..17 {
         for z in 0..17 {
-            let Ok(blocks_ids_vec) = region.read_chunk(x, z, |b| {
-                registry
-                    .get_numeric_id(&biome_registry_namespaced_key, &NamespacedKey::from_str(b).unwrap())
-                    .unwrap() as u64
-            }) else {
-                continue;
-            };
-
-            number_of_chunks += 1;
+            number_of_sent_chunks += 1;
 
             let mut bytes = BytesMut::new();
-
-            for (blocks_ids, biomes) in blocks_ids_vec {
-                let section = ChunkSection::new(blocks_ids.clone(), biomes.clone());
-                section.serialize_to_mc_format(&mut bytes).unwrap();
-            }
+            dimension.serialize_chunk(&mut bytes, x, z).unwrap();
 
             let heightmap = nbt!("", {
                 "MOTION_BLOCKING": [L;],
@@ -114,8 +81,8 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
             let chunk_sky_light_array = vec![chunk_section_sky_light_array; CHUNK_SECTIONS_PER_WORLD_HEIGHT + 2];
 
             connection.send_packet(ChunkDataAndUpdateLightS2CPacket {
-                chunk_x: x as i32,
-                chunk_z: z as i32,
+                chunk_x: x,
+                chunk_z: z,
                 heightmaps: heightmap,
                 data: bytes.freeze(),
                 block_entities: vec![],
@@ -131,7 +98,9 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         }
     }
 
-    connection.send_packet(ChunkBatchFinishedS2CPacket { number_of_chunks });
+    connection.send_packet(ChunkBatchFinishedS2CPacket {
+        number_of_chunks: number_of_sent_chunks,
+    });
 
     connection.send_packet(PlayerPositionS2CPacket {
         teleport_id: 0,

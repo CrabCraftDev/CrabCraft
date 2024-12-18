@@ -10,6 +10,8 @@ use utils::{errors::print_error_report_instructions, log};
 
 use crate::mc_server::McServer;
 use crate::utils::files::FILES;
+use crate::world::worlds_storage::WORLDS_STORAGE;
+use crate::world::OVERWORLD_IDENTIFIER;
 
 mod components;
 mod events;
@@ -17,6 +19,7 @@ mod handlers;
 mod mc_server;
 mod network;
 mod utils;
+mod world;
 
 pub const GITHUB_ISSUES_URL: &str = "https://github.com/CrabCraftDev/CrabCraft/issues/new/choose";
 pub const DISCORD_INVITE_URL: &str = "https://discord.gg/XZKprmznqP";
@@ -34,6 +37,7 @@ async fn main() {
 
     REGISTRY.get_or_init(RegistryManager::default);
     BLOCKS.get_or_init(init_blocks);
+    WORLDS_STORAGE.init_dimension(OVERWORLD_IDENTIFIER.clone(), -64);
 
     assert!(CaveAir::default_state_id().unwrap().is_air());
     assert!(VoidAir::default_state_id().unwrap().is_air());

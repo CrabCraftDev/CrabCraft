@@ -17,9 +17,18 @@ pub struct Chunk {
 }
 
 impl Chunk {
+    pub fn without_sections() -> Chunk {
+        Chunk { sections: Vec::new() }
+    }
+
     pub fn get_block(&self, x: u8, y: u16, z: u8) -> Option<Block> {
         let local_y = (y % CHUNK_SIZE as u16) as u8;
         self.sections[(y / CHUNK_SIZE as u16) as usize].get_block(x, local_y, z)
+    }
+
+    pub fn set_block(&mut self, x: u8, y: u16, z: u8, block: Block) -> Result<(), WorldError> {
+        let local_y = (y % CHUNK_SIZE as u16) as u8;
+        self.sections[(y / CHUNK_SIZE as u16) as usize].set_block(x, local_y, z, block)
     }
 
     /// Serializes the section to format used in [Chunk Data packet](crab_protocol::packets::play::ChunkDataAndUpdateLightS2CPacket).

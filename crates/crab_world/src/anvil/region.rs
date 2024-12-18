@@ -87,7 +87,7 @@ impl Region {
         let nbt = Nbt::read(&mut content).unwrap();
         let sections = nbt.get_list("sections").unwrap();
 
-        let mut chunk = Chunk::empty();
+        let mut chunk = Chunk::without_sections();
         for section in sections.iter() {
             let section = section.extract_compound().unwrap();
 
