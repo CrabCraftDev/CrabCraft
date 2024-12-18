@@ -13,8 +13,10 @@ use std::io::Read;
 use std::str::FromStr;
 use strum::FromRepr;
 
+use crate::chunks::chunk::Chunk;
 use crate::chunks::section::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
 use crate::error::AnvilError::ChunkNotGenerated;
+use crab_world::chunks::section::ChunkSection;
 use lz4::Decoder;
 
 #[bitfield(u32)]
@@ -40,19 +42,18 @@ pub struct Region {
     bytes: Bytes,
 }
 
+const SECTOR_SIZE: usize = 4096;
+
 impl Region {
-    pub fn read_chunk(
-        &self,
-        x: u8,
-        z: u8,
-        get_biome: impl Fn(&str) -> u64,
-    ) -> Result<Vec<(PalettedStorage, PalettedStorage)>, AnvilError> {
-        let index: usize = (x as usize % 32) + (z as usize % 32) * 32;
+    pub fn read_chunk(&self, x: u8, z: u8, get_biome: impl Fn(&str) -> u64) -> Result<Chunk, AnvilError> {
+        let index: usize = x as usize + (z as usize) * 32;
         let location = self.locations[index];
         if location.offset() == 0 && location.count() == 0 {
             return Err(ChunkNotGenerated { x, z });
         }
-        let start = location.offset() as usize * 4096;
+
+        // The First 2 sectors are locations and timestamps tables, but we don't store them
+        let start = (location.offset() - 2) as usize * SECTOR_SIZE;
 
         let mut bytes = self.bytes.slice(start..(start + 4));
         let compressed_len = bytes.get_u32();
@@ -86,7 +87,7 @@ impl Region {
         let nbt = Nbt::read(&mut content).unwrap();
         let sections = nbt.get_list("sections").unwrap();
 
-        let mut chunk_sections = Vec::new();
+        let mut chunk = Chunk::empty();
         for section in sections.iter() {
             let section = section.extract_compound().unwrap();
 
@@ -125,10 +126,10 @@ impl Region {
                 Palette::new(palette, storage, &PaletteContentType::Biomes),
             );
 
-            chunk_sections.push((blocks_storage, biomes_storage));
+            chunk.sections.push(ChunkSection::new(blocks_storage, biomes_storage));
         }
 
-        Ok(chunk_sections)
+        Ok(chunk)
     }
 }
 
@@ -139,7 +140,7 @@ impl From<Bytes> for Region {
             let location = Location(bytes.get_u32());
             locations.push(location);
         }
-        let _timestamps = bytes.copy_to_bytes(4096);
+        let _timestamps = bytes.copy_to_bytes(SECTOR_SIZE);
 
         Self { locations, bytes }
     }
