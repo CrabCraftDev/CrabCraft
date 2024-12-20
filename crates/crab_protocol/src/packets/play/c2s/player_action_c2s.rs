@@ -10,7 +10,7 @@ use crate::types::varint::VarInt;
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "player_action", id = 0x27, state = Play)]
 pub struct PlayerActionC2SPacket {
-    pub status: PlayerAction,
+    pub action: PlayerAction,
     pub position: BlockPosition,
     pub face: BlockFace,
     #[protocol_attribute(protocol_type = VarInt)]
@@ -18,7 +18,7 @@ pub struct PlayerActionC2SPacket {
     pub sequence_id: i32,
 }
 
-#[derive(ProtocolSerializer, FromRepr, Copy, Clone, Debug)]
+#[derive(ProtocolSerializer, FromRepr, Copy, Clone, Eq, PartialEq, Debug)]
 pub enum PlayerAction {
     StartedDigging,
     CancelledDigging,
