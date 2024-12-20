@@ -10,7 +10,6 @@ use evenio::prelude::Component;
 pub struct CurrentWorld(pub NamespacedKey);
 
 impl CurrentWorld {
-    #[allow(dead_code)]
     pub fn get_world(&self) -> Option<Ref<NamespacedKey, World>> {
         WORLDS_STORAGE.worlds.get(&self.0)
     }

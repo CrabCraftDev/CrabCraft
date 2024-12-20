@@ -9,6 +9,7 @@ pub fn init_handlers(world: &mut World) {
     world.add_handler(network::configuration_packet_handler::configuration_packets);
     world.add_handler(network::incoming_connection::player_login_checks);
     world.add_handler(network::server_list_ping::on_server_list_ping);
+    world.add_handler(network::block_interaction::on_block_break);
 
     // Player entity
     world.add_handler(player::position_handler::on_move);

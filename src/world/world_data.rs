@@ -47,7 +47,6 @@ impl World {
             .ok_or(Error::InvalidPositionInChunk)
     }
 
-    #[allow(dead_code)]
     pub fn set_block(&self, x: i32, y: i16, z: i32, block: Block) -> Result<(), Error> {
         let (chunk_x, chunk_z) = Self::chunk_coordinates(x, z);
         let Some(mut chunk) = self.get_chunk_mut(chunk_x, chunk_z) else {
@@ -71,7 +70,6 @@ impl World {
         }
     }
 
-    #[allow(dead_code)]
     pub fn get_chunk_mut(&self, x: i32, z: i32) -> Option<RefMut<'_, ChunkCoordinates, Chunk>> {
         self.chunks.get_mut(&Self::get_key(x, z))
     }
