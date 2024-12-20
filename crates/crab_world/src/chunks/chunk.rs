@@ -5,6 +5,7 @@ use crate::error::WorldError;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
 use crab_world::chunks::palette::paletted_storage::calculate_bits_per_entry;
+use crab_world::chunks::section::CHUNK_SIZE_SHIFT;
 
 /// The number of chunk sections that fit in the standard overworld height (384 blocks)
 pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
@@ -22,13 +23,15 @@ impl Chunk {
     }
 
     pub fn get_block(&self, x: u8, y: u16, z: u8) -> Option<Block> {
-        let local_y = (y % CHUNK_SIZE as u16) as u8;
-        self.sections[(y / CHUNK_SIZE as u16) as usize].get_block(x, local_y, z)
+        let section_index = (y >> CHUNK_SIZE_SHIFT) as usize;
+        let local_y = (y & (CHUNK_SIZE - 1)) as u8;
+        self.sections[section_index].get_block(x, local_y, z)
     }
 
     pub fn set_block(&mut self, x: u8, y: u16, z: u8, block: Block) -> Result<(), WorldError> {
-        let local_y = (y % CHUNK_SIZE as u16) as u8;
-        self.sections[(y / CHUNK_SIZE as u16) as usize].set_block(x, local_y, z, block)
+        let section_index = (y >> CHUNK_SIZE_SHIFT) as usize;
+        let local_y = (y & (CHUNK_SIZE - 1)) as u8;
+        self.sections[section_index].set_block(x, local_y, z, block)
     }
 
     /// Serializes the section to format used in [Chunk Data packet](crab_protocol::packets::play::ChunkDataAndUpdateLightS2CPacket).

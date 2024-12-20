@@ -7,7 +7,8 @@ use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_registry::REGISTRY;
 use std::fmt::Debug;
 
-pub const CHUNK_SIZE: u8 = 16;
+pub const CHUNK_SIZE: u16 = 16;
+pub const CHUNK_SIZE_SHIFT: u32 = CHUNK_SIZE.trailing_zeros();
 pub const AMOUNT_OF_BIOMES_IN_CHUNK_SECTION: u16 = 4 * 4 * 4;
 pub const AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION: usize = CHUNK_SIZE as usize * CHUNK_SIZE as usize * CHUNK_SIZE as usize;
 
