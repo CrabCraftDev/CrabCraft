@@ -156,8 +156,7 @@ impl PalettedStorage {
                     return Ok(0);
                 }
 
-                let mut storage = BitStorage::empty(AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, self.kind.indirect_min_bits());
-                storage.fill(*value as i64);
+                let storage = BitStorage::empty(AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, self.kind.indirect_min_bits());
 
                 let palette = vec![*value, new_value];
                 let new_palette = Palette::new(palette, storage, &self.kind);

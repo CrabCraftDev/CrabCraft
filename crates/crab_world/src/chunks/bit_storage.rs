@@ -41,13 +41,20 @@ impl BitStorage {
         }
     }
 
-    pub fn fill(&mut self, value: i64) {
+    pub fn fill(&mut self, value: i64) -> Result<(), WorldError> {
+        let mask = self.mask();
+        if value > mask {
+            return Err(WorldError::ValueExceedsMask(value, mask));
+        }
+
         let mut x = 0;
         for i in 0..self.amount_of_values_in_long() {
             x |= value << (i * self.bits_per_entry as usize);
         }
 
         self.data.fill(x);
+
+        Ok(())
     }
 
     pub fn get(&self, index: usize) -> Option<i64> {
