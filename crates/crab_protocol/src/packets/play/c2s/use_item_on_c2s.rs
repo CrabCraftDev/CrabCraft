@@ -16,6 +16,7 @@ pub struct UseItemOnC2SPacket {
     pub cursor_position_y: f32,
     pub cursor_position_z: f32,
     pub is_player_head_inside_block: bool,
+    pub is_world_border_hit: bool,
     #[protocol_attribute(protocol_type = VarInt)]
     pub sequence: i32,
 }
