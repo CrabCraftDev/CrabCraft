@@ -46,10 +46,15 @@ impl Block {
         matches!((self.namespaced_key(), other.namespaced_key()), (Ok(own_key), Ok(other_key)) if own_key == other_key)
     }
 
-    // Checking for air is executed so many times, so it's better to use this
     pub const fn is_air(&self) -> bool {
+        Self::is_air_i64(self.0 as i64)
+    }
+
+    /// Checking for air is executed so many times in (count_non_air_blocks)[crate::chunks::section::ChunkSection::count_non_air_blocks] function
+    /// So it requires i64 instead of Block/u16 to avoid casting
+    pub const fn is_air_i64(block: i64) -> bool {
         // For efficiency, those are hardcoded IDs of air, cave air and void air blocks
-        matches!(self.0, 0 | 13971 | 13972)
+        matches!(block, 0 | 13971 | 13972)
     }
 
     pub fn property<P: BlockData>(&self) -> Result<P::Value, WorldError> {
