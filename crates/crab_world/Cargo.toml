@@ -33,6 +33,10 @@ criterion.workspace = true
 name = "read_chunk"
 harness = false
 
+[[bench]]
+name = "count_blocks"
+harness = false
+
 [[test]]
 name = "chunks"
 path = "tests/chunks/mod.rs"

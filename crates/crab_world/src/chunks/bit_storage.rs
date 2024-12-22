@@ -90,6 +90,34 @@ impl BitStorage {
         Self::from_iter(self.iter(), new_bits_per_value)
     }
 
+    pub fn count<F>(&self, condition: F) -> usize
+    where
+        F: Fn(i64) -> bool,
+    {
+        let mask = self.mask();
+        let numbers_in_long = self.amount_of_values_in_long();
+        let bits_per_entry = self.bits_per_entry as usize;
+
+        let mut count = 0;
+
+        let length = self.amount_of_entries;
+
+        for (n, &i64_value) in self.data.iter().enumerate() {
+            if n >= length {
+                break;
+            }
+
+            for i in 0..numbers_in_long {
+                let extracted = (i64_value >> (i * bits_per_entry)) & mask;
+                if condition(extracted) {
+                    count += 1;
+                }
+            }
+        }
+
+        count
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = i64> + '_ {
         let numbers_in_long = self.amount_of_values_in_long();
         let bits_per_entry = self.bits_per_entry as i64;

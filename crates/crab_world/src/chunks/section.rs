@@ -33,23 +33,28 @@ impl ChunkSection {
     }
 
     pub fn count_non_air_blocks(&mut self) {
-        match &self.blocks.palette {
+        let is_not_air = |block: i64| !Block::is_air_i64(block);
+        self.non_air_block_amount = match &self.blocks.palette {
             Palette::Single(value) => {
-                if !Block(*value as u16).is_air() {
-                    self.non_air_block_amount = AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION as u16;
+                if Block(*value as u16).is_air() {
+                    0
+                } else {
+                    AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION
                 }
             }
-            Palette::Indirect { storage, .. } | Palette::Direct(storage) => {
-                self.non_air_block_amount = 0;
-                for x in storage.iter() {
-                    if let Some(block) = self.blocks.palette.value_for(x as u32) {
-                        if !Block(block as u16).is_air() {
-                            self.non_air_block_amount += 1;
-                        }
-                    }
+            Palette::Indirect {
+                values_lookup_table,
+                storage,
+            } => {
+                let has_air = values_lookup_table.iter().any(|&value| Block::is_air_i64(value as i64));
+                if has_air {
+                    storage.count(is_not_air)
+                } else {
+                    AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION
                 }
             }
-        };
+            Palette::Direct(storage) => storage.count(is_not_air),
+        } as u16;
     }
 
     pub fn serialize_to_mc_format(&self, chunk_section: &mut BytesMut) -> Result<(), WorldError> {
