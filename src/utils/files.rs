@@ -1,14 +1,14 @@
 use crate::utils::errors::Error;
 use chrono::{DateTime, Local};
 use crab_protocol::types::namespaced_key::NamespacedKey;
-use lazy_static::lazy_static;
-use std::fs::{self};
 use std::path::{Path, PathBuf};
 use std::{env, io};
+use std::{
+    fs::{self},
+    sync::LazyLock,
+};
 
-lazy_static! {
-    pub static ref FILES: ServerFiles = ServerFiles::new();
-}
+pub static FILES: LazyLock<ServerFiles> = LazyLock::new(ServerFiles::new);
 
 pub struct ServerFiles {
     pub server_root: PathBuf,
