@@ -9,7 +9,6 @@ use crate::errors::Error;
 
 use crate::configuration_entry::configuration_entry::ROOT_ENTRY_NAME;
 use crate::configuration_entry::ConfigurationEntry;
-use crate::errors::Error::{Serde, IO};
 use crate::handlers::format_handler::ConfigFormatHandler;
 
 pub struct YamlHandler;
@@ -105,54 +104,24 @@ impl ConfigFormatHandler for YamlHandler {
                 configuration_file_path: file_path,
             });
         }
-        let result_file = OpenOptions::new().read(true).open(file_path);
-        let file = match result_file {
-            Ok(file) => file,
-            Err(error) => return Err(IO(error)),
-        };
 
-        let read_result = serde_yml::from_reader::<File, Value>(file);
+        let file = OpenOptions::new().read(true).open(&file_path)?;
+        let yaml_value: Value = serde_yml::from_reader(file)?;
+        let mapping = yaml_value.as_mapping().ok_or(Error::UndefinedBehavior)?;
 
-        match read_result {
-            Ok(result) => {
-                if !result.is_mapping() {
-                    return Err(Error::UndefinedBehavior);
-                }
-
-                let mapping = result.as_mapping().unwrap();
-                Self::map_values_to_configuration_entry(mapping)
-            }
-            Err(error) => Err(Serde(error)),
-        }
+        Self::map_values_to_configuration_entry(mapping)
     }
 
     fn write(&self, file_path: String, contents: ConfigurationEntry) -> Result<(), Error> {
-        let path = Path::new(&file_path);
+        let mut file = File::create(&file_path)?;
 
-        let result = if !path.exists() {
-            File::create_new(&file_path)
-        } else {
-            Ok(OpenOptions::new().write(true).open(file_path).unwrap())
-        };
+        let serialized = serde_yml::to_string(&contents)?;
 
-        if result.is_err() {
-            return Err(IO(result.err().unwrap()));
-        }
+        // TODO: FIND ANY WORKING LIBRARY WITH COMMENT HANDLING serde_yaml is fake news
+        let regex = Regex::new(r#"(comment: ')(.*)('\n)"#).unwrap();
+        let modified_content = regex.replace_all(&serialized, "#$2\n");
 
-        let mut file = result.unwrap();
-
-        let conversion_result = serde_yml::to_string(&contents);
-        match conversion_result {
-            Ok(result) => {
-                // TODO: FIND ANY WORKING LIBRARY WITH COMMENT HANDLING serde_yaml is fake news
-                let regex = Regex::new(r#"(comment: ')(.*)('\n)"#).unwrap();
-                let write_result = file.write_all(regex.replace_all(&result, "#$2\n").to_string().as_bytes());
-                match write_result {
-                    Ok(_) => Ok(()),
-                    Err(err) => Err(IO(err)),
-                }
-            }
-            Err(error) => Err(Serde(error)),
-        }
+        file.write_all(modified_content.as_bytes())?;
+        Ok(())
     }
 }
