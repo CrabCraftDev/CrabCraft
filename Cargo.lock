@@ -329,7 +329,6 @@ dependencies = [
  "futures",
  "include_dir",
  "kanal",
- "lazy_static",
  "nohash-hasher",
  "nu-ansi-term 0.50.1",
  "parking_lot",

@@ -61,7 +61,6 @@ supports-color = "3.0.2"
 nohash-hasher = "0.2.0"
 crossbeam = "0.8.4"
 kanal = "0.1.0-pre8"
-lazy_static = "1.5.0"
 parking_lot = "0.12.3"
 futures = { version = "0.3.31", default-features = false, features = ["std"] }
 tracing.workspace = true
