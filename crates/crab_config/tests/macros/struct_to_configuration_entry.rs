@@ -11,7 +11,7 @@ fn struct_to_configuration_entry() {
         another_one: 1,
         test_value: AnotherTestConfig { another_test_value: 1 },
     };
-    let configuration_entries = x.map_to_configuration_entry();
+    let configuration_entries = x.as_configuration_entry();
     let entries: Vec<_> = configuration_entries.into_iter().collect();
 
     assert_eq!(

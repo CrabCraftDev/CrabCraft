@@ -1,4 +1,4 @@
-use crate::configuration::configuration_entry::utils::get_test_configuration_entry;
+use crate::utils::get_test_configuration_entry;
 use crab_config::configuration_entry::configuration_entry_search::get_configuration_entry_from_flat_key;
 
 pub const NEWLY_ADDED_KEY: &str = "1234567";

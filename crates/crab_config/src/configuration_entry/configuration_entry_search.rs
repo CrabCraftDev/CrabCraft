@@ -11,6 +11,7 @@ use crate::errors::Error;
 /// You can access `source` `ConfigurationKey` from tree by using flat key `test.source` \
 /// Example:
 /// ```rust
+/// use crab_config::Value;
 /// use crab_config::configuration_entry::configuration_entry_search::get_configuration_entry_from_flat_key;
 /// use crab_config::configuration_entry::ConfigurationEntry;
 /// // Implementation of above yaml
@@ -24,7 +25,7 @@ use crate::errors::Error;
 ///                 ConfigurationEntry::new(
 ///                 "source".to_owned(),
 ///                 None,
-///                 Some("2".to_owned()),
+///                 Some(Value::String("2".to_owned())),
 ///                 false
 ///              )
 ///          ]),
@@ -37,7 +38,7 @@ use crate::errors::Error;
 /// );
 /// // Usage of the function
 /// let value = get_configuration_entry_from_flat_key(&configuration_key, "test.source").unwrap();
-/// println!("{}", value.get_value().unwrap());
+/// println!("{:?}", value.get_value().unwrap());
 /// ```
 ///
 pub fn get_configuration_entry_from_flat_key(

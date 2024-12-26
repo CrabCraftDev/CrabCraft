@@ -13,20 +13,15 @@ use crate::handlers::format_handler::ConfigFormatHandler;
 
 pub struct YamlHandler;
 
-const NULL_VALUE_ENUM_DEFAULT: &str = "NULL";
-
 impl YamlHandler {
     pub fn map_values_to_configuration_entry(mapping: &Mapping) -> Result<ConfigurationEntry, Error> {
-        let result_of_config_entries = Self::get_configuration_entries_from_mapping(mapping);
-        match result_of_config_entries {
-            Ok(config_entries) => Ok(ConfigurationEntry::new(
-                ROOT_ENTRY_NAME.to_string(),
-                Some(config_entries),
-                None,
-                true,
-            )),
-            Err(error) => Err(error),
-        }
+        let config_entries = Self::get_configuration_entries_from_mapping(mapping)?;
+        Ok(ConfigurationEntry::new(
+            ROOT_ENTRY_NAME.to_string(),
+            Some(config_entries),
+            None,
+            true,
+        ))
     }
 
     fn get_configuration_entries_from_mapping(mapping: &Mapping) -> Result<Vec<ConfigurationEntry>, Error> {
@@ -36,6 +31,7 @@ impl YamlHandler {
             if !key.is_string() {
                 continue;
             }
+
             let key_string = key.as_str().unwrap().to_string();
 
             if value.is_mapping() {
@@ -48,51 +44,11 @@ impl YamlHandler {
                     }
                     Err(error) => return Err(error),
                 }
-            } else if value.is_string() || value.is_bool() || value.is_number() || value.is_null() {
-                config_entries.push(ConfigurationEntry::new(
-                    key_string,
-                    None,
-                    Some(Self::convert_value_to_string(value)),
-                    false,
-                ))
             } else {
-                return Err(Error::MatchedUnsupportedTypes {
-                    is_mapping: value.is_mapping(),
-                    is_sequence: value.is_sequence(),
-                });
+                config_entries.push(ConfigurationEntry::new(key_string, None, Some(value.clone()), false));
             }
         }
         Ok(config_entries)
-    }
-
-    /// It doesn't correctly convert all Value enums
-    /// due to how already we convert some values in function `get_configuration_entries_from_mapping`
-    /// because they're hierarchical and they cant be easily turned into string
-    fn convert_value_to_string(value: &Value) -> String {
-        match value {
-            Value::Bool(_) => value.as_bool().unwrap().to_string(),
-            Value::Number(_) => {
-                if value.is_f64() {
-                    value.as_f64().unwrap().to_string()
-                } else if value.is_i64() {
-                    value.as_i64().unwrap().to_string()
-                } else {
-                    value.as_u64().unwrap().to_string()
-                }
-            }
-            Value::String(_) => value.as_str().unwrap().to_string(),
-            Value::Null => NULL_VALUE_ENUM_DEFAULT.to_string(),
-            // These cases shouldn't be handled because you can't convert them to string
-            Value::Sequence(_) => panic!(
-                "UNDEFINED BEHAVIOR Value converted in format handler was Sequence expected String | number | boolean"
-            ),
-            Value::Mapping(_) => panic!(
-                "UNDEFINED BEHAVIOR Value converted in format handler was Mapping expected String | number | boolean"
-            ),
-            Value::Tagged(_) => panic!(
-                "UNDEFINED BEHAVIOR Value converted in format handler was Tagged expected String | number | boolean"
-            ),
-        }
     }
 }
 

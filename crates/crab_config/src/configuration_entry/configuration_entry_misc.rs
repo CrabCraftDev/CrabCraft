@@ -1,6 +1,7 @@
 use crate::configuration_entry::ConfigurationEntry;
 use crate::configuration_entry::configuration_entry::{FLAT_PATH_SEPARATOR, ROOT_ENTRY_NAME};
 use crate::errors::Error;
+use serde_yml::Value;
 use std::collections::HashMap;
 
 impl ConfigurationEntry {
@@ -16,11 +17,11 @@ impl ConfigurationEntry {
     /// Gives out following hashmap with keys: <br />
     /// test.test3 <br />
     /// test2 <br />
-    pub fn serialize_to_flatten_map_with_path(&self) -> Result<HashMap<String, String>, Error> {
+    pub fn serialize_to_flatten_map_with_path(&self) -> Result<HashMap<String, Value>, Error> {
         let separator = FLAT_PATH_SEPARATOR.to_string();
 
         if !self.does_next_exist() {
-            let mut map: HashMap<String, String> = HashMap::new();
+            let mut map: HashMap<String, Value> = HashMap::new();
             let Some(current_value) = self.get_value() else {
                 return Ok(map);
             };
@@ -37,8 +38,8 @@ impl ConfigurationEntry {
         separator: &String,
         parent_key: &String,
         array: &Vec<ConfigurationEntry>,
-    ) -> Result<HashMap<String, String>, Error> {
-        let mut map: HashMap<String, String> = HashMap::new();
+    ) -> Result<HashMap<String, Value>, Error> {
+        let mut map: HashMap<String, Value> = HashMap::new();
 
         for element in array {
             let flatten_map = element.serialize_to_flatten_map_with_path()?;

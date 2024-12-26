@@ -210,7 +210,7 @@ struct Hunger {
 
 #[derive(Config, Serialize, Deserialize, Debug)]
 struct MaxTickTime {
-    #[default_value("200")]
+    #[default_value(200)]
     tile: u8,
     entity: u8,
 }

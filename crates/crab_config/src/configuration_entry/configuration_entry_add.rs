@@ -1,5 +1,6 @@
-use crate::configuration_entry::ConfigurationEntry;
 use crate::configuration_entry::configuration_entry::FLAT_PATH_SEPARATOR;
+use crate::configuration_entry::ConfigurationEntry;
+use serde_yml::Value;
 
 impl ConfigurationEntry {
     // Useful method in testing
@@ -22,7 +23,7 @@ impl ConfigurationEntry {
         self.execute_for_configuration_entry_in_flat_path(flat_path, &add_child_by_flat_path)
     }
 
-    pub fn add_key_value_by_flat_path(&mut self, flat_path: &str, key: &str, value: String) -> bool {
+    pub fn add_key_value_by_flat_path(&mut self, flat_path: &str, key: &str, value: Value) -> bool {
         let add_value_by_flat_path = |x: &mut ConfigurationEntry| {
             if x.children.is_none() {
                 return;

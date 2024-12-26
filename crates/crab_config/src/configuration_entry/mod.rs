@@ -1,3 +1,5 @@
+use serde_yml::Value;
+
 #[allow(clippy::module_inception)]
 pub mod configuration_entry;
 pub mod configuration_entry_add;
@@ -10,6 +12,6 @@ pub struct ConfigurationEntry {
     pub key: String,
     pub documentation: Option<String>,
     children: Option<Vec<ConfigurationEntry>>,
-    value: Option<String>,
+    value: Option<Value>,
     is_root: bool,
 }
