@@ -14,7 +14,6 @@ test_value:
     let serde_mapping = serde_yml::from_str::<Mapping>(test_file_contents).unwrap();
 
     let configuration_entry = YamlHandler::map_values_to_configuration_entry(&serde_mapping).unwrap();
-    println!("{:?}", configuration_entry);
     let cfg = TestConfig::map(configuration_entry);
 
     assert_eq!(cfg.version, 8);

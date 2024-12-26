@@ -1,4 +1,4 @@
-use crate::configuration::configuration_entry::utils::get_test_configuration_entry;
+use crate::utils::get_test_configuration_entry;
 
 #[test]
 fn flat_path_removal() {

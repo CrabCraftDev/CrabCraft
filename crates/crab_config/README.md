@@ -1,6 +1,7 @@
 # Crab Config
+System for handling configuration files in CrabCraft.
 
-System for handling configuration files in CrabCraft
+Based on Java libraries [Configurate](https://github.com/SpongePowered/Configurate) and [BoostedYAML](https://dejvokep.gitbook.io/boostedyaml)
 
 ## Documentation
 
@@ -53,10 +54,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Config, Serialize, Deserialize)]
 struct MyConfig {
-    #[default_value("0")]
+    #[default_value(0)]
     version: u32,
     // Default value used to during saving defaults
-    #[default_value("69420")]
+    #[default_value(69420)]
     some_thing: u32 
 }
 fn main() {
@@ -103,10 +104,10 @@ Saving also will save any documentation we write or change
 ```rust
 #[derive(Config, Serialize, Deserialize)]
 struct MyConfig {
-    #[default_value("0")]
+    #[default_value(0)]
     version: u32,
     /// SOME TEST VALUE
-    #[default_value("69420")]
+    #[default_value(69420)]
     some_thing: u32 
 }
 fn main() {
@@ -132,10 +133,10 @@ For structural changes, use the processor system instead.
 ```rust
 #[derive(Config, Serialize, Deserialize)]
 struct MyConfig {
-    #[default_value("0")]
+    #[default_value(0)]
     version: u32,
     /// SOME TEST VALUE
-    #[default_value("69420")]
+    #[default_value(69420)]
     some_thing: u32 
 }
 fn main() {
@@ -143,7 +144,7 @@ fn main() {
     let my_config = configurable
         .read_and_save_default_if_config_doesnt_exists();
     // This function will map it into a tree more friendly for saving
-    let configuration_entries = my_config.map_to_configuration_entry();
+    let configuration_entries = my_config.as_configuration_entry();
     // Because the function above will give us Vector we need to convert it into root node
     // root node will be the main head of the tree and is constantly used for the saving and reading process
     let root_configuration_entry = ConfigurationEntry::new(

@@ -14,12 +14,14 @@ pub struct ServerFiles {
     pub server_root: PathBuf,
     pub logs: PathBuf,
     pub worlds: PathBuf,
+    pub config: PathBuf,
 }
 
 impl ServerFiles {
     pub fn create_directories(&self) -> Result<(), Error> {
         fs::create_dir_all(&self.logs)?;
         fs::create_dir_all(&self.worlds)?;
+        fs::create_dir_all(&self.config)?;
         Ok(())
     }
 
@@ -74,6 +76,7 @@ impl Default for ServerFiles {
         ServerFiles {
             logs: server_root.join("logs"),
             worlds: server_root.join("worlds"),
+            config: server_root.join("config"),
             server_root,
         }
     }

@@ -16,7 +16,7 @@ const VERSION_CONFIG_FIELD_NAME: &str = "version";
 
 pub struct Configurable<T: Config> {
     config_file_path: String,
-    implementation: Box<dyn ConfigFormatHandler>,
+    pub implementation: Box<dyn ConfigFormatHandler>,
     /// Placeholder for the generic type `T`.
     /// This ensures the generic type `T` is utilized, as Rust requires all generic types to be used.
     /// Without this, the compiler will throw an error, stating that the type parameter `T` is unused.
@@ -37,30 +37,15 @@ impl<T: Config> Configurable<T> {
         if Path::new(&config_path).exists() {
             return self.read_config_and_verify(processors);
         }
-        let default_config = T::default();
 
-        let write_result = self.implementation.write(
-            self.config_file_path.clone(),
-            ConfigurationEntry::new(
-                ROOT_ENTRY_NAME.to_string(),
-                Some(default_config.map_to_configuration_entry()),
-                None,
-                false,
-            ),
-        );
-        match write_result {
-            Ok(_) => Ok(default_config),
-            Err(error) => Err(error),
-        }
+        let default_config = T::default();
+        self.write(default_config.as_configuration_entry())?;
+        Ok(default_config)
     }
 
     pub fn read_config_and_verify(&self, processors: Vec<Processor>) -> Result<T, Error> {
-        let maybe_unverified_config = self.read_config();
-
-        match maybe_unverified_config {
-            Ok(entry) => self.verify_config(&mut entry.clone(), processors),
-            Err(error) => Err(error),
-        }
+        let mut entry = self.read_config()?;
+        self.verify_config(&mut entry, processors)
     }
 
     fn verify_config(
@@ -78,11 +63,11 @@ impl<T: Config> Configurable<T> {
 
         let config_version = maybe_config_version
             .unwrap()
-            .parse::<u32>()
-            .map_err(|_| Error::InvalidConfigVersion)?;
+            .as_i64()
+            .ok_or(Error::InvalidConfigVersion)?;
 
         let modified_result =
-            Self::apply_changelogs_to_configuration_entry(configuration_entry, config_version, processors);
+            Self::apply_changelogs_to_configuration_entry(configuration_entry, config_version as u32, processors);
 
         modified_result.map(|modified_configuration_entry| T::map(modified_configuration_entry.clone()))
     }
@@ -92,27 +77,31 @@ impl<T: Config> Configurable<T> {
     /// just dumps config into more manageable format of `ConfigurationEntry`
     pub fn read_config(&self) -> Result<ConfigurationEntry, Error> {
         let config_file_path = &self.config_file_path;
-        let result = self.implementation.read(String::from(config_file_path));
-        match result {
-            Ok(mut configuration_entry) => {
-                // TODO: In future find/create library that handles reading documentation comments above entry :)
-                // Current implementation just copies over the documentation from already written docs from code
-                configuration_entry.copy_docs_from(&ConfigurationEntry::new(
-                    "root".to_string(),
-                    Some(T::default().map_to_configuration_entry()),
-                    None,
-                    true,
-                ));
-                Ok(configuration_entry.clone())
-            }
-            Err(e) => Err(e),
-        }
+        let mut configuration_entry = self.implementation.read(String::from(config_file_path))?;
+
+        // TODO: In future find/create library that handles reading documentation comments above entry :)
+        // Current implementation just copies over the documentation from already written docs from code
+        configuration_entry.copy_docs_from(&ConfigurationEntry::new(
+            "root".to_string(),
+            Some(T::default().as_configuration_entry()),
+            None,
+            true,
+        ));
+
+        Ok(configuration_entry)
     }
 
-    pub fn write_config(&self, config_entry: ConfigurationEntry) -> Result<(), Error> {
-        let config_file_path = self.config_file_path.clone();
+    pub fn write(&self, config_entry: Vec<ConfigurationEntry>) -> Result<(), Error> {
+        self.write_node(ConfigurationEntry::new(
+            ROOT_ENTRY_NAME.to_string(),
+            Some(config_entry),
+            None,
+            false,
+        ))
+    }
 
-        self.implementation.write(config_file_path, config_entry)
+    pub fn write_node(&self, node: ConfigurationEntry) -> Result<(), Error> {
+        self.implementation.write(self.config_file_path.clone(), node)
     }
 
     fn apply_changelogs_to_configuration_entry(

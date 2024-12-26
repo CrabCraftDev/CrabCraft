@@ -1,7 +1,7 @@
+use crate::configuration_entry::ConfigurationEntry;
 use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
-
-use crate::configuration_entry::ConfigurationEntry;
+use serde_yml::Value;
 
 use crate::errors::Error;
 
@@ -14,7 +14,7 @@ impl ConfigurationEntry {
     pub fn new(
         key: String,
         children: Option<Vec<ConfigurationEntry>>,
-        value: Option<String>,
+        value: Option<Value>,
         is_root: bool,
     ) -> ConfigurationEntry {
         Self::new_with_doc(key, children, value, None, is_root).unwrap()
@@ -23,7 +23,7 @@ impl ConfigurationEntry {
     pub fn new_with_doc(
         key: String,
         children: Option<Vec<ConfigurationEntry>>,
-        value: Option<String>,
+        value: Option<Value>,
         documentation: Option<String>,
         is_root: bool,
     ) -> Result<ConfigurationEntry, Error> {
@@ -46,7 +46,7 @@ impl ConfigurationEntry {
         })
     }
 
-    pub fn new_value(key: String, value: String) -> ConfigurationEntry {
+    pub fn new_value(key: String, value: Value) -> ConfigurationEntry {
         ConfigurationEntry {
             key,
             children: None,
@@ -64,7 +64,7 @@ impl ConfigurationEntry {
         }
     }
 
-    pub fn get_value(&self) -> Option<&String> {
+    pub fn get_value(&self) -> Option<&Value> {
         self.value.as_ref()
     }
 
@@ -80,7 +80,7 @@ impl ConfigurationEntry {
         self.is_root
     }
 
-    pub fn set_value(&mut self, value: String) {
+    pub fn set_value(&mut self, value: Value) {
         if self.is_root || self.children.is_some() {
             return;
         }
@@ -88,7 +88,7 @@ impl ConfigurationEntry {
         self.value = Some(value);
     }
 
-    pub fn set_value_by_flat_path(&mut self, flat_path: &str, new_value: String) -> bool {
+    pub fn set_value_by_flat_path(&mut self, flat_path: &str, new_value: Value) -> bool {
         self.add_flat_path_if_path_doesnt_exist(flat_path);
         let set_value_function = |x: &mut ConfigurationEntry| {
             if x.children.is_some() {
@@ -142,7 +142,7 @@ impl ConfigurationEntry {
         false
     }
 
-    pub fn get_value_from_flat_path(&self, flat_path: &str) -> Option<&String> {
+    pub fn get_value_from_flat_path(&self, flat_path: &str) -> Option<&Value> {
         let mut parts: Vec<&str> = flat_path.split(&FLAT_PATH_SEPARATOR.to_string()).collect();
         let first_part = parts.first().unwrap().to_string();
 

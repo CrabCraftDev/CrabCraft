@@ -7,7 +7,7 @@ use std::iter::Map;
 use quote::quote;
 use syn::punctuated::{Iter, Punctuated};
 use syn::token::Comma;
-use syn::{Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, LitStr, Meta, Token, Type, parse_macro_input};
+use syn::{parse_macro_input, Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, Meta, Type};
 
 pub fn config_macro(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -53,14 +53,14 @@ pub fn config_macro(input: TokenStream) -> TokenStream {
                         }
                     }
 
-                    fn map_to_configuration_entry(&self) -> Vec<crab_config::configuration_entry::ConfigurationEntry> {
+                    fn as_configuration_entry(&self) -> Vec<crab_config::configuration_entry::ConfigurationEntry> {
                         let mut vector: Vec<crab_config::configuration_entry::ConfigurationEntry> = Vec::new();
                         #(#fields_to_configuration_entry_mapping)*
                         vector
                     }
 
-                    fn get_default_fields(&self) -> std::collections::HashMap<String, String>  {
-                        let mut map: std::collections::HashMap<String,String> = std::collections::HashMap::new();
+                    fn get_default_fields(&self) -> std::collections::HashMap<String, crab_config::Value>  {
+                        let mut map: std::collections::HashMap<String, crab_config::Value> = std::collections::HashMap::new();
                         #(#fields_to_defaults_mapping)*
                         return map;
                     }
@@ -89,7 +89,7 @@ fn fields_to_configuration_entry(
         let is_primitive = is_primitive(field_ty);
 
         let variables_declaration_expression = quote! {
-                    let mut value: core::option::Option<String> = core::option::Option::None;
+                    let mut value: core::option::Option<crab_config::Value> = core::option::Option::None;
                     let mut children: core::option::Option<Vec<crab_config::configuration_entry::ConfigurationEntry>> = core::option::Option::None;
                     let mut maybe_some_children: Vec<crab_config::configuration_entry::ConfigurationEntry> = Vec::new();
         };
@@ -97,7 +97,7 @@ fn fields_to_configuration_entry(
         let field_value_expression = if is_primitive {
             quote! {
                         value =
-                            core::option::Option::Some(String::from(format!("{}", &self.#field_name)));
+                            core::option::Option::Some(crab_config::to_value(&self.#field_name).unwrap());
                     }
         } else {
             quote! {
@@ -118,7 +118,7 @@ fn fields_to_configuration_entry(
                     }
         } else {
             quote! {
-                        maybe_some_children = self.#field_name.map_to_configuration_entry();
+                        maybe_some_children = self.#field_name.as_configuration_entry();
                         children =
                         if (!&maybe_some_children.is_empty()) {
                                 core::option::Option::Some((&maybe_some_children).clone())
@@ -164,17 +164,18 @@ fn collect_docs(field: &Field) -> String {
         .collect::<Vec<_>>()
         .join("\n")
 }
+
 fn fields_to_default(
     named_fields: &Punctuated<Field, Comma>,
 ) -> Map<Iter<Field>, fn(&Field) -> proc_macro2::TokenStream> {
     named_fields.iter().map(|field| {
         let default = collect_default_value(field);
-        if default.is_empty() {
+        if default.is_none() {
             return quote! {};
         }
         let field_name = &field.ident;
         quote! {
-            map.insert(stringify!(#field_name).to_string(), #default.to_string());
+            map.insert(stringify!(#field_name).to_string(), crab_config::to_value(#default).unwrap());
         }
     })
 }
@@ -190,7 +191,7 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
                 field_configuration_entries.push(
                 crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
                         stringify!(#field_name).to_string(),
-                        core::option::Option::Some(<#field_type as crab_config::types::config::Config>::map_to_configuration_entry(&field_type_default)),
+                        core::option::Option::Some(<#field_type as crab_config::types::config::Config>::as_configuration_entry(&field_type_default)),
                         core::option::Option::None,
                         core::option::Option::Some(#docs.to_string()),
                         false
@@ -198,16 +199,19 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
                 );
             }
         }
-        let mut default = collect_default_value(field);
-        if default.is_empty() {
-            default = "0".to_string();
-        }
+
+        let default = if let Some(default_value) = collect_default_value(field) {
+            quote! { #default_value }
+        } else {
+            quote! { #field_type::default() }
+        };
+
         quote! {
             field_configuration_entries.push(
                 crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
                         stringify!(#field_name).to_string(),
                         core::option::Option::None,
-                        core::option::Option::Some(#default.to_string()),
+                        core::option::Option::Some(crab_config::to_value(#default).unwrap()),
                         core::option::Option::Some(#docs.to_string()),
                         false
                     ).unwrap()
@@ -229,34 +233,23 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
     }
 }
 
-fn collect_default_value(field: &Field) -> String {
-    field
-        .attrs
-        .iter()
-        .filter_map(|attr| {
-            if attr.path().is_ident("default_value") {
-                if let Meta::NameValue(meta) = &attr.meta {
-                    if let Expr::Lit(ExprLit {
-                        lit: Lit::Str(lit_str), ..
-                    }) = &meta.value
-                    {
-                        return Some(lit_str.value());
-                    }
-                } else if let Meta::List(list) = &attr.meta {
-                    if let Ok(parsed_args) = list.parse_args_with(Punctuated::<LitStr, Token![,]>::parse_terminated) {
-                        return Some(
-                            parsed_args
-                                .iter()
-                                .map(|it| it.value())
-                                .collect::<Vec<String>>()
-                                .join(","),
-                        );
-                    }
-                }
+fn collect_default_value(field: &Field) -> Option<ExprLit> {
+    for attr in &field.attrs {
+        // panic!("abc {:?}", attr.path().get_ident());
+        if !attr.path().is_ident("default_value") {
+            continue;
+        }
+
+        if let Meta::List(meta) = attr.meta.clone() {
+            // panic!("GOOD META {:?}", );
+            // panic!("default_value can only be used with a single value {:?} {:?}", meta.path.get_ident(), meta.value.to_token_stream());
+            if let Ok(val) = meta.parse_args::<ExprLit>() {
+                return Some(val);
             }
-            None
-        })
-        .collect::<String>()
+        }
+    }
+
+    None
 }
 
 fn is_primitive(field_type: &Type) -> bool {
