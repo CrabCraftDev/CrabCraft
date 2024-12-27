@@ -24,11 +24,11 @@ pub fn config_macro(input: TokenStream) -> TokenStream {
                 let field_name = &field.ident;
                 let field_type = &field.ty;
                 quote! {
-                        #field_name: {
-                            let entry = children_map.remove(stringify!(#field_name)).expect(concat!("Missing entry for field: ", stringify!(#field_name)));
-                            <#field_type as crab_config::types::config::Config>::map(entry)
-                        }
+                    #field_name: {
+                        let entry = children_map.remove(stringify!(#field_name)).expect(concat!("Missing entry for field: ", stringify!(#field_name)));
+                        <#field_type as crab_config::types::config::Config>::map(entry)
                     }
+                }
             });
 
             let fields_to_configuration_entry_mapping = fields_to_configuration_entry(&named_fields);
@@ -89,58 +89,55 @@ fn fields_to_configuration_entry(
         let is_primitive = is_primitive(field_ty);
 
         let variables_declaration_expression = quote! {
-                    let mut value: core::option::Option<crab_config::Value> = core::option::Option::None;
-                    let mut children: core::option::Option<Vec<crab_config::configuration_entry::ConfigurationEntry>> = core::option::Option::None;
-                    let mut maybe_some_children: Vec<crab_config::configuration_entry::ConfigurationEntry> = Vec::new();
+            let mut value: core::option::Option<crab_config::Value> = None;
+            let mut children: core::option::Option<Vec<crab_config::configuration_entry::ConfigurationEntry>> = None;
+            let mut maybe_some_children: Vec<crab_config::configuration_entry::ConfigurationEntry> = Vec::new();
         };
 
         let field_value_expression = if is_primitive {
             quote! {
-                        value =
-                            core::option::Option::Some(crab_config::to_value(&self.#field_name).unwrap());
-                    }
+                value = Some(crab_config::to_value(&self.#field_name).unwrap());
+            }
         } else {
             quote! {
-                        value = core::option::Option::None;
-                    }
+                value = None;
+            }
         };
 
         let docs = collect_docs(field);
         let docs_option = if docs.is_empty() {
-            quote! { core::option::Option::None }
+            quote! { None }
         } else {
-            quote! { core::option::Option::Some(#docs.to_owned()) }
+            quote! { Some(#docs.to_owned()) }
         };
 
         let children_value_expression = if is_primitive {
             quote! {
-                        children = core::option::Option::None;
-                    }
+                children = None;
+            }
         } else {
             quote! {
-                        maybe_some_children = self.#field_name.as_configuration_entry();
-                        children =
-                        if (!&maybe_some_children.is_empty()) {
-                                core::option::Option::Some((&maybe_some_children).clone())
-                            }
-                            else {
-                                core::option::Option::None
-                            };
-                    }
+                maybe_some_children = self.#field_name.as_configuration_entry();
+                children = if (!&maybe_some_children.is_empty()) {
+                    Some((&maybe_some_children).clone())
+                } else {
+                    None
+                };
+            }
         };
 
         quote! {
-                    #variables_declaration_expression
-                    #children_value_expression
-                    #field_value_expression
-                    vector.push(crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
-                        stringify!(#field_name).to_owned(),
-                        children,
-                        value,
-                        #docs_option,
-                        false
-                    ).unwrap());
-                }
+            #variables_declaration_expression
+            #children_value_expression
+            #field_value_expression
+            vector.push(crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
+                stringify!(#field_name).to_owned(),
+                children,
+                value,
+                #docs_option,
+                false
+            ).unwrap());
+        }
     })
 }
 
@@ -173,6 +170,7 @@ fn fields_to_default(
         if default.is_none() {
             return quote! {};
         }
+
         let field_name = &field.ident;
         quote! {
             map.insert(stringify!(#field_name).to_string(), crab_config::to_value(#default).unwrap());
@@ -191,9 +189,9 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
                 field_configuration_entries.push(
                 crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
                         stringify!(#field_name).to_string(),
-                        core::option::Option::Some(<#field_type as crab_config::types::config::Config>::as_configuration_entry(&field_type_default)),
-                        core::option::Option::None,
-                        core::option::Option::Some(#docs.to_string()),
+                        Some(<#field_type as crab_config::types::config::Config>::as_configuration_entry(&field_type_default)),
+                        None,
+                        Some(#docs.to_string()),
                         false
                     ).unwrap()
                 );
@@ -210,9 +208,9 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
             field_configuration_entries.push(
                 crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
                         stringify!(#field_name).to_string(),
-                        core::option::Option::None,
-                        core::option::Option::Some(crab_config::to_value(#default).unwrap()),
-                        core::option::Option::Some(#docs.to_string()),
+                        None,
+                        Some(crab_config::to_value(#default).unwrap()),
+                        Some(#docs.to_string()),
                         false
                     ).unwrap()
             );
@@ -225,9 +223,9 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
 
         <#name_of_config as crab_config::types::config::Config>::map(crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
             "root".to_string(),
-            core::option::Option::Some(field_configuration_entries),
-            core::option::Option::None,
-            core::option::Option::None,
+            Some(field_configuration_entries),
+            None,
+            None,
             true
         ).unwrap())
     }
@@ -235,14 +233,11 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
 
 fn collect_default_value(field: &Field) -> Option<ExprLit> {
     for attr in &field.attrs {
-        // panic!("abc {:?}", attr.path().get_ident());
         if !attr.path().is_ident("default_value") {
             continue;
         }
 
-        if let Meta::List(meta) = attr.meta.clone() {
-            // panic!("GOOD META {:?}", );
-            // panic!("default_value can only be used with a single value {:?} {:?}", meta.path.get_ident(), meta.value.to_token_stream());
+        if let Meta::List(meta) = &attr.meta {
             if let Ok(val) = meta.parse_args::<ExprLit>() {
                 return Some(val);
             }
