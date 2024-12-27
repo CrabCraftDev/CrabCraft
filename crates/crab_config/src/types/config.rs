@@ -1,40 +1,43 @@
-use crate::configuration_entry::ConfigurationEntry;
-use serde_yml::{from_value, Value};
-use std::collections::HashMap;
-use std::str::FromStr;
+use crate::error::ConfigError;
+use crate::node::ConfigurationNode;
+use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde_yml::{from_value, to_value};
 
 /// Used to implement serializing specific structs inside config
 pub trait Config: Default {
-    fn map(config_entry: ConfigurationEntry) -> Self;
+    fn from_configuration_node(node: &ConfigurationNode) -> Result<Self, ConfigError>;
 
-    fn as_configuration_entry(&self) -> Vec<ConfigurationEntry>;
-
-    /// Gives out field_name -> default value intended to be stored
-    /// for example with struct:
-    /// ```rust
-    ///
-    /// use crab_macros::Config;
-    /// #[derive(Config)]
-    /// struct MyConfig {
-    ///     #[default_value(200)]
-    ///     some_field: String
-    /// }
-    /// ```
-    /// Will give following hashmap:
-    /// some_field -> 200
-    fn get_default_fields(&self) -> HashMap<String, Value>;
+    fn as_configuration_node(&self) -> ConfigurationNode;
 }
 
-impl<T: serde::de::DeserializeOwned + Default + FromStr> Config for T {
-    fn map(config_entry: ConfigurationEntry) -> Self {
-        from_value(config_entry.get_value().unwrap().clone()).unwrap()
+// Default config trait implementation for primitive types
+// Improve when https://github.com/rust-lang/rust/issues/31844 is fully stabilized
+
+pub trait PrimitiveConfig: Default + Serialize + DeserializeOwned {}
+impl PrimitiveConfig for i8 {}
+impl PrimitiveConfig for i32 {}
+impl PrimitiveConfig for i64 {}
+impl PrimitiveConfig for u8 {}
+impl PrimitiveConfig for u32 {}
+impl PrimitiveConfig for u64 {}
+impl PrimitiveConfig for bool {}
+impl PrimitiveConfig for f32 {}
+impl PrimitiveConfig for f64 {}
+impl PrimitiveConfig for String {}
+impl<T: PrimitiveConfig> PrimitiveConfig for Vec<T> {}
+
+impl<T> Config for T
+where
+    T: PrimitiveConfig,
+{
+    fn from_configuration_node(node: &ConfigurationNode) -> Result<Self, ConfigError> {
+        let value = node.get_value().ok_or(ConfigError::FoundValueExpectedMapping)?;
+
+        from_value(value.clone()).map_err(|error| ConfigError::InvalidFieldValue { serde_error: error })
     }
 
-    fn as_configuration_entry(&self) -> Vec<ConfigurationEntry> {
-        unimplemented!("Config's map_to_configuration_entry is not implemented!")
-    }
-
-    fn get_default_fields(&self) -> HashMap<String, Value> {
-        unimplemented!("Config's get_default_fields is not implemented!")
+    fn as_configuration_node(&self) -> ConfigurationNode {
+        ConfigurationNode::with_value(to_value(self).unwrap())
     }
 }

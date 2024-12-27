@@ -1,11 +1,11 @@
-use std::process::exit;
-use std::{backtrace::Backtrace, panic, thread};
-
 use chrono::Local;
+use crab_craft::config::manager::ConfigManager;
 use crab_craft::utils::{errors::print_error_report_instructions, log};
 use crab_registry::{REGISTRY, RegistryManager};
 use crab_world::blocks::init_blocks;
 use crab_world::blocks::{Air, BLOCKS, BlockType, CaveAir, VoidAir};
+use std::process::exit;
+use std::{backtrace::Backtrace, panic, thread};
 use tracing::{error, info, info_span};
 
 use crab_craft::mc_server::McServer;
@@ -20,12 +20,17 @@ async fn main() {
     FILES.create_directories().expect("Failed to create server directories");
 
     // Guards make sure all logs are flushed in case of panic
-    let _guards = log::init();
+    let guards = log::init();
 
     let span = info_span!("Init");
     let span_guard = span.enter();
 
     set_panic_hook();
+
+    if ConfigManager::init().is_err() {
+        drop(guards);
+        exit(1);
+    }
 
     REGISTRY.get_or_init(RegistryManager::default);
     BLOCKS.get_or_init(init_blocks);
@@ -35,7 +40,7 @@ async fn main() {
     assert!(VoidAir::default_state_id().unwrap().is_air());
     assert!(Air::default_state_id().unwrap().is_air());
 
-    let mc_server = McServer::new("127.0.0.1:25565".to_string());
+    let mc_server = McServer::new();
 
     let startup_finish = Local::now().timestamp_millis();
     info!("CrabCraft started in {}ms!", startup_finish - startup_begin);

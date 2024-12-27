@@ -1,4 +1,4 @@
-use crab_config::configuration_entry::ConfigurationEntry;
+use crab_config::node::ConfigurationNode;
 use crab_config::types::config::Config;
 use crab_macros::Config;
 use serde::{Deserialize, Serialize};
@@ -11,41 +11,35 @@ use std::path::Path;
 pub struct TestConfig {
     /// First value documentation
     /// Which has second line :3
-    #[default_value(0)]
-    pub version: u8,
+    #[default_value("0.0.2".to_string())]
+    pub _version: String,
     /// Second value "documentation"
     #[default_value(264306)]
     pub test: u32,
 }
 
-pub fn get_test_configuration_entry() -> ConfigurationEntry {
-    ConfigurationEntry::new(
-        "root".to_string(),
-        Some(
-            [
-                ConfigurationEntry::new("1".to_string(), None, Some(Value::String("Test".to_string())), false),
-                ConfigurationEntry::new("12".to_string(), None, Some(Value::String("Test".to_string())), false),
-                ConfigurationEntry::new("123".to_string(), None, Some(Value::String("Test".to_string())), false),
-                ConfigurationEntry::new(
-                    "1234".to_string(),
-                    Some(
-                        [ConfigurationEntry::new(
-                            "12345".to_string(),
-                            None,
-                            Some(Value::String("Test".to_string())),
-                            false,
-                        )]
-                        .to_vec(),
-                    ),
-                    None,
-                    false,
-                ),
-            ]
-            .to_vec(),
+pub fn get_test_configuration_node() -> ConfigurationNode {
+    ConfigurationNode::with_children(Vec::from_iter([
+        (
+            "1".to_string(),
+            ConfigurationNode::with_value(Value::String("Test".to_string())),
         ),
-        None,
-        true,
-    )
+        (
+            "12".to_string(),
+            ConfigurationNode::with_value(Value::String("Test".to_string())),
+        ),
+        (
+            "123".to_string(),
+            ConfigurationNode::with_value(Value::String("Test".to_string())),
+        ),
+        (
+            "1234".to_string(),
+            ConfigurationNode::with_children(Vec::from_iter([(
+                "12345".to_string(),
+                ConfigurationNode::with_value(Value::String("Test".to_string())),
+            )])),
+        ),
+    ]))
 }
 
 pub fn create_test_file(test_structure: impl Config + Serialize, file: &str) {

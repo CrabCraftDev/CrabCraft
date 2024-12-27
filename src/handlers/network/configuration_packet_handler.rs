@@ -1,3 +1,4 @@
+use crate::config::manager::ConfigManager;
 use crate::events::player::packet::PacketEvent;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::{
@@ -44,26 +45,28 @@ pub fn configuration_packets(
     if let Some(packet) = packet.decode::<ClientInformationC2SPacket>(*state) {
         sender.insert(entity, packet as ClientInformation);
 
-        let crabcraft_version = env!("CARGO_PKG_VERSION");
-        connection.send_packet(ReportDetailsS2CPacket {
-            details: vec![ReportDetail {
-                title: "Server".to_owned(),
-                description: format!("CrabCraft v{crabcraft_version}"),
-            }],
-        });
+        if ConfigManager::get().main.mention_crab_craft_usage {
+            let crabcraft_version = env!("CARGO_PKG_VERSION");
+            connection.send_packet(ReportDetailsS2CPacket {
+                details: vec![ReportDetail {
+                    title: "Server".to_owned(),
+                    description: format!("CrabCraft v{crabcraft_version}"),
+                }],
+            });
 
-        connection.send_packet(ServerLinksS2CPacket {
-            links: vec![
-                ServerLink::Known {
-                    link: KnownServerLinkType::BugReport,
-                    url: GITHUB_ISSUES_URL.to_owned(),
-                },
-                ServerLink::Known {
-                    link: KnownServerLinkType::Community,
-                    url: DISCORD_INVITE_URL.to_string(),
-                },
-            ],
-        });
+            connection.send_packet(ServerLinksS2CPacket {
+                links: vec![
+                    ServerLink::Known {
+                        link: KnownServerLinkType::BugReport,
+                        url: GITHUB_ISSUES_URL.to_owned(),
+                    },
+                    ServerLink::Known {
+                        link: KnownServerLinkType::Community,
+                        url: DISCORD_INVITE_URL.to_string(),
+                    },
+                ],
+            });
+        }
 
         let known_packs = COMPATIBLE_SERVER_VERSIONS
             .iter()
@@ -126,7 +129,8 @@ pub fn configuration_packets(
         }
 
         let mut data = BytesMut::new();
-        "CrabCraft".to_owned().serialize(&mut data).unwrap();
+        let server_brand = ConfigManager::get().main.server_brand.to_owned();
+        server_brand.serialize(&mut data).unwrap();
 
         connection.send_packet(PluginMessageS2CPacket {
             channel: NamespacedKey::minecraft("brand").unwrap(),

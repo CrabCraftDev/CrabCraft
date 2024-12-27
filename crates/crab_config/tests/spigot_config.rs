@@ -67,9 +67,9 @@ struct Settings {
 #[derive(Config, Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
 struct Attribute {
-    maxHealth: MaxAttribute,
-    movementSpeed: MaxAttribute,
-    attackDamage: MaxAttribute,
+    max_health: MaxAttribute,
+    movement_speed: MaxAttribute,
+    attack_damage: MaxAttribute,
 }
 
 #[derive(Config, Serialize, Deserialize, Debug)]

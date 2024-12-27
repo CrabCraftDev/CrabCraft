@@ -1,8 +1,9 @@
 use crate::utils::{create_test_file, remove_test_file};
 use crab_config::configurable::Configurable;
-use crab_config::configuration_entry::configuration_entry_search::get_configuration_entry_from_flat_key;
 use crab_config::handlers::yaml_handler::YamlHandler;
+use crab_config::node::search::get_configuration_node_from_flat_key;
 use crab_macros::Config;
+use semver::Version;
 use serde::Serialize;
 use serde_yml::{Number, Value};
 
@@ -36,7 +37,7 @@ fn read_config_yaml_and_verify_using_flattening() {
     const TEST_VALUE_4: f64 = 2.137;
 
     let yaml_handler: YamlHandler = YamlHandler {};
-    let configurable = Configurable::<TestStructure>::new(TEST_FILE.to_string(), Box::new(yaml_handler));
+    let configurable = Configurable::<TestStructure, Version>::new(TEST_FILE.to_string(), Box::new(yaml_handler));
 
     let test_structure_1 = TestStructure {
         test_value_1: TEST_VALUE_1.to_string(),
@@ -52,11 +53,11 @@ fn read_config_yaml_and_verify_using_flattening() {
     create_test_file(test_structure_1, TEST_FILE);
 
     // Act
-    let configuration_entry = configurable.read_config().unwrap();
+    let configuration_node = configurable.read_config().unwrap();
 
     // Verify
 
-    let map = configuration_entry.serialize_to_flatten_map_with_path().unwrap();
+    let map = configuration_node.serialize_to_flatten_map_with_path().unwrap();
     assert_eq!(map.get("test_value_1").unwrap(), TEST_VALUE_1);
     assert_eq!(map.get("test_value_2").unwrap(), TEST_VALUE_2);
     assert_eq!(
@@ -80,7 +81,7 @@ fn read_config_yaml_and_verify_using_index_access() {
     const TEST_VALUE_4: f64 = 2.137;
 
     let yaml_handler: YamlHandler = YamlHandler {};
-    let configurable = Configurable::<TestStructure>::new(TEST_FILE2.to_string(), Box::new(yaml_handler));
+    let configurable = Configurable::<TestStructure, Version>::new(TEST_FILE2.to_string(), Box::new(yaml_handler));
 
     let test_structure_1 = TestStructure {
         test_value_1: TEST_VALUE_1.to_string(),
@@ -96,35 +97,35 @@ fn read_config_yaml_and_verify_using_index_access() {
     create_test_file(test_structure_1, TEST_FILE2);
 
     // Act
-    let configuration_entry_result = configurable.read_config();
+    let configuration_node_result = configurable.read_config();
 
     // Verify
-    match configuration_entry_result {
-        Ok(configuration_entry) => {
+    match configuration_node_result {
+        Ok(configuration_node) => {
             assert_eq!(
-                get_configuration_entry_from_flat_key(&configuration_entry, "test_value_1")
+                get_configuration_node_from_flat_key(&configuration_node, "test_value_1")
                     .unwrap()
                     .get_value()
                     .unwrap(),
                 TEST_VALUE_1
             );
             assert_eq!(
-                get_configuration_entry_from_flat_key(&configuration_entry, "test_value_2")
+                get_configuration_node_from_flat_key(&configuration_node, "test_value_2")
                     .unwrap()
                     .get_value()
                     .unwrap(),
                 TEST_VALUE_2
             );
             assert_eq!(
-                *get_configuration_entry_from_flat_key(&configuration_entry, "test_structure_2.test_value_3")
+                *get_configuration_node_from_flat_key(&configuration_node, "test_structure_2.test_value_3")
                     .unwrap()
                     .get_value()
                     .unwrap(),
                 Value::Number(Number::from(TEST_VALUE_3))
             );
             assert_eq!(
-                *get_configuration_entry_from_flat_key(
-                    &configuration_entry,
+                *get_configuration_node_from_flat_key(
+                    &configuration_node,
                     "test_structure_2.test_structure_3.test_value_4"
                 )
                 .unwrap()

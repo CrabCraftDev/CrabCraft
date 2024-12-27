@@ -134,7 +134,7 @@ pub fn derive_block_property(item: TokenStream) -> TokenStream {
 /// ```ignore
 /// #[derive(Config)]
 /// pub struct ServerConfig {
-///     #[default_value = "25565"]
+///     #[default_value = 25565]
 ///     pub port: u16,
 ///     /// Comment
 ///     #[default_value = "127.0.0.1"]

@@ -8,6 +8,7 @@ use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
 use tracing::{error, info, info_span, warn};
 
+use crate::config::manager::ConfigManager;
 use crate::events::asynchronous::{AsyncEvent, AsyncEventHolder};
 use crate::events::global::server::ServerShutdownEvent;
 use crate::events::global::world::WorldTickEvent;
@@ -37,10 +38,16 @@ pub struct McServer {
     event_sender: AsyncSender<AsyncEventHolder>,
 }
 
+impl Default for McServer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl McServer {
-    pub fn new(ip_address: String) -> McServer {
+    pub fn new() -> McServer {
         let (event_sender, events_receiver) = kanal::unbounded_async::<AsyncEventHolder>();
-        let tcp_server = TcpServer::new(ip_address, event_sender.clone());
+        let tcp_server = TcpServer::new(ConfigManager::get().main.server_address(), event_sender.clone());
 
         let mut world = World::new();
         init_handlers(&mut world);

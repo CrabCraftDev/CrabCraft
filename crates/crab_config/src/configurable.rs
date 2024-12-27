@@ -1,21 +1,38 @@
-use std::collections::HashMap;
+use crate::error::ConfigError;
+use crate::handlers::format_handler::ConfigFormatHandler;
+use crate::node::ConfigurationNode;
+use crate::types::config::Config;
+use crate::version_control::migrations::migration::Migration;
+use semver::Version;
+use serde_yml::Value;
 use std::marker::PhantomData;
 use std::path::Path;
 
-use crate::handlers::format_handler::ConfigFormatHandler;
-use crate::version_control::modifications::processor::Processor;
-
-use crate::configuration_entry::ConfigurationEntry;
-use crate::configuration_entry::configuration_entry::ROOT_ENTRY_NAME;
-use crate::errors::Error;
-use crate::types::config::Config;
-
 /// Describes name of variable behind saying this is the version of this config
-/// Important to use name of it everywhere in every config
-const VERSION_CONFIG_FIELD_NAME: &str = "version";
+pub const VERSION_CONFIG_FIELD_NAME: &str = "_version";
 
-pub struct Configurable<T: Config> {
+pub trait ConfigVersion: PartialOrd + Ord + PartialEq {
+    fn from_value(value: &Value) -> Result<Self, ConfigError>
+    where
+        Self: Sized;
+
+    fn to_value(&self) -> Value;
+}
+
+impl ConfigVersion for Version {
+    fn from_value(value: &Value) -> Result<Self, ConfigError> {
+        let value = value.as_str().ok_or(ConfigError::InvalidConfigVersion)?;
+        Version::parse(value).map_err(|_| ConfigError::InvalidConfigVersion)
+    }
+
+    fn to_value(&self) -> Value {
+        Value::String(self.to_string())
+    }
+}
+
+pub struct Configurable<T: Config, V: ConfigVersion> {
     config_file_path: String,
+    config_version: Option<V>,
     pub implementation: Box<dyn ConfigFormatHandler>,
     /// Placeholder for the generic type `T`.
     /// This ensures the generic type `T` is utilized, as Rust requires all generic types to be used.
@@ -23,112 +40,111 @@ pub struct Configurable<T: Config> {
     _phantom_data: PhantomData<T>,
 }
 
-impl<T: Config> Configurable<T> {
-    pub fn new(config_file_path: String, implementation: Box<dyn ConfigFormatHandler>) -> Configurable<T> {
-        Configurable::<T> {
+impl<T: Config, V: ConfigVersion> Configurable<T, V> {
+    pub fn new(config_file_path: String, implementation: Box<dyn ConfigFormatHandler>) -> Configurable<T, V> {
+        Configurable::<T, V> {
             config_file_path,
             implementation,
+            config_version: None,
             _phantom_data: PhantomData,
         }
     }
 
-    pub fn read_and_save_default_if_config_doesnt_exists(&self, processors: Vec<Processor>) -> Result<T, Error> {
+    pub fn new_with_version(
+        config_file_path: String,
+        implementation: Box<dyn ConfigFormatHandler>,
+        version: Option<V>,
+    ) -> Configurable<T, V> {
+        Configurable::<T, V> {
+            config_file_path,
+            implementation,
+            config_version: version,
+            _phantom_data: PhantomData,
+        }
+    }
+
+    pub fn load_or_create_default_config(&self, migrations: Vec<Box<dyn Migration<V>>>) -> Result<T, ConfigError> {
         let config_path = self.config_file_path.clone();
         if Path::new(&config_path).exists() {
-            return self.read_config_and_verify(processors);
+            return self.read_config_and_update(migrations);
         }
 
         let default_config = T::default();
-        self.write(default_config.as_configuration_entry())?;
+        self.write_node(default_config.as_configuration_node())?;
         Ok(default_config)
     }
 
-    pub fn read_config_and_verify(&self, processors: Vec<Processor>) -> Result<T, Error> {
+    pub fn read_config_and_update(&self, migrations: Vec<Box<dyn Migration<V>>>) -> Result<T, ConfigError> {
         let mut entry = self.read_config()?;
-        self.verify_config(&mut entry, processors)
+        self.apply_migrations(&mut entry, migrations)
     }
 
-    fn verify_config(
+    fn apply_migrations(
         &self,
-        configuration_entry: &mut ConfigurationEntry,
-        processors: Vec<Processor>,
-    ) -> Result<T, Error> {
-        // !IMPORTANT
-        // There's no physical way to know where the config_version is so we just assume it's
-        // going to be in root node if it ain't there we just panic
-        let maybe_config_version = configuration_entry.get_value_from_flat_path(VERSION_CONFIG_FIELD_NAME);
-        if maybe_config_version.is_none() {
-            return Err(Error::ConfigVersionNotFound);
+        configuration_node: &mut ConfigurationNode,
+        migrations: Vec<Box<dyn Migration<V>>>,
+    ) -> Result<T, ConfigError> {
+        let config_version = if let Some(config_version) = &self.config_version {
+            config_version
+        } else {
+            let Some(config_version) = configuration_node.get_value_from_flat_path(VERSION_CONFIG_FIELD_NAME) else {
+                return Err(ConfigError::ConfigVersionNotFound);
+            };
+
+            &V::from_value(config_version)?
+        };
+
+        let mut default_configuration_node = T::default().as_configuration_node();
+
+        let default_version = V::from_value(
+            default_configuration_node
+                .get_value_from_flat_path(VERSION_CONFIG_FIELD_NAME)
+                .unwrap(),
+        )?;
+
+        if config_version != &default_version {
+            Self::apply_migrations_to_node(configuration_node, config_version, &default_version, migrations)?;
+
+            default_configuration_node.merge(configuration_node);
+            default_configuration_node.set_value_by_flat_path(VERSION_CONFIG_FIELD_NAME, default_version.to_value());
+            self.write_node(default_configuration_node.clone())?;
+
+            T::from_configuration_node(&default_configuration_node)
+        } else {
+            T::from_configuration_node(configuration_node)
         }
-
-        let config_version = maybe_config_version
-            .unwrap()
-            .as_i64()
-            .ok_or(Error::InvalidConfigVersion)?;
-
-        let modified_result =
-            Self::apply_changelogs_to_configuration_entry(configuration_entry, config_version as u32, processors);
-
-        modified_result.map(|modified_configuration_entry| T::map(modified_configuration_entry.clone()))
     }
 
     /// Despite having almost same name as `read_config_and_verify` it returns `ConfigurationEntry`
     /// due to not having certainty of type this function doesn't check for type
     /// just dumps config into more manageable format of `ConfigurationEntry`
-    pub fn read_config(&self) -> Result<ConfigurationEntry, Error> {
+    pub fn read_config(&self) -> Result<ConfigurationNode, ConfigError> {
         let config_file_path = self.config_file_path.clone();
-        let mut configuration_entry = self.implementation.read(config_file_path)?;
+        let mut configuration_node = self.implementation.read(config_file_path)?;
 
-        // TODO: In future find/create library that handles reading documentation comments above entry :)
-        // Current implementation just copies over the documentation from already written docs from code
-        configuration_entry.copy_docs_from(&ConfigurationEntry::new(
-            "root".to_string(),
-            Some(T::default().as_configuration_entry()),
-            None,
-            true,
-        ));
+        configuration_node.copy_docs_from(&T::default().as_configuration_node());
 
-        Ok(configuration_entry)
+        Ok(configuration_node)
     }
 
-    pub fn write(&self, config_entry: Vec<ConfigurationEntry>) -> Result<(), Error> {
-        self.write_node(ConfigurationEntry::new(
-            ROOT_ENTRY_NAME.to_string(),
-            Some(config_entry),
-            None,
-            false,
-        ))
-    }
-
-    pub fn write_node(&self, node: ConfigurationEntry) -> Result<(), Error> {
+    pub fn write_node(&self, node: ConfigurationNode) -> Result<(), ConfigError> {
         self.implementation.write(self.config_file_path.clone(), node)
     }
 
-    fn apply_changelogs_to_configuration_entry(
-        mut configuration_entry: &mut ConfigurationEntry,
-        config_version: u32,
-        processors: Vec<Processor>,
-    ) -> Result<&ConfigurationEntry, Error> {
-        let mut changelog_version_to_processor: HashMap<u32, Processor> = HashMap::new();
+    fn apply_migrations_to_node(
+        configuration_node: &mut ConfigurationNode,
+        previous_config_version: &V,
+        config_version: &V,
+        mut migrations: Vec<Box<dyn Migration<V>>>,
+    ) -> Result<(), ConfigError> {
+        migrations.sort_by_key(|a| a.version());
 
-        for processor in processors {
-            if processor.get_config_applied_version() < config_version {
-                continue;
-            }
-            changelog_version_to_processor.insert(processor.get_config_applied_version(), processor);
-        }
-        let highest_config_version = changelog_version_to_processor
-            .iter()
-            .max_by(|a, b| a.0.cmp(b.0))
-            .map(|(k, _v)| k)
-            .unwrap_or_else(|| &0u32);
-
-        for version in config_version..=*highest_config_version {
-            if let Some(processor) = changelog_version_to_processor.get(&version) {
-                configuration_entry = (processor.processor_function)(configuration_entry);
+        for migration in migrations {
+            if &migration.version() > previous_config_version && &migration.version() <= config_version {
+                migration.up(configuration_node);
             }
         }
 
-        Ok(configuration_entry)
+        Ok(())
     }
 }
