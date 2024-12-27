@@ -1,3 +1,5 @@
+use crate::GITHUB_ISSUES_URL;
+use crab_config::error::ConfigError;
 use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
 use crab_world::error::{AnvilError, WorldError};
@@ -5,8 +7,6 @@ use kanal::{OneshotReceiveError, SendError};
 use std::{any::Any, io};
 use thiserror::Error;
 use tracing::error;
-
-use crate::GITHUB_ISSUES_URL;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -22,6 +22,8 @@ pub enum Error {
     World(#[from] WorldError),
     #[error(transparent)]
     Anvil(#[from] AnvilError),
+    #[error(transparent)]
+    Config(#[from] ConfigError),
 
     #[error(transparent)]
     SendChannel(#[from] SendError),

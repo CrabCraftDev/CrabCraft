@@ -51,6 +51,7 @@ uuid.workspace = true
 tokio.workspace = true
 crab_nbt.workspace = true
 serde_json.workspace = true
+serde.workspace = true
 evenio.workspace = true
 derive_more.workspace = true
 nu-ansi-term.workspace = true
@@ -72,6 +73,7 @@ dashmap = "6.1.0"
 crab_protocol = { path = "crates/crab_protocol" }
 crab_registry = { path = "crates/crab_registry" }
 crab_world = { path = "crates/crab_world" }
+crab_config = { path = "crates/crab_config" }
 crab_macros = { path = "crates/crab_macros" }
 crab_text = { path = "crates/crab_text" }
 

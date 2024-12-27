@@ -24,7 +24,7 @@ impl TcpServer {
     #[tracing::instrument(name = "Tcp Server", skip_all)]
     pub async fn start(&self) {
         let listener = TcpListener::bind(&self.address).await.unwrap();
-        info!("Listening on {}", self.address);
+        info!("Listening on {}", listener.local_addr().unwrap());
 
         let mut connections = FuturesUnordered::new();
 

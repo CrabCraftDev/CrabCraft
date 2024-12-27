@@ -1,8 +1,8 @@
-use crate::utils::get_test_configuration_entry;
+use crate::utils::get_test_configuration_node;
 
 #[test]
 fn flat_path_removal() {
-    let mut test_config_entry = get_test_configuration_entry();
+    let mut test_config_entry = get_test_configuration_node();
     let initial_map = test_config_entry
         .serialize_to_flatten_map_with_path()
         .expect("Failed to serialize initial configuration");

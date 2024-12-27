@@ -1,1 +1,1 @@
-pub mod modifications;
+pub mod migrations;

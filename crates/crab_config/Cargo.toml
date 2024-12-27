@@ -8,6 +8,7 @@ thiserror.workspace = true
 serde.workspace = true
 serde_yml = "0.0.12"
 regex = "1.11.1"
+semver = "1.0.26"
 
 [dev-dependencies]
 crab_macros = { path = "../crab_macros" }

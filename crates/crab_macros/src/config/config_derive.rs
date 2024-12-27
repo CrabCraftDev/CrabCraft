@@ -4,10 +4,10 @@ use proc_macro::TokenStream;
 use proc_macro2::Ident;
 use std::iter::Map;
 
-use quote::quote;
+use quote::{ToTokens, quote};
 use syn::punctuated::{Iter, Punctuated};
 use syn::token::Comma;
-use syn::{parse_macro_input, Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, Meta, Type};
+use syn::{Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, Meta, parse_macro_input};
 
 pub fn config_macro(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -20,49 +20,65 @@ pub fn config_macro(input: TokenStream) -> TokenStream {
                 _ => unimplemented!("Only named fields are supported"),
             };
 
-            let configuration_entry_to_fields_mappings = named_fields.iter().map(|field| {
+            let mut elements = Vec::new();
+
+            let configuration_node_to_fields_mappings = named_fields.iter().map(|field| {
+
                 let field_name = &field.ident;
+                elements.push(quote! {
+                    #field_name: #field_name.unwrap()
+                });
                 let field_type = &field.ty;
                 quote! {
-                    #field_name: {
-                        let entry = children_map.remove(stringify!(#field_name)).expect(concat!("Missing entry for field: ", stringify!(#field_name)));
-                        <#field_type as crab_config::types::config::Config>::map(entry)
-                    }
+                    let entry = children_map.remove(stringify!(#field_name));
+                    let #field_name = match entry {
+                        Some(entry) => match <#field_type as crab_config::types::config::Config>::from_configuration_node(&entry) {
+                            Ok(value) => Some(value),
+                            Err(error) => {
+                                errors.push(error);
+                                None
+                            }
+                        },
+                        None => {
+                            errors.push(crab_config::error::ConfigError::MissingNode { key: stringify!(#field_name).to_string(), parent_key: "root".to_string() });
+                            None
+                        }
+                    };
                 }
             });
 
-            let fields_to_configuration_entry_mapping = fields_to_configuration_entry(&named_fields);
-
-            let fields_to_defaults_mapping = fields_to_default(&named_fields);
+            let fields_to_configuration_node_mapping = fields_to_configuration_node(&named_fields);
 
             let default_creator = create_default(&named_fields, &name_of_config);
 
             quote! {
                 impl crab_config::types::config::Config for #name_of_config {
-                    fn map(config_entry: crab_config::configuration_entry::ConfigurationEntry) -> Self {
-                        let mut children_map = config_entry
-                            .get_next()
+                    fn from_configuration_node(node: &crab_config::node::ConfigurationNode) -> Result<Self, ::crab_config::error::ConfigError> {
+                        let mut children_map = node
+                            .get_children()
                             .cloned()
                             .unwrap_or_default()
                             .into_iter()
-                            .map(|entry| (entry.key.clone(), entry))
+                            .map(|(key, child_node)| (key.clone(), child_node))
                             .collect::<std::collections::HashMap<_, _>>();
 
-                        #name_of_config {
-                            #(#configuration_entry_to_fields_mappings),*
+                        let mut errors = Vec::new();
+
+                        #(#configuration_node_to_fields_mappings)*
+
+                        if errors.len() > 0 {
+                            return Err(::crab_config::error::ConfigError::InvalidConfig { errors });
                         }
+
+                        Ok(#name_of_config {
+                            #(#elements),*
+                        })
                     }
 
-                    fn as_configuration_entry(&self) -> Vec<crab_config::configuration_entry::ConfigurationEntry> {
-                        let mut vector: Vec<crab_config::configuration_entry::ConfigurationEntry> = Vec::new();
-                        #(#fields_to_configuration_entry_mapping)*
-                        vector
-                    }
-
-                    fn get_default_fields(&self) -> std::collections::HashMap<String, crab_config::Value>  {
-                        let mut map: std::collections::HashMap<String, crab_config::Value> = std::collections::HashMap::new();
-                        #(#fields_to_defaults_mapping)*
-                        return map;
+                    fn as_configuration_node(&self) -> crab_config::node::ConfigurationNode {
+                        let mut child = Vec::new();
+                        #(#fields_to_configuration_node_mapping)*
+                        crab_config::node::ConfigurationNode::with_children(child)
                     }
                 }
 
@@ -79,64 +95,30 @@ pub fn config_macro(input: TokenStream) -> TokenStream {
     TokenStream::from(generated_code)
 }
 
-fn fields_to_configuration_entry(
+fn fields_to_configuration_node(
     named_fields: &Punctuated<Field, Comma>,
 ) -> Map<Iter<Field>, fn(&Field) -> proc_macro2::TokenStream> {
     named_fields.iter().map(|field| {
         let field_name = &field.ident;
-        let field_ty = &field.ty;
 
-        let is_primitive = is_primitive(field_ty);
+        let mut docs = collect_docs(field);
 
-        let variables_declaration_expression = quote! {
-            let mut value: core::option::Option<crab_config::Value> = None;
-            let mut children: core::option::Option<Vec<crab_config::configuration_entry::ConfigurationEntry>> = None;
-            let mut maybe_some_children: Vec<crab_config::configuration_entry::ConfigurationEntry> = Vec::new();
-        };
-
-        let field_value_expression = if is_primitive {
-            quote! {
-                value = Some(crab_config::to_value(&self.#field_name).unwrap());
+        let docs_option = if let Some(default) = collect_default_value(field) {
+            let default_tokens = default.to_token_stream();
+            if !docs.is_empty() {
+                docs.push('\n');
             }
-        } else {
-            quote! {
-                value = None;
-            }
-        };
+            docs.push_str(" Default value: {:?}");
 
-        let docs = collect_docs(field);
-        let docs_option = if docs.is_empty() {
+            quote! { Some(format!(#docs, #default_tokens)) }
+        } else if docs.is_empty() {
             quote! { None }
         } else {
             quote! { Some(#docs.to_owned()) }
         };
 
-        let children_value_expression = if is_primitive {
-            quote! {
-                children = None;
-            }
-        } else {
-            quote! {
-                maybe_some_children = self.#field_name.as_configuration_entry();
-                children = if (!&maybe_some_children.is_empty()) {
-                    Some((&maybe_some_children).clone())
-                } else {
-                    None
-                };
-            }
-        };
-
         quote! {
-            #variables_declaration_expression
-            #children_value_expression
-            #field_value_expression
-            vector.push(crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
-                stringify!(#field_name).to_owned(),
-                children,
-                value,
-                #docs_option,
-                false
-            ).unwrap());
+            child.push((stringify!(#field_name).to_owned(), self.#field_name.as_configuration_node().set_doc(#docs_option)));
         }
     })
 }
@@ -162,41 +144,11 @@ fn collect_docs(field: &Field) -> String {
         .join("\n")
 }
 
-fn fields_to_default(
-    named_fields: &Punctuated<Field, Comma>,
-) -> Map<Iter<Field>, fn(&Field) -> proc_macro2::TokenStream> {
-    named_fields.iter().map(|field| {
-        let default = collect_default_value(field);
-        if default.is_none() {
-            return quote! {};
-        }
-
-        let field_name = &field.ident;
-        quote! {
-            map.insert(stringify!(#field_name).to_string(), crab_config::to_value(#default).unwrap());
-        }
-    })
-}
-
 fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Ident) -> proc_macro2::TokenStream {
     let configuration_entries_to_add = named_fields.iter().map(|field| {
         let field_type = &field.ty;
         let field_name = &field.ident;
         let docs = collect_docs(field);
-        if !is_primitive(field_type) {
-            return quote! {
-                let field_type_default: #field_type = <#field_type as Default>::default();
-                field_configuration_entries.push(
-                crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
-                        stringify!(#field_name).to_string(),
-                        Some(<#field_type as crab_config::types::config::Config>::as_configuration_entry(&field_type_default)),
-                        None,
-                        Some(#docs.to_string()),
-                        false
-                    ).unwrap()
-                );
-            }
-        }
 
         let default = if let Some(default_value) = collect_default_value(field) {
             quote! { #default_value }
@@ -205,61 +157,34 @@ fn create_default(named_fields: &Punctuated<Field, Comma>, name_of_config: &Iden
         };
 
         quote! {
-            field_configuration_entries.push(
-                crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
-                        stringify!(#field_name).to_string(),
-                        None,
-                        Some(crab_config::to_value(#default).unwrap()),
-                        Some(#docs.to_string()),
-                        false
-                    ).unwrap()
-            );
+            let mut node = <#field_type as crab_config::types::config::Config>::as_configuration_node(&#default);
+            node.documentation = Some(#docs.to_string());
+            field_configuration_entries.push((stringify!(#field_name).to_string(), node));
         }
     });
 
     quote! {
-        let mut field_configuration_entries: Vec<crab_config::configuration_entry::ConfigurationEntry> = Vec::new();
+        let mut field_configuration_entries = Vec::new();
         #(#configuration_entries_to_add)*
 
-        <#name_of_config as crab_config::types::config::Config>::map(crab_config::configuration_entry::ConfigurationEntry::new_with_doc(
-            "root".to_string(),
-            Some(field_configuration_entries),
-            None,
-            None,
-            true
-        ).unwrap())
+        <#name_of_config as crab_config::types::config::Config>::from_configuration_node(&crab_config::node::ConfigurationNode::with_children(
+            field_configuration_entries
+        )).unwrap()
     }
 }
 
-fn collect_default_value(field: &Field) -> Option<ExprLit> {
+fn collect_default_value(field: &Field) -> Option<Expr> {
     for attr in &field.attrs {
         if !attr.path().is_ident("default_value") {
             continue;
         }
 
         if let Meta::List(meta) = &attr.meta {
-            if let Ok(val) = meta.parse_args::<ExprLit>() {
+            if let Ok(val) = meta.parse_args::<Expr>() {
                 return Some(val);
             }
         }
     }
 
     None
-}
-
-fn is_primitive(field_type: &Type) -> bool {
-    match field_type {
-        Type::Reference(type_reference) => is_primitive(&type_reference.elem),
-        Type::Path(type_path) => {
-            if let Some(ident) = type_path.path.get_ident() {
-                matches!(
-                    ident.to_string().as_str(),
-                    "i32" | "i64" | "u32" | "u64" | "u8" | "i8" | "f32" | "f64" | "bool" | "char" | "String" | "&str"
-                )
-            } else {
-                false
-            }
-        }
-        _ => false,
-    }
 }
