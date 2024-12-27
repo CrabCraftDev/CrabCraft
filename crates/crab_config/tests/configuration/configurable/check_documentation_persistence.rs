@@ -19,7 +19,13 @@ fn check_documentation_persistence() {
     let configuration_entry = get_configuration_entry_from_flat_key(&result, "version").unwrap();
     assert_eq!(
         configuration_entry.documentation.unwrap(),
-        " TEST DOCUMENTAITON 'VERY TESTABLE DOVCUMENITATONI' \"SOMETHING SOMETHING\""
+        " First value documentation\n Which has second line :3"
     );
+    let configuration_entry = get_configuration_entry_from_flat_key(&result, "test").unwrap();
+    assert_eq!(
+        configuration_entry.documentation.unwrap(),
+        " Second value \"documentation\""
+    );
+
     let _ = fs::remove_file(TEST_FILE);
 }

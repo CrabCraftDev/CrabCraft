@@ -76,8 +76,8 @@ impl<T: Config> Configurable<T> {
     /// due to not having certainty of type this function doesn't check for type
     /// just dumps config into more manageable format of `ConfigurationEntry`
     pub fn read_config(&self) -> Result<ConfigurationEntry, Error> {
-        let config_file_path = &self.config_file_path;
-        let mut configuration_entry = self.implementation.read(String::from(config_file_path))?;
+        let config_file_path = self.config_file_path.clone();
+        let mut configuration_entry = self.implementation.read(config_file_path)?;
 
         // TODO: In future find/create library that handles reading documentation comments above entry :)
         // Current implementation just copies over the documentation from already written docs from code

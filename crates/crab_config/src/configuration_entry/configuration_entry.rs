@@ -187,7 +187,9 @@ impl Serialize for ConfigurationEntry {
             if maybe_documentation.is_some() {
                 let documentation = maybe_documentation.as_ref().unwrap();
                 // TODO: FIND ANY LIBRARY THAT ACCEPTS COMMENTS NATIVELY serde_yaml is fake news
-                serialized_struct.serialize_entry("comment", &documentation)?;
+                for line in documentation.lines() {
+                    serialized_struct.serialize_entry("comment", &line)?;
+                }
             }
 
             if let Some(value) = &child.value {

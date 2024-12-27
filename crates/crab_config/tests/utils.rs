@@ -9,9 +9,11 @@ use std::path::Path;
 
 #[derive(Config, Serialize, Deserialize, PartialEq, Debug)]
 pub struct TestConfig {
-    /// TEST DOCUMENTAITON 'VERY TESTABLE DOVCUMENITATONI' "SOMETHING SOMETHING"
+    /// First value documentation
+    /// Which has second line :3
     #[default_value(0)]
     pub version: u8,
+    /// Second value "documentation"
     #[default_value(264306)]
     pub test: u32,
 }
