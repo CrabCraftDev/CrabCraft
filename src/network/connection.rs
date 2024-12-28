@@ -1,7 +1,6 @@
 use super::{
     handlers::{handshake_handler, keep_alive_handler, login_handler, status_handler},
     keep_alive_state::KeepAliveState,
-    packet_transformer::PacketTransformer,
 };
 use crate::events::asynchronous::{AsyncEvent, AsyncEventHolder};
 use crate::events::player::packet::PacketEvent;
@@ -10,6 +9,7 @@ use crate::utils::errors::Error;
 use chrono::Local;
 use crab_nbt::NbtTag;
 use crab_protocol::error::ProtocolError;
+use crab_protocol::packet_transformer::PacketTransformer;
 use crab_protocol::{
     buf::packet_from_stream,
     packet::Packet,
@@ -31,7 +31,6 @@ use std::fmt::Debug;
 use std::net::IpAddr;
 use std::{io, panic, sync::Arc, time::Duration};
 use tokio::{
-    io::AsyncWriteExt,
     net::{
         tcp::{OwnedReadHalf, OwnedWriteHalf},
         TcpStream,
@@ -113,23 +112,22 @@ impl NetworkConnection {
     }
 
     #[tracing::instrument(name = "Connection Writer", skip_all)]
-    async fn writer(connection: NetworkConnection, mut read_half: OwnedWriteHalf, transformer: PacketTransformer) {
+    async fn writer(connection: NetworkConnection, mut read_half: OwnedWriteHalf, mut transformer: PacketTransformer) {
         let receiver = connection.outgoing_packets_receiver.clone().to_async();
         loop {
             let Ok(packet) = receiver.recv().await else {
                 break;
             };
-            let bytes = match transformer.encode(packet) {
-                Ok(bytes) => bytes,
+
+            let state = *connection.state.read().unwrap();
+
+            match transformer.encode_and_write(packet, state, &mut read_half).await {
+                Ok(_) => {}
                 Err(err) => {
                     error!("{}Serialization error: {err}", connection.prefix());
                     connection.close();
                     break;
                 }
-            };
-            if read_half.write_all(&bytes).await.is_err() {
-                connection.close();
-                break;
             }
         }
     }
@@ -141,16 +139,16 @@ impl NetworkConnection {
                 Ok(Some(packet)) => packet,
                 Ok(None) => break,
                 Err(Error::Protocol(ProtocolError::Io(error))) => {
-                    if error.kind() == io::ErrorKind::ConnectionReset {
-                        connection.disconnect("Connection reset".to_owned());
-                    } else {
-                        connection.disconnect(format!("IO Error: {}", error));
-                    }
+                    let message = match error.kind() {
+                        io::ErrorKind::ConnectionReset => "Connection reset".to_owned(),
+                        _ => format!("IO Error: {}", error),
+                    };
+                    connection.disconnect(message);
                     break;
                 }
                 Err(error) => {
                     warn!("{}Error decoding packet {error:?}!", connection.prefix());
-                    connection.disconnect("Invalid packet received!".to_owned());
+                    connection.disconnect("Unexpected connection error".to_owned());
                     break;
                 }
             };

@@ -4,6 +4,7 @@ pub mod bounded;
 pub mod buf;
 pub mod error;
 pub mod packet;
+pub mod packet_transformer;
 pub mod packets;
 pub mod protocol_serializer;
 pub mod protocol_state;

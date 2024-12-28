@@ -509,6 +509,8 @@ dependencies = [
  "crab_nbt",
  "derive_more",
  "evenio",
+ "flate2",
+ "libdeflater",
  "serde",
  "serde_json",
  "strum",
@@ -521,7 +523,6 @@ dependencies = [
 name = "crab_proxy"
 version = "0.2.0"
 dependencies = [
- "bytes",
  "clap",
  "crab_protocol",
  "tokio",
@@ -1150,6 +1151,24 @@ name = "libc"
 version = "0.2.167"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09d6582e104315a817dff97f75133544b2e094ee22447d2acf4a74e189ba06fc"
+
+[[package]]
+name = "libdeflate-sys"
+version = "1.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "413b667c8a795fcbe6287a75a8ce92b1dae928172c716fe95044cb2ec7877941"
+dependencies = [
+ "cc",
+]
+
+[[package]]
+name = "libdeflater"
+version = "1.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d78376c917eec0550b9c56c858de50e1b7ebf303116487562e624e63ce51453a"
+dependencies = [
+ "libdeflate-sys",
+]
 
 [[package]]
 name = "libyml"
