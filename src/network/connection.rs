@@ -9,6 +9,7 @@ use crate::events::player::player_quit::{PlayerQuitEvent, PlayerQuitReason};
 use crate::utils::errors::Error;
 use chrono::Local;
 use crab_nbt::NbtTag;
+use crab_protocol::error::ProtocolError;
 use crab_protocol::{
     buf::packet_from_stream,
     packet::Packet,
@@ -28,7 +29,7 @@ use parking_lot::Mutex;
 use serde_json::json;
 use std::fmt::Debug;
 use std::net::IpAddr;
-use std::{panic, sync::Arc, time::Duration};
+use std::{io, panic, sync::Arc, time::Duration};
 use tokio::{
     io::AsyncWriteExt,
     net::{
@@ -102,16 +103,13 @@ impl NetworkConnection {
         }
 
         if !self.is_closed() {
-            if self.get_state().should_entity_be_spawned() {
-                if self.entity_id.read().unwrap().is_none() {
-                    error!("Player entity is not spawned!")
-                } else {
-                    self.send_target_event(PlayerQuitEvent::new(PlayerQuitReason::Disconnected))
-                        .unwrap();
-                }
+            if self.get_state().should_entity_be_spawned() && self.entity_id.read().unwrap().is_none() {
+                error!("Player entity is not spawned!")
             }
             self.close();
         }
+        self.send_target_event(PlayerQuitEvent::new(PlayerQuitReason::Disconnected))
+            .unwrap();
     }
 
     #[tracing::instrument(name = "Connection Writer", skip_all)]
@@ -142,6 +140,14 @@ impl NetworkConnection {
             let packet = match NetworkConnection::next_packet(&mut read_half, &mut transformer).await {
                 Ok(Some(packet)) => packet,
                 Ok(None) => break,
+                Err(Error::Protocol(ProtocolError::Io(error))) => {
+                    if error.kind() == io::ErrorKind::ConnectionReset {
+                        connection.disconnect("Connection reset".to_owned());
+                    } else {
+                        connection.disconnect(format!("IO Error: {}", error));
+                    }
+                    break;
+                }
                 Err(error) => {
                     warn!("{}Error decoding packet {error:?}!", connection.prefix());
                     connection.disconnect("Invalid packet received!".to_owned());
@@ -231,7 +237,7 @@ impl NetworkConnection {
     }
 
     pub fn disconnect(&self, message: String) {
-        self.disconnect_with_reason(message, PlayerQuitReason::Kicked);
+        self.disconnect_with_reason(message.clone(), PlayerQuitReason::Kicked(message));
     }
 
     pub fn disconnect_with_reason(&self, message: String, reason_type: PlayerQuitReason) {
@@ -299,7 +305,9 @@ impl NetworkConnection {
         &self,
         event: E,
     ) -> Result<(), Error> {
-        debug_assert!(!self.is_closed(), "Tried to send target event on closed connection");
+        if self.entity_id.read().unwrap().is_none() {
+            return Ok(());
+        }
 
         let id = *self.entity_id.clone().read().unwrap();
         AsyncEvent::send_target_event(event, &self.event_sender, id)
