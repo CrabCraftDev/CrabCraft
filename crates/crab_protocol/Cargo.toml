@@ -15,5 +15,7 @@ derive_more.workspace = true
 strum.workspace = true
 bitfield-struct.workspace = true
 evenio.workspace = true
+flate2.workspace = true
+libdeflater = "1.23.0"
 
 crab_macros = { path = "../crab_macros" }

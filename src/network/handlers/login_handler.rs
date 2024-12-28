@@ -1,4 +1,7 @@
-use crab_protocol::packets::login::{LoginAcknowledgedC2SPacket, LoginFinishedS2CPacket, LoginStartC2SPacket};
+use crab_protocol::packet_transformer::COMPRESSION_THRESHOLD;
+use crab_protocol::packets::login::{
+    LoginAcknowledgedC2SPacket, LoginFinishedS2CPacket, LoginStartC2SPacket, SetCompressionS2CPacket,
+};
 use crab_protocol::raw_packet::RawPacket;
 
 use crate::events::player::player_login::{PlayerLoginEvent, PlayerLoginStatus};
@@ -33,6 +36,9 @@ pub async fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket
                 if let PlayerLoginStatus::Disallowed(_) = event.status {
                     return Ok(());
                 }
+                connection.send_packet(SetCompressionS2CPacket {
+                    threshold: COMPRESSION_THRESHOLD,
+                });
 
                 connection.send_packet(LoginFinishedS2CPacket {
                     uuid: event.uuid(),

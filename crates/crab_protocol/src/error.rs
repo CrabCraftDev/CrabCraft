@@ -1,6 +1,6 @@
-use std::{io, str::Utf8Error};
-
 use crate::protocol_state::ProtocolState;
+use libdeflater::DecompressionError;
+use std::{io, str::Utf8Error};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -13,6 +13,8 @@ pub enum ProtocolError {
     Nbt(#[from] crab_nbt::error::Error),
     #[error(transparent)]
     SerdeJson(#[from] serde_json::Error),
+    #[error(transparent)]
+    LibdeflateDecompression(#[from] DecompressionError),
     #[error("VarInt exceeds {0} bits (had {1} bits)")]
     TooBigVarInt(usize, i8),
     #[error("Enum {0} failed to be constructed of ordinal {1}")]
@@ -31,4 +33,6 @@ pub enum ProtocolError {
     InvalidBoundedLength(usize, usize),
     #[error("Packet {0} doesn't support state {1}!")]
     InvalidState(String, ProtocolState),
+    #[error("Tried to decompress packet with different size: {0} than provided: {1}!")]
+    DecompressedSizeMismatch(usize, usize),
 }

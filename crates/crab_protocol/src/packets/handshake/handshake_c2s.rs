@@ -16,7 +16,7 @@ pub struct HandshakeC2SPacket {
     pub next_state: NextState,
 }
 
-#[derive(ProtocolSerializer, FromRepr, Copy, Clone, Debug)]
+#[derive(ProtocolSerializer, FromRepr, Copy, Clone, Debug, PartialEq, Eq)]
 pub enum NextState {
     Status = 1,
     Login = 2,

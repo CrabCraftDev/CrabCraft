@@ -1,9 +1,13 @@
-use std::sync::Arc;
-
-use bytes::BytesMut;
 use clap::Parser;
-use crab_protocol::buf::{packet_from_stream, ReadByteBuf, WriteByteBuf};
+use crab_protocol::buf::packet_from_stream;
+use crab_protocol::packet_transformer::PacketTransformer;
+use crab_protocol::packets::handshake::{HandshakeC2SPacket, NextState};
+use crab_protocol::packets::login::LoginAcknowledgedC2SPacket;
+use crab_protocol::protocol_state::ProtocolState;
+use crab_protocol::protocol_state::ProtocolState::{Configuration, Handshake, Login, Status};
+use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::sync::RwLock;
 use tokio::{
     net::{TcpListener, TcpStream},
     select,
@@ -62,15 +66,35 @@ async fn handle_client_connection(
     let (mut client_recv, mut client_send) = client_conn.split();
     let (mut server_recv, mut server_send) = main_server_conn.split();
 
+    let state = Arc::new(RwLock::new(Handshake));
+    let state_clone = state.clone();
+
+    let packet_transformer = PacketTransformer::new();
+    let packet_transformer_clone = packet_transformer.clone();
+
     let handle_c2s = async {
-        transfer_data("C2S", &args, &mut client_recv, &mut server_send)
-            .await
-            .unwrap();
+        transfer_data(
+            "C2S",
+            &args,
+            &mut client_recv,
+            &mut server_send,
+            state_clone,
+            packet_transformer,
+        )
+        .await
+        .unwrap();
     };
     let handle_s2c = async {
-        transfer_data("S2C", &args, &mut server_recv, &mut client_send)
-            .await
-            .unwrap();
+        transfer_data(
+            "S2C",
+            &args,
+            &mut server_recv,
+            &mut client_send,
+            state,
+            packet_transformer_clone,
+        )
+        .await
+        .unwrap();
     };
 
     select! {
@@ -87,20 +111,45 @@ async fn transfer_data(
     args: &Args,
     receiver: &mut (impl AsyncReadExt + Unpin),
     sender: &mut (impl AsyncWriteExt + Unpin),
+    state: Arc<RwLock<ProtocolState>>,
+    mut packet_transformer: PacketTransformer,
 ) -> Result<(), Box<dyn std::error::Error>> {
     while let Ok(Some(buffer)) = packet_from_stream(receiver).await {
-        let id = buffer.clone().get_var_int().unwrap();
-        if buffer.len() >= args.maximum_packet_print_size as usize {
-            info!("[{direction}] {id:X}: Packet is too big to be printed!");
+        let decoded_packet = packet_transformer.decode(buffer)?;
+
+        if decoded_packet.data.len() >= args.maximum_packet_print_size as usize {
+            info!(
+                "[{direction}] {:X}: Packet is too big to be printed!",
+                decoded_packet.id
+            );
         } else {
-            info!("[{direction}] {id:X}: {buffer:?}");
+            info!("[{direction}] {:X}: {:?}", decoded_packet.id, decoded_packet.data);
         }
 
-        let mut full_packet = BytesMut::new();
-        full_packet.put_var_int(buffer.len().try_into().unwrap());
-        full_packet.extend_from_slice(&buffer);
+        if *state.read().await == Handshake {
+            let handshake = decoded_packet.decode::<HandshakeC2SPacket>(Handshake).unwrap();
 
-        sender.write_all(&full_packet).await?;
+            *state.write().await = if handshake.next_state == NextState::Login {
+                info!("Switch to login");
+                Login
+            } else {
+                info!("Switch to status/transfer");
+                Status
+            };
+        }
+
+        if *state.read().await == Login
+            && direction == "C2S"
+            && decoded_packet.decode::<LoginAcknowledgedC2SPacket>(Login).is_some()
+        {
+            *state.write().await = Configuration;
+            info!("Switch to configuration")
+        }
+
+        packet_transformer
+            .encode_and_write(decoded_packet, *state.read().await, sender)
+            .await
+            .unwrap();
     }
     Ok(())
 }
