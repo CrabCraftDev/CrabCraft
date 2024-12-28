@@ -11,6 +11,6 @@ pub fn on_quit(receiver: Receiver<PlayerQuitEvent, (EntityId, &Name, &NetworkCon
     let (entity, name, network_connection) = receiver.query;
 
     network_connection.close();
-    info!("{name} disconnected!");
+    info!("{name} left the game: {}", receiver.event.quit_reason);
     sender.send_to(entity, Despawn);
 }
