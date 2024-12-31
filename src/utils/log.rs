@@ -32,10 +32,14 @@ pub fn init() -> Vec<WorkerGuard> {
         .event_format(LogFormatter::new(false))
         .with_writer(latest_log.with_max_level(max_logging_level()));
 
-    tracing_subscriber::registry()
+    let registry = tracing_subscriber::registry()
         .with(stdout_logger)
-        .with(latest_log_logger)
-        .init();
+        .with(latest_log_logger);
+
+    #[cfg(feature = "tokio-console")]
+    let registry = registry.with(console_subscriber::spawn());
+
+    registry.init();
 
     vec![stdio_guard, latest_log_guard]
 }
