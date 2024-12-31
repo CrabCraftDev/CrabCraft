@@ -9,7 +9,6 @@ A drop-in replacement for Paper Minecraft Server written in Rust.
 >
 > CrabCraft is in very, very early stage of development\
 > Please report any bugs!
->
 
 ## 🔨 Development
 
@@ -18,3 +17,6 @@ A drop-in replacement for Paper Minecraft Server written in Rust.
 3. Use `cargo install`
 4. To run CrabCraft use `cargo run`
 
+## Building
+
+See [building.md](docs/building.md)
