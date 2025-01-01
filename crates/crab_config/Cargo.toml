@@ -9,4 +9,5 @@ serde.workspace = true
 serde_yml = "0.0.12"
 regex = "1.11.1"
 
+[dev-dependencies]
 crab_macros = { path = "../crab_macros" }
