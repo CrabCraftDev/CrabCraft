@@ -66,6 +66,7 @@ futures = { version = "0.3.31", default-features = false, features = ["std"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true
 tracing-appender.workspace = true
+console-subscriber = { version = "0.4.1", optional = true }
 dashmap = "6.1.0"
 
 crab_protocol = { path = "crates/crab_protocol" }
@@ -82,3 +83,6 @@ cargo-husky = { version = "1.5.0", features = [
     "run-cargo-clippy",
     "run-cargo-fmt",
 ] }
+
+[features]
+tokio-console = ["dep:console-subscriber", "tokio/tracing"]
