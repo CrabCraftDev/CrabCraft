@@ -12,10 +12,3 @@ body:
       placeholder: Add an option to...
     validations:
       required: true
-
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Possible alternatives
-      description: Any alternative solutions or features you've thought about?
-      placeholder: We could also ... instead.
