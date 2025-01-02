@@ -468,7 +468,6 @@ dependencies = [
  "nohash-hasher",
  "nu-ansi-term 0.50.1",
  "parking_lot",
- "serde",
  "serde_json",
  "supports-color",
  "thiserror 2.0.3",
@@ -536,9 +535,7 @@ name = "crab_registry"
 version = "0.0.5"
 dependencies = [
  "crab_protocol",
- "derive_more",
  "include_dir",
- "strum",
 ]
 
 [[package]]

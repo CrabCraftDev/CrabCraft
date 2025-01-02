@@ -4,8 +4,6 @@ version.workspace = true
 edition = "2021"
 
 [dependencies]
-strum.workspace = true
-derive_more.workspace = true
 include_dir = "0.7.4"
 
 crab_protocol = { path = "../../crates/crab_protocol" }
