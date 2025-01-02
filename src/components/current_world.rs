@@ -14,7 +14,6 @@ impl CurrentWorld {
         WORLDS_STORAGE.worlds.get(&self.0)
     }
 
-    #[allow(dead_code)]
     pub fn get_world_mut(&self) -> Option<RefMut<NamespacedKey, World>> {
         WORLDS_STORAGE.worlds.get_mut(&self.0)
     }
