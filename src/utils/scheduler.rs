@@ -14,7 +14,6 @@ pub struct ScheduledTask {
 }
 
 impl ServerScheduler {
-    #[allow(dead_code)]
     pub fn run_task(&mut self, func: fn(), delay: u64, repeat: bool) -> u64 {
         let task = ScheduledTask {
             func,
@@ -27,7 +26,7 @@ impl ServerScheduler {
         self.next_id += 1;
         self.next_id
     }
-    #[allow(dead_code)]
+
     pub fn cancel_task(&mut self, id: u64) {
         self.tasks.remove(&id);
     }

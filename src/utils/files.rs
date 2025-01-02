@@ -8,7 +8,7 @@ use std::{
     sync::LazyLock,
 };
 
-pub static FILES: LazyLock<ServerFiles> = LazyLock::new(ServerFiles::new);
+pub static FILES: LazyLock<ServerFiles> = LazyLock::new(ServerFiles::default);
 
 pub struct ServerFiles {
     pub server_root: PathBuf,
@@ -17,27 +17,9 @@ pub struct ServerFiles {
 }
 
 impl ServerFiles {
-    pub fn new() -> Self {
-        let server_root = if let Ok(manifest_str) = env::var("CARGO_MANIFEST_DIR") {
-            Path::new(&manifest_str).join("server").to_path_buf()
-        } else {
-            let mut exe_path = env::current_exe()
-                .expect("Couldn't get server directory path! (Maybe permissions issue?)")
-                .to_path_buf();
-            exe_path.pop();
-            exe_path
-        };
-
-        ServerFiles {
-            logs: server_root.join("logs"),
-            worlds: server_root.join("worlds"),
-            server_root,
-        }
-    }
-
     pub fn create_directories(&self) -> Result<(), Error> {
-        std::fs::create_dir_all(&self.logs)?;
-        std::fs::create_dir_all(&self.worlds)?;
+        fs::create_dir_all(&self.logs)?;
+        fs::create_dir_all(&self.worlds)?;
         Ok(())
     }
 
@@ -72,8 +54,28 @@ impl ServerFiles {
             .join(&namespaced_key.namespace)
             .join(&namespaced_key.value)
             .join("region");
-        std::fs::create_dir_all(&path)?;
+        fs::create_dir_all(&path)?;
         Ok(path)
+    }
+}
+
+impl Default for ServerFiles {
+    fn default() -> Self {
+        let server_root = if let Ok(manifest_str) = env::var("CARGO_MANIFEST_DIR") {
+            Path::new(&manifest_str).join("server").to_path_buf()
+        } else {
+            let mut exe_path = env::current_exe()
+                .expect("Couldn't get server directory path! (Maybe permissions issue?)")
+                .to_path_buf();
+            exe_path.pop();
+            exe_path
+        };
+
+        ServerFiles {
+            logs: server_root.join("logs"),
+            worlds: server_root.join("worlds"),
+            server_root,
+        }
     }
 }
 

@@ -35,7 +35,6 @@ impl World {
         Ok(())
     }
 
-    #[allow(dead_code)]
     pub fn get_block(&self, x: i32, y: i16, z: i32) -> Result<Block, Error> {
         let (chunk_x, chunk_z) = Self::chunk_coordinates(x, z);
         let Some(chunk) = self.get_chunk(chunk_x, chunk_z) else {
@@ -74,7 +73,6 @@ impl World {
         self.chunks.get_mut(&Self::get_key(x, z))
     }
 
-    #[allow(dead_code)]
     pub fn get_chunk_mut_or_load(&self, x: i32, z: i32) -> Result<RefMut<'_, ChunkCoordinates, Chunk>, Error> {
         let key = Self::get_key(x, z);
         if let Some(chunk) = self.chunks.get_mut(&key) {
@@ -121,7 +119,6 @@ impl World {
         Ok(chunk)
     }
 
-    #[allow(dead_code)]
     pub fn unload_chunk(&mut self, x: i32, z: i32) {
         self.chunks.remove(&Self::get_key(x, z));
     }

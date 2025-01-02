@@ -2,27 +2,16 @@ use std::process::exit;
 use std::{backtrace::Backtrace, panic, thread};
 
 use chrono::Local;
+use crab_craft::utils::{errors::print_error_report_instructions, log};
 use crab_registry::{RegistryManager, REGISTRY};
 use crab_world::blocks::init_blocks;
 use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir, BLOCKS};
 use tracing::{error, info, info_span};
-use utils::{errors::print_error_report_instructions, log};
 
-use crate::mc_server::McServer;
-use crate::utils::files::FILES;
-use crate::world::worlds_storage::WORLDS_STORAGE;
-use crate::world::OVERWORLD_IDENTIFIER;
-
-mod components;
-mod events;
-mod handlers;
-mod mc_server;
-mod network;
-mod utils;
-mod world;
-
-pub const GITHUB_ISSUES_URL: &str = "https://github.com/CrabCraftDev/CrabCraft/issues/new/choose";
-pub const DISCORD_INVITE_URL: &str = "https://discord.gg/XZKprmznqP";
+use crab_craft::mc_server::McServer;
+use crab_craft::utils::files::FILES;
+use crab_craft::world::worlds_storage::WORLDS_STORAGE;
+use crab_craft::world::OVERWORLD_IDENTIFIER;
 
 #[tokio::main]
 async fn main() {
