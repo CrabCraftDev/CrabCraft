@@ -41,7 +41,7 @@ pub fn generate() -> TokenStream {
         let block_name = &block.name;
 
         blocks_initialization.push(quote! {
-            blocks.add_block(#states_amount, &#name::namespaced_key(), BlockInformation {
+            blocks.add_block(#states_amount, &#name::namespaced_key(), ::crab_world::blocks::block_registry::BlockInformation {
                 from_properties: #name::from_properties,
                 properties: #name::properties,
                 starting_state_id: 0,
@@ -57,18 +57,18 @@ pub fn generate() -> TokenStream {
             #[derive(Clone, PartialEq, Hash)]
             pub struct #name;
 
-            impl BlockType for #name {
-                fn namespaced_key() -> NamespacedKey {
-                    NamespacedKey::minecraft(#block_name).unwrap()
+            impl ::crab_world::blocks::BlockType for #name {
+                fn namespaced_key() -> ::crab_protocol::types::namespaced_key::NamespacedKey {
+                    ::crab_protocol::types::namespaced_key::NamespacedKey::minecraft(#block_name).unwrap()
                 }
 
                 #[allow(unused_mut, unused)]
-                fn properties(local_state: u16) -> Result<HashMap<&'static str, String>, WorldError> {
+                fn properties(local_state: u16) -> Result<::std::collections::HashMap<&'static str, String>, ::crab_world::error::WorldError> {
                     if local_state > #states_amount {
-                        return Err(WorldError::InvalidLocalState(local_state, #states_amount));
+                        return Err(::crab_world::error::WorldError::InvalidLocalState(local_state, #states_amount));
                     }
 
-                    let mut hashmap: HashMap<&'static str, String> = HashMap::new();
+                    let mut hashmap: ::std::collections::HashMap<&'static str, String> = ::std::collections::HashMap::new();
                     let mut current_state = local_state;
 
                     #(
@@ -81,7 +81,7 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_properties(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError> {
+                fn from_properties(hashmap: &::std::collections::HashMap<&str, String>) -> Result<::crab_world::blocks::Block, ::crab_world::error::WorldError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(
@@ -89,19 +89,15 @@ pub fn generate() -> TokenStream {
                         state_id_offset += property_value as u16 * multiplier;
                         multiplier *= #states_combinations_amounts;
                     )*
-                    Ok(Block(state_id_offset))
+                    Ok(::crab_world::blocks::Block(state_id_offset))
                 }
             }
         });
     }
 
     quote! {
-        use crab_protocol::types::namespaced_key::NamespacedKey;
-        use std::collections::HashMap;
-        use crab_world::blocks::block_registry::BlockInformation;
-
-        pub fn init_blocks() -> BlockRegistry {
-            let mut blocks = BlockRegistry::default();
+        pub fn init_blocks() -> ::crab_world::blocks::block_registry::BlockRegistry {
+            let mut blocks = ::crab_world::blocks::block_registry::BlockRegistry::default();
             #(#blocks_initialization)*
             blocks
         }
