@@ -92,7 +92,7 @@ impl World {
                 self.chunks.insert(key, chunk);
                 Ok(())
             }
-            Err(Error::Anvil(ChunkNotGenerated { .. })) => {
+            Err(Error::Anvil(ChunkNotGenerated { .. })) | Err(Error::MissingWorldFile { .. }) => {
                 warn!("World generator is not implemented in CrabCraft!");
                 warn!("Ensure the required pre-generated world files exist in: worlds/overworld/region/");
 
