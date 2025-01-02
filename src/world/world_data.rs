@@ -7,6 +7,7 @@ use crab_registry::REGISTRY;
 use crab_world::anvil::region::Region;
 use crab_world::blocks::Block;
 use crab_world::chunks::chunk::Chunk;
+use crab_world::chunks::section::CHUNK_SIZE_SHIFT;
 use crab_world::error::AnvilError::ChunkNotGenerated;
 use dashmap::mapref::one::{Ref, RefMut};
 use dashmap::DashMap;
@@ -110,11 +111,8 @@ impl World {
             .map_err(|_| Error::MissingWorldFile(region_file_name.clone()))?;
 
         let region = Region::from(Bytes::from(bytes));
-        let chunk = region.read_chunk(
-            (x % REGION_SIZE_IN_CHUNKS) as u8,
-            (z % REGION_SIZE_IN_CHUNKS) as u8,
-            Self::get_biome,
-        )?;
+        let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
+        let chunk = region.read_chunk(local_chunk_x, local_chunk_z, Self::get_biome)?;
 
         Ok(chunk)
     }
@@ -132,15 +130,39 @@ impl World {
             .unwrap() as u64
     }
 
-    fn get_key(x: i32, z: i32) -> ChunkCoordinates {
-        ((x as ChunkCoordinates) << i32::BITS) | z as ChunkCoordinates
+    pub fn get_key(region_x: i32, region_z: i32) -> ChunkCoordinates {
+        ((region_x as ChunkCoordinates) << i32::BITS) | region_z as ChunkCoordinates
     }
 
-    fn chunk_coordinates(x: i32, z: i32) -> (i32, i32) {
-        ((x as f64 / 16.0).floor() as i32, (z as f64 / 16.0).floor() as i32)
+    fn chunk_coordinates(block_x: i32, block_z: i32) -> (i32, i32) {
+        (block_x >> CHUNK_SIZE_SHIFT, block_z >> CHUNK_SIZE_SHIFT)
     }
 
-    fn get_region_name(x: i32, z: i32) -> String {
-        format!("r.{}.{}.mca", x >> 5, z >> 5)
+    fn chunk_coordinates_inside_region(x: i32, z: i32) -> (u8, u8) {
+        ((x % REGION_SIZE_IN_CHUNKS) as u8, (z % REGION_SIZE_IN_CHUNKS) as u8)
+    }
+
+    fn get_region_name(chunk_x: i32, chunk_z: i32) -> String {
+        // Floor of dividing the chunk coordinates by 32 (REGION_SIZE_IN_CHUNKS)
+        format!("r.{}.{}.mca", chunk_x >> 5, chunk_z >> 5)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::world::World;
+
+    #[test]
+    fn test_chunk_coordinates() {
+        let (chunk_x, chunk_z) = World::chunk_coordinates(32, -5);
+        assert_eq!(chunk_x, 2);
+        assert_eq!(chunk_z, -1);
+    }
+
+    #[test]
+    fn test_get_region_name() {
+        let region = World::get_region_name(1500, -600);
+
+        assert_eq!(region, "r.46.-19.mca");
     }
 }
