@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::time::{self, Instant, MissedTickBehavior};
 use tokio::{select, signal};
-use tracing::{error, info, warn};
+use tracing::{error, info, info_span, warn};
 
 use crate::events::asynchronous::{AsyncEvent, AsyncEventHolder};
 use crate::events::global::server::ServerShutdownEvent;
@@ -56,6 +56,7 @@ impl McServer {
         }
     }
 
+    #[tracing::instrument(name = "Mc Server", skip_all)]
     pub async fn start(mut self) {
         let ctrl_c = signal::ctrl_c();
 
@@ -93,6 +94,7 @@ impl McServer {
         print_error_report_instructions();
     }
 
+    #[tracing::instrument(name = "Tick Scheduler", skip_all)]
     pub async fn tick_loop(event_sender: AsyncSender<AsyncEventHolder>) {
         let mut ticker = time::interval(Duration::from_millis(1000 / TPS));
         let mut overload_warning_cooldown = Instant::now();
@@ -119,6 +121,7 @@ impl McServer {
         }
     }
 
+    #[tracing::instrument(name = "Event Loop", skip_all)]
     pub async fn event_loop(&mut self) {
         while self.running {
             let Ok(event) = self.events_receiver.recv().await else {
@@ -148,6 +151,8 @@ impl McServer {
                     .send_to_with_response(entity_id.expect("Missing entity for Packet event"), event)
                     .map(AsyncEvent::Packet),
                 AsyncEvent::WorldTick(event) => {
+                    let span = info_span!("Tick");
+                    let _span_guard = span.enter();
                     self.current_tick += 1;
                     self.scheduler.tick();
                     self.world.send_with_response(event).map(AsyncEvent::WorldTick)
@@ -169,6 +174,7 @@ impl McServer {
         self.running = false;
     }
 
+    #[tracing::instrument(name = "Shutdown", skip_all)]
     async fn do_shutdown(&mut self) {
         info!("Stopping server...");
         if self.running {

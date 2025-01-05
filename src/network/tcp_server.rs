@@ -21,6 +21,7 @@ impl TcpServer {
         TcpServer { address, event_sender }
     }
 
+    #[tracing::instrument(name = "Tcp Server", skip_all)]
     pub async fn start(&self) {
         let listener = TcpListener::bind(&self.address).await.unwrap();
         info!("Listening on {}", self.address);
@@ -45,6 +46,7 @@ impl TcpServer {
         }
     }
 
+    #[tracing::instrument(name = "Incoming Connection", skip_all)]
     pub async fn accept_connection(&self, stream: TcpStream, address: SocketAddr) {
         debug!("Connection established {address}!");
 

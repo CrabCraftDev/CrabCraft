@@ -5,7 +5,7 @@ use chrono::Local;
 use crab_registry::{RegistryManager, REGISTRY};
 use crab_world::blocks::init_blocks;
 use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir, BLOCKS};
-use tracing::{error, info};
+use tracing::{error, info, info_span};
 use utils::{errors::print_error_report_instructions, log};
 
 use crate::mc_server::McServer;
@@ -33,6 +33,10 @@ async fn main() {
     // Guards make sure all logs are flushed in case of panic
     let _guards = log::init();
 
+    // TODO: Make this one line once Rust 2024 Edition is out
+    let span = info_span!("Init");
+    let span_guard = span.enter();
+
     set_panic_hook();
 
     REGISTRY.get_or_init(RegistryManager::default);
@@ -48,7 +52,13 @@ async fn main() {
     let startup_finish = Local::now().timestamp_millis();
     info!("CrabCraft started in {}ms!", startup_finish - startup_begin);
 
+    drop(span_guard);
+
     mc_server.start().await;
+
+    // TODO: Make this one line once Rust 2024 Edition is out
+    let span = info_span!("Exit");
+    let _span_guard = span.enter();
 
     info!("Exiting!");
 }

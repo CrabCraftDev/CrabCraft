@@ -5,7 +5,7 @@ use nu_ansi_term::Color;
 use tracing::{Event, Level, Subscriber};
 use tracing_subscriber::{
     fmt::{format::Writer, FmtContext, FormatEvent, FormatFields},
-    registry::LookupSpan,
+    registry::{LookupSpan, SpanRef},
 };
 
 #[derive(Debug, Default, Clone)]
@@ -30,12 +30,23 @@ where
         let timestamp = Local::now().format("%H:%M:%S");
 
         let level = metadata.level();
-        let (prefix, color) = match *level {
+        let (level, color) = match *level {
             Level::INFO => ("INFO", Color::LightGray),
             Level::WARN => ("WARN", Color::LightYellow),
             Level::ERROR => ("ERROR", Color::LightRed),
             Level::DEBUG => ("DEBUG", Color::LightBlue),
             Level::TRACE => ("TRACE", Color::Blue),
+        };
+
+        let span = ctx
+            .event_scope()
+            .as_mut()
+            .and_then(Iterator::next)
+            .filter(Self::span_filter);
+
+        let prefix = match span {
+            Some(span) => format!("{}/{}", span.name(), level),
+            None => level.to_owned(),
         };
 
         if self.color_enabled {
@@ -59,5 +70,18 @@ where
 
         writeln!(writer)?;
         Ok(())
+    }
+}
+
+impl LogFormatter {
+    fn span_filter<S>(span: &SpanRef<'_, S>) -> bool
+    where
+        S: Subscriber + for<'a> LookupSpan<'a>,
+    {
+        // Filter out random spans from other crates
+        span.metadata()
+            .module_path()
+            .map(|path| path.starts_with("crab_"))
+            .unwrap_or(false)
     }
 }

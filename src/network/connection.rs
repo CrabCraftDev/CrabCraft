@@ -114,6 +114,7 @@ impl NetworkConnection {
         }
     }
 
+    #[tracing::instrument(name = "Connection Writer", skip_all)]
     async fn writer(connection: NetworkConnection, mut read_half: OwnedWriteHalf, transformer: PacketTransformer) {
         let receiver = connection.outgoing_packets_receiver.clone().to_async();
         loop {
@@ -135,6 +136,7 @@ impl NetworkConnection {
         }
     }
 
+    #[tracing::instrument(name = "Connection Reader", skip_all)]
     async fn reader(connection: NetworkConnection, mut read_half: OwnedReadHalf, mut transformer: PacketTransformer) {
         while !connection.is_closed() {
             let packet = match NetworkConnection::next_packet(&mut read_half, &mut transformer).await {
