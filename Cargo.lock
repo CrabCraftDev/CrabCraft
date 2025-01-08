@@ -332,6 +332,7 @@ dependencies = [
  "nohash-hasher",
  "nu-ansi-term 0.50.1",
  "parking_lot",
+ "rayon",
  "serde",
  "serde_json",
  "supports-color",

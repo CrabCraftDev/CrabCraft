@@ -1,11 +1,17 @@
+use std::mem::take;
 use evenio::world::World;
 use kanal::{AsyncReceiver, AsyncSender};
 use std::ops::Add;
 use std::panic;
-use std::sync::Arc;
+use std::process::exit;
+use std::sync::{Arc};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::Ordering::SeqCst;
 use std::time::Duration;
 use tokio::time::{self, Instant, MissedTickBehavior};
-use tokio::{select, signal};
+use tokio::{join, select, signal};
+use tokio::sync::Mutex;
+use tokio::task::{LocalSet};
 use tracing::{error, info, warn};
 
 use crate::events::asynchronous::{AsyncEvent, AsyncEventHolder};
@@ -27,14 +33,14 @@ const MAX_TICK_DURATION: Duration = Duration::from_millis(1000 / TPS);
 const SERVER_OVERLOAD_WARNING_COOLDOWN: Duration = Duration::from_secs(20);
 
 pub struct McServer {
-    running: bool,
+    running: Arc<AtomicBool>,
     current_tick: u64,
     scheduler: ServerScheduler,
     tcp_server: Arc<TcpServer>,
-    world: World,
     /// Channels used for communication between the main thread and others
     events_receiver: AsyncReceiver<AsyncEventHolder>,
     event_sender: AsyncSender<AsyncEventHolder>,
+    main_thread_status: Arc<Mutex<bool>>,
 }
 
 impl McServer {
@@ -42,41 +48,100 @@ impl McServer {
         let (event_sender, events_receiver) = kanal::unbounded_async::<AsyncEventHolder>();
         let tcp_server = TcpServer::new(ip_address, event_sender.clone());
 
-        let mut world = World::new();
-        init_handlers(&mut world);
-
         McServer {
-            running: true,
+            running: Arc::new(AtomicBool::new(true)),
             current_tick: 0,
             tcp_server: Arc::new(tcp_server),
             scheduler: ServerScheduler::default(),
-            world,
             events_receiver,
             event_sender,
+            main_thread_status: Arc::new(Mutex::new(true)),
         }
     }
 
     pub async fn start(mut self) {
         let ctrl_c = signal::ctrl_c();
 
+        let tcp_server = Arc::clone(&self.tcp_server);
         let event_channel = self.event_sender.clone();
-        select! {
-            _ = ctrl_c => {
-                println!(); // To write new messages after ^C
-                self.shutdown();
-            },
-            _ = McServer::tcp_server_task(Arc::clone(&self.tcp_server)) => {},
-            _ = Self::tick_loop(event_channel) => {},
-            _ = self.event_loop() => {}
-        }
 
-        self.do_shutdown().await;
+
+        let tcp_server = Arc::clone(&self.tcp_server);
+        let event_channel = self.event_sender.clone();
+        let event_channel2 = self.event_sender.clone();
+        let main_thread_status = Arc::clone(&self.main_thread_status);
+
+
+        // let afc = Arc::clone(&self.main_loop_working);
+        //
+        // // Spawn the event loop in the LocalSet
+        // let a = local_set.spawn_local(async move {
+        //     self.event_loop().await;
+        //     self
+        // });
+
+        let skibidi = Arc::clone(&self.running);
+        let skibidi2 = Arc::clone(&self.running);
+        let skibidi3 = Arc::clone(&self.running);
+
+        // use tokio_util::task::TaskTracker;
+        // let tracker = TaskTracker::new();
+
+        let main_task = tokio::task::spawn_blocking(move || {
+            self.event_loop()
+        });
+        
+        // let s = JoinSet::new();
+        let abort = main_task.abort_handle();
+
+        let a = join!(
+            tokio::task::spawn(async move {
+                signal::ctrl_c().await.unwrap();
+                skibidi.store(false, Ordering::SeqCst);
+                println!("Stopping main thread");
+                AsyncEvent::send_event(ServerShutdownEvent, &event_channel2).expect("TODO: panic message");
+                println!("FINISHED, GOODBYE");
+                
+                
+                let abcd = tokio::task::spawn(async {
+                    time::sleep(tokio::time::Duration::from_secs(5)).await;
+                    println!("Main task didn't finish in 5 seconds");
+                    println!("If you want press ctr c again to completly stop it");
+                    println!("IT WON'T SAVE ANY DATA AND MAY CAUSE CORUPTION");
+                    signal::ctrl_c().await.unwrap();
+                    println!("Are you sure about that?");
+                    signal::ctrl_c().await.unwrap();
+                    println!("YOU KILLED ME");
+                    exit(5);
+                });
+                
+                
+                select! {
+                    _ = abcd => {
+                        println!("BAJOJAJO");
+                        
+                    }
+                    _ = main_task => {}
+                }
+            }),
+            McServer::tcp_server_task(tcp_server, skibidi3),
+            Self::tick_loop(event_channel, skibidi2),
+            // main_task,
+        );
+        
+        println!("BAJO JAJO");
+
+        // *self = interface;
+
+        // println!("skibidi {:?}", self);
+
+        // self.do_shutdown().await;
     }
 
-    async fn tcp_server_task(tcp_server: Arc<TcpServer>) {
+    async fn tcp_server_task(tcp_server: Arc<TcpServer>, is_disabled: Arc<AtomicBool>) {
         // We are creating task and then awaiting it, to handle panic errors
         let task = tokio::spawn(async move {
-            tcp_server.start().await;
+            tcp_server.start(is_disabled).await;
         });
         let Err(err) = task.await else {
             return;
@@ -93,16 +158,16 @@ impl McServer {
         print_error_report_instructions();
     }
 
-    pub async fn tick_loop(event_sender: AsyncSender<AsyncEventHolder>) {
+    pub async fn tick_loop(event_sender: AsyncSender<AsyncEventHolder>, is_running: Arc<AtomicBool>) {
         let mut ticker = time::interval(Duration::from_millis(1000 / TPS));
         let mut overload_warning_cooldown = Instant::now();
         ticker.set_missed_tick_behavior(MissedTickBehavior::Delay);
 
-        loop {
+        while is_running.load(SeqCst) {
             let tick_start = Instant::now();
 
-            AsyncEvent::send_event_with_response(WorldTickEvent, &event_sender)
-                .await
+            AsyncEvent::send_event(WorldTickEvent, &event_sender)
+                // .await
                 .unwrap();
 
             ticker.tick().await;
@@ -119,9 +184,14 @@ impl McServer {
         }
     }
 
-    pub async fn event_loop(&mut self) {
-        while self.running {
-            let Ok(event) = self.events_receiver.recv().await else {
+    pub fn event_loop(mut self) {
+        println!("a");
+        let mut world = World::new();
+        init_handlers(&mut world);
+
+        while self.running.load(SeqCst) {
+            println!("ev");
+            let Ok(event) = self.events_receiver.as_sync().recv() else {
                 break;
             };
 
@@ -132,25 +202,44 @@ impl McServer {
             } = event;
 
             let event: Option<AsyncEvent> = match event {
-                AsyncEvent::PlayerLogin(event) => self.world.send_with_response(event).map(AsyncEvent::PlayerLogin),
+                AsyncEvent::PlayerLogin(event) => world.send_with_response(event).map(AsyncEvent::PlayerLogin),
                 AsyncEvent::PlayerPreLogin(event) => {
-                    self.world.send_with_response(event).map(AsyncEvent::PlayerPreLogin)
+                    world.send_with_response(event).map(AsyncEvent::PlayerPreLogin)
                 }
                 AsyncEvent::ServerListPing(event) => {
-                    self.world.send_with_response(event).map(AsyncEvent::ServerListPing)
+                    world.send_with_response(event).map(AsyncEvent::ServerListPing)
                 }
-                AsyncEvent::PlayerQuit(event) => self
-                    .world
+                AsyncEvent::PlayerQuit(event) => world
                     .send_to_with_response(entity_id.expect("Missing entity for Quit event"), event)
                     .map(AsyncEvent::PlayerQuit),
-                AsyncEvent::Packet(event) => self
-                    .world
+                AsyncEvent::Packet(event) => world
                     .send_to_with_response(entity_id.expect("Missing entity for Packet event"), event)
                     .map(AsyncEvent::Packet),
                 AsyncEvent::WorldTick(event) => {
                     self.current_tick += 1;
                     self.scheduler.tick();
-                    self.world.send_with_response(event).map(AsyncEvent::WorldTick)
+                    
+                    // todo: catch panics
+
+                    // let world_ref = &mut self.world;
+                    // let mut interface = take(world_ref);
+                    // let mut world = self.world;
+                    // let a = tokio::task::spawn_blocking(move || {
+                    let b = world.send_with_response(event).map(AsyncEvent::WorldTick);
+                    std::thread::sleep_ms(10000);
+                    // (b, interface)
+                    // });
+                    // let o = a.await.unwrap();
+                    // *world_ref = o.1;
+                    // self = o.1;
+
+                    b
+                    // self = a.await.unwrap();
+
+                },
+                AsyncEvent::ServerShutdown(event) => {
+                    world.send_with_response(event).map(AsyncEvent::ServerShutdown);
+                    break;
                 }
             };
 
@@ -163,21 +252,28 @@ impl McServer {
                     .expect("Response channel for event was closed");
             }
         }
+
+        println!("real shutting down");
+
+
     }
 
     pub fn shutdown(&mut self) {
-        self.running = false;
+        self.running.store(false, Ordering::SeqCst);
     }
 
     async fn do_shutdown(&mut self) {
         info!("Stopping server...");
-        if self.running {
-            warn!("Stopping server while it is still running!");
-            return;
-        }
+        // if self.running {
+        //     warn!("Stopping server while it is still running!");
+        //     return;
+        // }
 
-        self.world.send(ServerShutdownEvent);
+        println!("o");
+        // self.world.send(ServerShutdownEvent);
+        println!("e");
 
         info!("CrabCraft has stopped! Bye!")
     }
 }
+    

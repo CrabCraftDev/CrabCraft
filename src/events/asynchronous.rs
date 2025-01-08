@@ -9,6 +9,7 @@ use derive_more::{From, Into};
 use evenio::event::{GlobalEvent, TargetedEvent};
 use evenio::prelude::EntityId;
 use kanal::{AsyncSender, OneshotSender};
+use crate::events::global::server::ServerShutdownEvent;
 
 /// Represents various asynchronous events that can occur in the system.
 ///
@@ -22,6 +23,7 @@ pub enum AsyncEvent {
     PlayerPreLogin(PlayerPreLoginEvent),
     PlayerQuit(PlayerQuitEvent),
     Packet(PacketEvent),
+    ServerShutdown(ServerShutdownEvent)
 }
 
 /// Holds an asynchronous event along with optional metadata such as the entity ID
