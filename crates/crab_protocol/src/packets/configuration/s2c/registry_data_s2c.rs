@@ -3,7 +3,7 @@ use crab_nbt::Nbt;
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "registry_data", id = 0x07, state = Configuration)]

@@ -1,6 +1,10 @@
 use crate::events::asynchronous::AsyncEvent;
 use crate::utils::errors::Error;
 use crab_macros::AsyncEvent;
+use crab_text::formats::terminal::ColoredTerminalFormat;
+use crab_text::formats::TextFormat;
+use crab_text::text::color::TextColor;
+use crab_text::text::Text;
 use evenio::event::TargetedEvent;
 use std::fmt::{Display, Formatter};
 
@@ -21,7 +25,7 @@ impl PlayerQuitEvent {
 #[derive(Debug)]
 pub enum PlayerQuitReason {
     Disconnected,
-    Kicked(String),
+    Kicked(Text),
     TimedOut,
 }
 
@@ -29,7 +33,13 @@ impl Display for PlayerQuitReason {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             PlayerQuitReason::Disconnected => formatter.write_str("Disconnected"),
-            PlayerQuitReason::Kicked(reason) => formatter.write_str(reason),
+            PlayerQuitReason::Kicked(reason) => {
+                let reason = reason.clone().color(TextColor::Gold);
+                match ColoredTerminalFormat.write(&reason) {
+                    Ok(colored_text) => formatter.write_str(&colored_text),
+                    Err(_) => formatter.write_str(&format!("{:?}", reason)),
+                }
+            }
             PlayerQuitReason::TimedOut => formatter.write_str("Timed out"),
         }
     }

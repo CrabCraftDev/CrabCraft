@@ -17,7 +17,7 @@ pub fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) {
         NextState::Status => ProtocolState::Status,
         NextState::Login => ProtocolState::Login,
         NextState::Transfer => {
-            connection.disconnect("CrabCraft doesn't support transfers!".to_owned());
+            connection.disconnect("CrabCraft doesn't support transfers!".into());
             return;
         }
     };
@@ -34,5 +34,5 @@ pub fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) {
         Ordering::Equal => return,
     };
 
-    connection.disconnect(message);
+    connection.disconnect(message.into());
 }

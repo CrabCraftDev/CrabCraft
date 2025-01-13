@@ -1,4 +1,4 @@
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use include_dir::{include_dir, Dir};
 use std::collections::HashMap;
 use std::path::Path;

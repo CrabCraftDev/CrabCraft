@@ -10,7 +10,6 @@ use crab_protocol::packets::common::{
     ReportDetailsS2CPacket, ServerLink, ServerLinksS2CPacket, Tag, UpdateTagsS2CPacket,
 };
 use crab_protocol::packets::configuration::RegistryDataEntry;
-use crab_protocol::types::namespaced_key::MINECRAFT_NAMESPACE;
 use crab_protocol::{
     packets::configuration::{
         AcknowledgeFinishConfigurationC2SPacket, FinishConfigurationS2CPacket, KnownPacksC2SPacket,
@@ -18,9 +17,10 @@ use crab_protocol::{
     },
     protocol_serializer::ProtocolSerializer,
     protocol_state::ProtocolState,
-    types::{known_pack::KnownPack, namespaced_key::NamespacedKey},
+    types::known_pack::KnownPack,
 };
 use crab_registry::REGISTRY;
+use crab_text::utils::namespaced_key::{NamespacedKey, MINECRAFT_NAMESPACE};
 use evenio::event::Insert;
 use evenio::{
     entity::EntityId,

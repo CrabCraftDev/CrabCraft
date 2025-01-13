@@ -1,6 +1,6 @@
 use crate::utils::errors::Error;
 use chrono::{DateTime, Local};
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use std::path::{Path, PathBuf};
 use std::{env, io};
 use std::{

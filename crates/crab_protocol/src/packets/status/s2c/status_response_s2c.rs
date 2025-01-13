@@ -5,6 +5,7 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
+use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "status_response", id = 0x00, state = Status)]
@@ -16,7 +17,7 @@ pub struct StatusResponseS2CPacket {
 pub struct ServerInfo {
     pub version: ServerVersion,
     pub players: PlayersInfo,
-    pub description: String,
+    pub description: Text,
     pub favicon: String,
     pub enforces_secure_chat: bool,
     pub previews_chat: bool,

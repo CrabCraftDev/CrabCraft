@@ -7,7 +7,7 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::text::TextComponent;
+use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "set_player_team", id = 0x67, state = Play)]
@@ -91,13 +91,13 @@ impl ProtocolSerializer for UpdateTeamsMethod {
 
 #[derive(Clone, Debug, ProtocolSerializer)]
 pub struct TeamInformation {
-    pub team_display_name: TextComponent,
+    pub team_display_name: Text,
     pub friendly_flags: FriendlyFlags,
     pub name_tag_visibility: String,
     pub collision_rule: String,
     pub name_color: TextFormatting,
-    pub name_prefix: TextComponent,
-    pub name_suffix: TextComponent,
+    pub name_prefix: Text,
+    pub name_suffix: Text,
 }
 
 #[bitfield(u8)]

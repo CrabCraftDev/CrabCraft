@@ -2,8 +2,8 @@ use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
 use crate::types::bytes::EndBytes;
-use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "custom_query", id = 0x04, state = Login)]

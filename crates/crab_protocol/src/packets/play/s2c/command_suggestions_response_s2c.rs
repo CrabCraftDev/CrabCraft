@@ -1,8 +1,8 @@
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::text::TextComponent;
 use crate::types::varint::VarInt;
+use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "command_suggestions", id = 0x10, state = Play)]
@@ -19,5 +19,5 @@ pub struct CommandSuggestionsResponseS2CPacket {
 #[derive(Debug, Clone, PartialEq, ProtocolSerializer)]
 pub struct CommandSuggestion {
     pub suggestion: String,
-    pub tooltip: Option<TextComponent>,
+    pub tooltip: Option<Text>,
 }

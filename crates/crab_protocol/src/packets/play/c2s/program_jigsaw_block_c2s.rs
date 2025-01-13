@@ -2,8 +2,8 @@ use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
 use crate::types::block_position::BlockPosition;
-use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "set_jigsaw_block", id = 0x37, state = Play)]

@@ -1,8 +1,8 @@
 use crate::blocks::BLOCKS;
 use crate::chunks::section::AMOUNT_OF_BIOMES_IN_CHUNK_SECTION;
 use crate::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
-use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_registry::REGISTRY;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::chunks::palette::paletted_storage::calculate_bits_per_entry;
 
 #[derive(Clone, Debug, Copy, PartialEq)]

@@ -6,6 +6,6 @@ use evenio::fetch::Fetcher;
 
 pub fn server_shutdown(_: Receiver<ServerShutdownEvent>, fetcher: Fetcher<(&Player, &NetworkConnection)>) {
     for (_, network_connection) in fetcher.iter() {
-        network_connection.disconnect("Server shutting down!".to_string());
+        network_connection.disconnect("Server shutting down!".into());
     }
 }

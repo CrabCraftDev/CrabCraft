@@ -19,3 +19,4 @@ flate2.workspace = true
 libdeflater = "1.23.0"
 
 crab_macros = { path = "../crab_macros" }
+crab_text = { path = "../crab_text" }

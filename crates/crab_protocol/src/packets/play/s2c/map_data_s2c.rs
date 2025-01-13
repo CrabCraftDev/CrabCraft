@@ -8,8 +8,8 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::text::TextComponent;
 use crate::types::varint::VarInt;
+use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "map_item_data", id = 0x2D, state = Play)]
@@ -28,7 +28,7 @@ pub struct MapDecoration {
     pub x: i8,
     pub y: i8,
     pub rotation: i8,
-    pub display_name: Option<TextComponent>,
+    pub display_name: Option<Text>,
 }
 
 #[derive(Clone, Default, Debug, From, Into)]

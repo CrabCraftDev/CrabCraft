@@ -7,7 +7,6 @@ use crate::events::player::packet::PacketEvent;
 use crate::events::player::player_quit::{PlayerQuitEvent, PlayerQuitReason};
 use crate::utils::errors::Error;
 use chrono::Local;
-use crab_nbt::NbtTag;
 use crab_protocol::error::ProtocolError;
 use crab_protocol::packet_transformer::PacketTransformer;
 use crab_protocol::{
@@ -20,13 +19,13 @@ use crab_protocol::{
     protocol_state::ProtocolState,
     raw_packet::RawPacket,
 };
+use crab_text::text::Text;
 use crossbeam::sync::ShardedLock;
 use evenio::component::Component;
 use evenio::entity::EntityId;
 use evenio::prelude::{GlobalEvent, TargetedEvent};
 use kanal::{AsyncSender, Receiver, Sender};
 use parking_lot::Mutex;
-use serde_json::json;
 use std::fmt::Debug;
 use std::net::IpAddr;
 use std::{io, panic, sync::Arc, time::Duration};
@@ -143,12 +142,12 @@ impl NetworkConnection {
                         io::ErrorKind::ConnectionReset => "Connection reset".to_owned(),
                         _ => format!("IO Error: {}", error),
                     };
-                    connection.disconnect(message);
+                    connection.disconnect(message.into());
                     break;
                 }
                 Err(error) => {
                     warn!("{}Error decoding packet {error:?}!", connection.prefix());
-                    connection.disconnect("Unexpected connection error".to_owned());
+                    connection.disconnect("Invalid packet received!".into());
                     break;
                 }
             };
@@ -176,7 +175,7 @@ impl NetworkConnection {
                 let mut keep_alive_state = self.keep_alive_state.lock();
 
                 if keep_alive_state.keep_alive_pending {
-                    self.disconnect("Timeout!".to_owned());
+                    self.disconnect("Timeout!".into());
                     continue;
                 }
 
@@ -234,33 +233,33 @@ impl NetworkConnection {
         };
     }
 
-    pub fn disconnect(&self, message: String) {
+    pub fn disconnect(&self, message: Text) {
         self.disconnect_with_reason(message.clone(), PlayerQuitReason::Kicked(message));
     }
 
-    pub fn disconnect_with_reason(&self, message: String, reason_type: PlayerQuitReason) {
+    pub fn disconnect_with_reason(&self, message: Text, reason_type: PlayerQuitReason) {
         if self.is_closed() {
             warn!("Called disconnect() on a closed connection");
             return;
         }
 
+        println!("disconnect");
+        println!("a {:?}", self.entity_id.read().unwrap().is_some());
         // Don't send event if there is no entity spawned in ECS
         if self.entity_id.read().unwrap().is_some() {
+            println!("quit event");
             self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
+            println!("end");
         } else if self.get_state().should_entity_be_spawned() {
             panic!("Entity is not spawned in {:?} protocol state", self.get_state());
         }
 
         match self.get_state() {
             ProtocolState::Configuration | ProtocolState::Play => {
-                self.send_packet(DisconnectS2CPacket {
-                    reason: NbtTag::String(message).into(),
-                });
+                self.send_packet(DisconnectS2CPacket { reason: message });
             }
             ProtocolState::Login => {
-                self.send_packet(LoginDisconnectS2CPacket {
-                    reason: json!({"text": message}).to_string().into(),
-                });
+                self.send_packet(LoginDisconnectS2CPacket { reason: message });
             }
             _ => {}
         }
@@ -303,12 +302,17 @@ impl NetworkConnection {
         &self,
         event: E,
     ) -> Result<(), Error> {
+        println!("a");
         if self.entity_id.read().unwrap().is_none() {
             return Ok(());
         }
 
+        println!("b");
         let id = *self.entity_id.clone().read().unwrap();
-        AsyncEvent::send_target_event(event, &self.event_sender, id)
+        println!("c");
+        let a = AsyncEvent::send_target_event(event, &self.event_sender, id);
+        println!("d");
+        a
     }
 
     pub async fn send_event_with_response<E: GlobalEvent + Debug + TryFrom<AsyncEvent> + Into<AsyncEvent>>(

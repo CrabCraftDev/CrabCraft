@@ -7,7 +7,7 @@ use crab_macros::ProtocolSerializer;
 use strum::FromRepr;
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::text::TextComponent;
+use crab_text::text::Text;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct ServerLinksS2CPacket {
@@ -36,7 +36,7 @@ pub enum KnownServerLinkType {
 #[derive(Debug, Clone)]
 pub enum ServerLink {
     Known { link: KnownServerLinkType, url: String },
-    Custom { component: TextComponent, url: String },
+    Custom { component: Text, url: String },
 }
 
 impl ProtocolSerializer for ServerLink {
@@ -63,7 +63,7 @@ impl ProtocolSerializer for ServerLink {
             let url = String::deserialize(buf)?;
             Ok(ServerLink::Known { link, url })
         } else {
-            let component = TextComponent::deserialize(buf)?;
+            let component = Text::deserialize(buf)?;
             let url = String::deserialize(buf)?;
             Ok(ServerLink::Custom { component, url })
         }

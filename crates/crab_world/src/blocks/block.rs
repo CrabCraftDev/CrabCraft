@@ -1,14 +1,12 @@
 use std::cmp::PartialEq;
 use std::collections::HashMap;
 
-use derive_more::{From, Into};
-
-use crab_protocol::types::namespaced_key::NamespacedKey;
-
 use crate::blocks::block_data::BlockData;
 use crate::blocks::block_registry::BlockInformation;
 use crate::blocks::{get_block_registry, BLOCKS};
 use crate::error::WorldError;
+use crab_text::utils::namespaced_key::NamespacedKey;
+use derive_more::{From, Into};
 
 /// Represents a block used in our codebase
 /// u16 is block state id (mostly used in protocol), which is unique id for each block state

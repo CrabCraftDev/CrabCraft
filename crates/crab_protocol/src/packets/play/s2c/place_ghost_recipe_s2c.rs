@@ -1,8 +1,8 @@
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "place_ghost_recipe", id = 0x39, state = Play)]

@@ -2,7 +2,7 @@ use std::io;
 use thiserror::Error;
 
 use crab_protocol::error::ProtocolError;
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Debug, Error)]
 pub enum WorldError {

@@ -1,6 +1,6 @@
 use crate::world::worlds_storage::WORLDS_STORAGE;
 use crate::world::World;
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use dashmap::mapref::one::{Ref, RefMut};
 use derive_more::From;
 use evenio::prelude::Component;

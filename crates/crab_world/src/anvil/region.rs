@@ -2,7 +2,6 @@ use crate::error::AnvilError;
 use bitfield_struct::bitfield;
 use bytes::{Buf, Bytes};
 use crab_nbt::Nbt;
-use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_world::blocks::Block;
 use crab_world::chunks::bit_storage::BitStorage;
 use crab_world::chunks::palette::palette_content_type::PaletteContentType;
@@ -16,6 +15,7 @@ use strum::FromRepr;
 use crate::chunks::chunk::Chunk;
 use crate::chunks::section::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
 use crate::error::AnvilError::ChunkNotGenerated;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::chunks::section::ChunkSection;
 use lz4::Decoder;
 

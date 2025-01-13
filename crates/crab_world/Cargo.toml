@@ -18,6 +18,7 @@ lz4 = "1.28.0"
 crab_registry = { path = "../crab_registry" }
 crab_protocol = { path = "../crab_protocol" }
 crab_macros = { path = "../crab_macros" }
+crab_text = { path = "../crab_text" }
 
 [build-dependencies]
 serde.workspace = true

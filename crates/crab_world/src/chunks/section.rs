@@ -3,8 +3,8 @@ use crate::chunks::palette::palette_content_type::PaletteContentType;
 use crate::chunks::palette::paletted_storage::{Palette, PalettedStorage};
 use crate::error::WorldError;
 use bytes::{BufMut, BytesMut};
-use crab_protocol::types::namespaced_key::NamespacedKey;
 use crab_registry::REGISTRY;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use std::fmt::Debug;
 
 pub const CHUNK_SIZE: u16 = 16;

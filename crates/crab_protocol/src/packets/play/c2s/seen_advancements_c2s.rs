@@ -4,7 +4,7 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "seen_advancements", id = 0x30, state = Play)]

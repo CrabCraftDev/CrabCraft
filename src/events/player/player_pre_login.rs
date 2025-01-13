@@ -1,7 +1,7 @@
 use crate::events::asynchronous::AsyncEvent;
 use crate::utils::errors::Error;
 use crab_macros::AsyncEvent;
-use crab_protocol::types::text::TextComponent;
+use crab_text::text::Text;
 use evenio::event::GlobalEvent;
 use std::net::IpAddr;
 use uuid::Uuid;
@@ -53,5 +53,5 @@ pub enum PlayerPreLoginStatus {
     KickBanned,
     KickFull,
     KickWhitelist,
-    KickOther(TextComponent),
+    KickOther(Text),
 }

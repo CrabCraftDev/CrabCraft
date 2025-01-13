@@ -5,7 +5,7 @@ use crab_macros::ProtocolSerializer;
 use crate::packet::Packet;
 use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::text::TextComponent;
+use crab_text::text::Text;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct AddResourcePackS2CPacket {
@@ -15,7 +15,7 @@ pub struct AddResourcePackS2CPacket {
     /// SHA-1 hash of the resource pack
     pub hash: String,
     pub is_forced: bool,
-    pub prompt_message: Option<TextComponent>,
+    pub prompt_message: Option<Text>,
 }
 
 impl Packet for AddResourcePackS2CPacket {

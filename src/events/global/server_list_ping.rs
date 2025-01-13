@@ -56,7 +56,7 @@ impl ServerListPingEvent {
                 online: 0,
                 sample: Vec::new(),
             },
-            description: "CrabCraft!".to_string(),
+            description: "CrabCraft".into(),
             favicon,
             enforces_secure_chat: false,
             previews_chat: false,
