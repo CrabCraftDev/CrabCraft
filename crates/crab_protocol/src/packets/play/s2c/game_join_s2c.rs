@@ -2,9 +2,9 @@ use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
 use crate::types::block_position::BlockPosition;
-use crate::types::namespaced_key::NamespacedKey;
 use crate::types::player_spawn_information::PlayerSpawnInformation;
 use crate::types::varint::VarInt;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "login", id = 0x2C, state = Play)]

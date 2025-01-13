@@ -4,7 +4,7 @@ use crate::packet::Packet;
 use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 use crate::types::bytes::EndBytes;
-use crate::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct PluginMessageC2SPacket {

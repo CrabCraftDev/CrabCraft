@@ -1,9 +1,8 @@
-use std::collections::HashMap;
-
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::blocks::block_data::Snowy;
 use crab_world::blocks::{init_blocks, GrassBlock};
 use crab_world::blocks::{BlockType, BLOCKS};
+use std::collections::HashMap;
 
 #[test]
 fn get_block_struct_information() {

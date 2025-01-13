@@ -9,8 +9,8 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
 use crate::types::bit_set::BitSet;
 use crate::types::bytes::FixedBytes;
-use crate::types::text::TextComponent;
 use crate::types::varint::VarInt;
+use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "player_chat", id = 0x3B, state = Play)]
@@ -25,10 +25,10 @@ pub struct PlayerChatMessageS2CPacket {
     pub salt: i64,
     #[protocol_attribute(bounded = 20)]
     pub previous_messages: Vec<PreviousMessage>,
-    pub unsigned_content: Option<TextComponent>,
+    pub unsigned_content: Option<Text>,
     pub filter_type: MessageFilterType,
-    pub sender_name: Option<TextComponent>,
-    pub target_name: Option<TextComponent>,
+    pub sender_name: Option<Text>,
+    pub target_name: Option<Text>,
 }
 
 #[derive(Clone, Debug, PartialEq, FromRepr)]

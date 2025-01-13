@@ -47,17 +47,16 @@ pub async fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket
                 });
             }
             PlayerPreLoginStatus::KickBanned => {
-                connection.disconnect("You are banned from this server".to_string());
+                connection.disconnect("You are banned from this server".into());
             }
             PlayerPreLoginStatus::KickFull => {
-                connection.disconnect("The server is full".to_string());
+                connection.disconnect("The server is full".into());
             }
             PlayerPreLoginStatus::KickWhitelist => {
-                connection.disconnect("You are not whitelisted on this server".to_string());
+                connection.disconnect("You are not whitelisted on this server".into());
             }
             PlayerPreLoginStatus::KickOther(_) => {
-                // TODO: Waiting for text components for proper implementation
-                connection.disconnect("Other kick reason".to_string());
+                connection.disconnect("Other kick reason".into());
             }
         }
     }

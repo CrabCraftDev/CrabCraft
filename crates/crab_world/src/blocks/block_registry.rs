@@ -1,6 +1,6 @@
 use crate::blocks::Block;
 use crate::error::WorldError;
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use std::collections::{BTreeMap, HashMap};
 
 #[derive(Debug, Clone)]

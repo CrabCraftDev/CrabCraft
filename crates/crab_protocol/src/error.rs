@@ -12,6 +12,8 @@ pub enum ProtocolError {
     #[error(transparent)]
     Nbt(#[from] crab_nbt::error::Error),
     #[error(transparent)]
+    Text(#[from] crab_text::error::TextError),
+    #[error(transparent)]
     SerdeJson(#[from] serde_json::Error),
     #[error(transparent)]
     LibdeflateDecompression(#[from] DecompressionError),
@@ -21,8 +23,6 @@ pub enum ProtocolError {
     EnumOutOfBounds(String, usize),
     #[error("A key in a HashMap is already present!")]
     HashMapDuplicateKey,
-    #[error("Invalid namespaced key {0}")]
-    InvalidNamespacedKey(String),
     #[error("Invalid block position coordinate {0}. {1} doesn't fit in {2} bits")]
     InvalidBlockPos(String, i32, u32),
     #[error("Invalid length in fixed bytes! Expected {0} but found {1}")]

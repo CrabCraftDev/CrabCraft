@@ -1,15 +1,14 @@
 use crab_nbt::NbtTag;
-
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_protocol::types::text::TextComponent;
+use crab_text::text::Text;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum NumberFormat {
     Blank,
     Styled(NbtTag),
-    Fixed(TextComponent),
+    Fixed(Text),
 }
 
 impl ProtocolSerializer for NumberFormat {
@@ -39,7 +38,7 @@ impl ProtocolSerializer for NumberFormat {
                 Ok(NumberFormat::Styled(styling))
             }
             2 => {
-                let text_component = TextComponent::deserialize(buf)?;
+                let text_component = Text::deserialize(buf)?;
                 Ok(NumberFormat::Fixed(text_component))
             }
             _ => Err(ProtocolError::EnumOutOfBounds(

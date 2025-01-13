@@ -1,10 +1,9 @@
-use crab_macros::ProtocolSerializer;
-
 use crate::packets::play::LastDeathLocation;
 use crate::types::game_mode::GameMode;
 use crate::types::game_mode::OptionalGameMode;
-use crate::types::namespaced_key::NamespacedKey;
 use crate::types::varint::VarInt;
+use crab_macros::ProtocolSerializer;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct PlayerSpawnInformation {

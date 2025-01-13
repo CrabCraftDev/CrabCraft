@@ -1,5 +1,5 @@
 use crate::world::world_data::World;
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use dashmap::DashMap;
 use std::sync::{Arc, LazyLock};
 

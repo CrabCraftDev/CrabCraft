@@ -6,8 +6,8 @@ use strum::FromRepr;
 use crab_macros::{Packet, ProtocolSerializer};
 
 use crate::protocol_state::ProtocolState::*;
-use crate::types::namespaced_key::NamespacedKey;
-use crate::types::text::TextComponent;
+use crab_text::text::Text;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "update_advancements", id = 0x7B, state = Play)]
@@ -28,8 +28,8 @@ pub struct Advancement {
 
 #[derive(ProtocolSerializer, Clone, Debug)]
 pub struct AdvancementDisplay {
-    pub title: TextComponent,
-    pub description: TextComponent,
+    pub title: Text,
+    pub description: Text,
     pub frame_type: AdvancementFrameType,
     pub flags: AdvancementDisplayFlags,
     pub background_texture: Option<NamespacedKey>,

@@ -1,4 +1,4 @@
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::blocks::block_registry::{BlockInformation, BlockRegistry};
 use crab_world::blocks::Block;
 use crab_world::error::WorldError;

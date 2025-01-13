@@ -7,7 +7,7 @@ use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
 use crate::types::number_format::NumberFormat;
-use crate::types::text::TextComponent;
+use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "set_objective", id = 0x64, state = Play)]
@@ -64,7 +64,7 @@ impl ProtocolSerializer for UpdateObjectiveMode {
 
 #[derive(Clone, PartialEq, Debug, ProtocolSerializer)]
 pub struct ObjectiveContent {
-    pub objective_value: TextComponent,
+    pub objective_value: Text,
     pub objective_type: ObjectiveType,
     pub number_format: Option<NumberFormat>,
 }

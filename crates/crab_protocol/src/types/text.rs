@@ -1,34 +1,18 @@
-use crab_nbt::NbtTag;
-use derive_more::{From, Into};
-use std::fmt::Debug;
-
-use crab_macros::ProtocolSerializer;
-use crab_protocol::bounded::Bounded;
-use crab_protocol::protocol_serializer::ProtocolSerializer;
-
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
+use crab_nbt::serde::de::from_bytes_unnamed;
+use crab_protocol::protocol_serializer::ProtocolSerializer;
+use crab_text::formats::nbt::NbtTextFormat;
+use crab_text::formats::TextFormat;
+use crab_text::text::Text;
 
-const MAX_JSON_TEXT_COMPONENT_LENGTH: usize = i16::MAX as usize;
-
-#[derive(Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, From, Into)]
-pub struct JsonTextComponent(pub String);
-
-impl ProtocolSerializer for JsonTextComponent {
+impl ProtocolSerializer for Text {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        Bounded::check(&self.0, MAX_JSON_TEXT_COMPONENT_LENGTH)?;
-        buf.put_string(&self.0);
+        buf.put(NbtTextFormat.write(self)?);
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        let value = buf.get_string()?;
-        Bounded::check(&value, MAX_JSON_TEXT_COMPONENT_LENGTH)?;
-        Ok(value.into())
+        Ok(from_bytes_unnamed(buf)?)
     }
-}
-
-#[derive(ProtocolSerializer, Clone, PartialEq, Debug, From, Into)]
-pub struct TextComponent {
-    pub tag: NbtTag,
 }

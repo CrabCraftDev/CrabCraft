@@ -6,8 +6,8 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::namespaced_key::NamespacedKey;
 use crate::types::sound::SoundCategory;
+use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, Debug, Clone)]
 #[packet(name = "stop_sound", id = 0x71, state = Play)]

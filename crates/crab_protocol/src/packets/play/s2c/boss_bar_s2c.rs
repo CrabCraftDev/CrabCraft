@@ -8,7 +8,7 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::text::TextComponent;
+use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
 #[packet(name = "boss_event", id = 0x0A, state = Play)]
@@ -20,7 +20,7 @@ pub struct BossBarS2CPacket {
 #[derive(Debug, Clone)]
 pub enum BossBarMethod {
     Add {
-        title: TextComponent,
+        title: Text,
         health: f32,
         color: BossBarColor,
         division: BossBarDivision,
@@ -28,7 +28,7 @@ pub enum BossBarMethod {
     },
     Remove,
     UpdateHealth(f32),
-    UpdateTitle(TextComponent),
+    UpdateTitle(Text),
     UpdateStyle {
         color: BossBarColor,
         division: BossBarDivision,

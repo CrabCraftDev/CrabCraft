@@ -3,11 +3,11 @@ use crab_macros::ProtocolSerializer;
 use crate::packet::Packet;
 use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
-use crate::types::text::TextComponent;
+use crab_text::text::Text;
 
 #[derive(ProtocolSerializer, Debug, Clone)]
 pub struct DisconnectS2CPacket {
-    pub reason: TextComponent,
+    pub reason: Text,
 }
 
 impl Packet for DisconnectS2CPacket {

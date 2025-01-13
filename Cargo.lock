@@ -442,7 +442,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_yml",
- "thiserror 2.0.3",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -458,6 +458,7 @@ dependencies = [
  "crab_nbt",
  "crab_protocol",
  "crab_registry",
+ "crab_text",
  "crab_world",
  "crossbeam",
  "dashmap",
@@ -470,7 +471,7 @@ dependencies = [
  "parking_lot",
  "serde_json",
  "supports-color",
- "thiserror 2.0.3",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
  "tracing-appender",
@@ -489,14 +490,15 @@ dependencies = [
 
 [[package]]
 name = "crab_nbt"
-version = "0.2.5"
+version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "760e4de0b3bc54188041c8d00cd4c70fc51149fd48c3e5356766880963ced2a2"
+checksum = "53309c1f327aeb4a4636bfcc5247f23c393f3f08a0e07f41dab194d0b8687015"
 dependencies = [
  "bytes",
  "cesu8",
  "derive_more",
- "thiserror 2.0.3",
+ "serde",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -507,6 +509,7 @@ dependencies = [
  "bytes",
  "crab_macros",
  "crab_nbt",
+ "crab_text",
  "derive_more",
  "evenio",
  "flate2",
@@ -514,7 +517,7 @@ dependencies = [
  "serde",
  "serde_json",
  "strum",
- "thiserror 2.0.3",
+ "thiserror 2.0.11",
  "tokio",
  "uuid",
 ]
@@ -535,8 +538,21 @@ dependencies = [
 name = "crab_registry"
 version = "0.0.5"
 dependencies = [
- "crab_protocol",
+ "crab_text",
  "include_dir",
+]
+
+[[package]]
+name = "crab_text"
+version = "0.0.5"
+dependencies = [
+ "bytes",
+ "crab_nbt",
+ "nu-ansi-term 0.50.1",
+ "serde",
+ "serde_json",
+ "strum",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -549,6 +565,7 @@ dependencies = [
  "crab_nbt",
  "crab_protocol",
  "crab_registry",
+ "crab_text",
  "criterion",
  "derive_more",
  "flate2",
@@ -560,7 +577,7 @@ dependencies = [
  "serde",
  "serde_json",
  "strum",
- "thiserror 2.0.3",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -1654,18 +1671,18 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "serde"
-version = "1.0.215"
+version = "1.0.217"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6513c1ad0b11a9376da888e3e0baa0077f1aed55c17f50e7b2397136129fb88f"
+checksum = "02fc4265df13d6fa1d00ecff087228cc0a2b5f3c0e87e258d8b94a156e984c70"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.215"
+version = "1.0.217"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad1e866f866923f252f05c889987993144fb74e722403468a4ebd70c3cd756c0"
+checksum = "5a9bf7cf98d04a2b28aead066b7496853d4779c9cc183c440dbac457641e19a0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1819,11 +1836,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.3"
+version = "2.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c006c85c7651b3cf2ada4584faa36773bd07bac24acfb39f3c431b36d7e667aa"
+checksum = "d452f284b73e6d76dd36758a0c8684b1d5be31f92b89d07fd5822175732206fc"
 dependencies = [
- "thiserror-impl 2.0.3",
+ "thiserror-impl 2.0.11",
 ]
 
 [[package]]
@@ -1839,9 +1856,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.3"
+version = "2.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f077553d607adc1caf65430528a576c757a71ed73944b66ebb58ef2bbd243568"
+checksum = "26afc1baea8a989337eeb52b6e72a039780ce45c3edfcc9c5b9d112feeb173c2"
 dependencies = [
  "proc-macro2",
  "quote",

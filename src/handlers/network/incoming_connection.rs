@@ -44,7 +44,7 @@ pub fn on_player_login_event(
     let event = receiver.event;
 
     if let PlayerLoginStatus::Disallowed(status) = &event.status {
-        event.connection.disconnect(status.clone());
+        event.connection.disconnect(status.clone().into());
         return;
     }
 

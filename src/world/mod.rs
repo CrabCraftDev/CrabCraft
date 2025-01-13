@@ -1,4 +1,4 @@
-use crab_protocol::types::namespaced_key::NamespacedKey;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use std::sync::LazyLock;
 
 pub static OVERWORLD_IDENTIFIER: LazyLock<NamespacedKey> =

@@ -96,7 +96,7 @@ pub fn generate() -> TokenStream {
     }
 
     quote! {
-        use crab_protocol::types::namespaced_key::NamespacedKey;
+        use crab_text::utils::namespaced_key::NamespacedKey;
         use std::collections::HashMap;
         use crab_world::blocks::block_registry::BlockInformation;
 
