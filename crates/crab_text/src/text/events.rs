@@ -21,7 +21,7 @@ pub enum ClickEvent {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(tag = "action", content = "value", rename_all = "snake_case")]
+#[serde(tag = "action", content = "contents", rename_all = "snake_case")]
 pub enum HoverEvent {
     ShowText(Box<Text>),
     ShowItem {
@@ -30,12 +30,12 @@ pub enum HoverEvent {
         count: i32,
         // Note: This should be sNBT, but CrabCraft doesn't support it yet
         #[serde(skip_serializing_if = "Option::is_none")]
-        tag: Option<Cow<'static, str>>,
+        components: Option<Cow<'static, str>>,
     },
     ShowEntity {
         #[serde(rename = "type")]
         entity_type: NamespacedKey,
         id: Cow<'static, str>,
-        name: Option<Cow<'static, str>>,
+        name: Option<Box<Text>>,
     },
 }
