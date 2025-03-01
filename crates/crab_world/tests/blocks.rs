@@ -1,7 +1,7 @@
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::blocks::block_data::Snowy;
-use crab_world::blocks::{init_blocks, GrassBlock};
-use crab_world::blocks::{BlockType, BLOCKS};
+use crab_world::blocks::{BLOCKS, BlockType};
+use crab_world::blocks::{GrassBlock, init_blocks};
 use std::collections::HashMap;
 
 #[test]

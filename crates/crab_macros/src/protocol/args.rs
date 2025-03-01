@@ -1,7 +1,7 @@
 use proc_macro2::{Ident, Span};
 use syn::parse::{Parse, ParseStream};
 use syn::spanned::Spanned;
-use syn::{parse2, Attribute, Error, Expr, Meta, Token, Type};
+use syn::{Attribute, Error, Expr, Meta, Token, Type, parse2};
 
 pub(crate) struct RootPacketArgs {
     pub(crate) span: Span,

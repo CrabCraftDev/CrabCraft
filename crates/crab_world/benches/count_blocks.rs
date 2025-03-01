@@ -1,9 +1,9 @@
 use bytes::Bytes;
-use crab_registry::{RegistryManager, REGISTRY};
+use crab_registry::{REGISTRY, RegistryManager};
 use crab_world::anvil::region::Region;
-use crab_world::blocks::init_blocks;
 use crab_world::blocks::BLOCKS;
-use criterion::{criterion_group, criterion_main, Criterion};
+use crab_world::blocks::init_blocks;
+use criterion::{Criterion, criterion_group, criterion_main};
 use std::fs;
 
 pub fn count_blocks(c: &mut Criterion) {

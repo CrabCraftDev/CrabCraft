@@ -1,4 +1,4 @@
-use futures::{stream::FuturesUnordered, StreamExt};
+use futures::{StreamExt, stream::FuturesUnordered};
 use kanal::AsyncSender;
 use std::net::SocketAddr;
 use tracing::{debug, error, info};

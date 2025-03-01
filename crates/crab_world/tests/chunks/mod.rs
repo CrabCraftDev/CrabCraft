@@ -1,5 +1,5 @@
-use crab_registry::{RegistryManager, REGISTRY};
-use crab_world::blocks::{init_blocks, BLOCKS};
+use crab_registry::{REGISTRY, RegistryManager};
+use crab_world::blocks::{BLOCKS, init_blocks};
 
 mod bit_storage;
 mod resize;

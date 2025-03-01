@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse2, DeriveInput, Result};
+use syn::{DeriveInput, Result, parse2};
 
 pub(crate) fn async_event_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;

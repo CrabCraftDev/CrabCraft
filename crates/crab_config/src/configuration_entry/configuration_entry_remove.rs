@@ -1,6 +1,6 @@
+use crate::configuration_entry::ConfigurationEntry;
 use crate::configuration_entry::configuration_entry::EMPTY_STRING;
 use crate::configuration_entry::configuration_entry::FLAT_PATH_SEPARATOR;
-use crate::configuration_entry::ConfigurationEntry;
 
 impl ConfigurationEntry {
     pub fn remove_children_in_flat_path(&mut self, flat_path: &str) -> bool {

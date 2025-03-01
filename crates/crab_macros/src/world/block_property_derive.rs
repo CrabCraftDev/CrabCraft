@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse2, spanned::Spanned, Data, DeriveInput, Error, Fields, Result};
+use syn::{Data, DeriveInput, Error, Fields, Result, parse2, spanned::Spanned};
 
 pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;

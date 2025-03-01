@@ -1,5 +1,5 @@
-use crate::configuration_entry::configuration_entry::FLAT_PATH_SEPARATOR;
 use crate::configuration_entry::ConfigurationEntry;
+use crate::configuration_entry::configuration_entry::FLAT_PATH_SEPARATOR;
 
 impl ConfigurationEntry {
     // Useful method in testing

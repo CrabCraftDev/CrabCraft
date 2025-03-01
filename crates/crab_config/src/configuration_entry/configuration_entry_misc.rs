@@ -1,5 +1,5 @@
-use crate::configuration_entry::configuration_entry::{FLAT_PATH_SEPARATOR, ROOT_ENTRY_NAME};
 use crate::configuration_entry::ConfigurationEntry;
+use crate::configuration_entry::configuration_entry::{FLAT_PATH_SEPARATOR, ROOT_ENTRY_NAME};
 use crate::errors::Error;
 use std::collections::HashMap;
 

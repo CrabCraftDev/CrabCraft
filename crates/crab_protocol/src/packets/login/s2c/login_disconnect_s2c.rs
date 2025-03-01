@@ -3,8 +3,8 @@ use crab_macros::Packet;
 use crab_protocol::buf::{ReadByteBuf, WriteByteBuf};
 use crab_protocol::error::ProtocolError;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_text::formats::json::JsonTextFormat;
 use crab_text::formats::TextFormat;
+use crab_text::formats::json::JsonTextFormat;
 use crab_text::text::Text;
 
 #[derive(Packet, Debug, Clone)]

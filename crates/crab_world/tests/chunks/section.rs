@@ -2,7 +2,7 @@ use crate::init_registries;
 use crab_world::blocks::{Block, BlockType, Stone};
 use crab_world::chunks::palette::palette_content_type::PaletteContentType;
 use crab_world::chunks::palette::paletted_storage::PalettedStorage;
-use crab_world::chunks::section::{ChunkSection, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
+use crab_world::chunks::section::{AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, ChunkSection};
 
 #[test]
 fn test_automatic_count_air_blocks() {

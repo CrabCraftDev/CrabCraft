@@ -1,8 +1,8 @@
 use crate::components::name::Name;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::network::connection::NetworkConnection;
-use crate::world::worlds_storage::WORLDS_STORAGE;
 use crate::world::OVERWORLD_IDENTIFIER;
+use crate::world::worlds_storage::WORLDS_STORAGE;
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::packets::play::{

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::blocks::block_data::BlockData;
 use crate::blocks::block_registry::BlockInformation;
-use crate::blocks::{get_block_registry, BLOCKS};
+use crate::blocks::{BLOCKS, get_block_registry};
 use crate::error::WorldError;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use derive_more::{From, Into};

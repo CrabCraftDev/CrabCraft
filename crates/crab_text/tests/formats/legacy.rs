@@ -1,5 +1,5 @@
-use crab_text::formats::legacy::LegacyTextFormat;
 use crab_text::formats::TextFormat;
+use crab_text::formats::legacy::LegacyTextFormat;
 
 #[test]
 fn test_legacy() {

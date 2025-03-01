@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse2, DeriveInput, Error, Expr, Result};
+use syn::{DeriveInput, Error, Expr, Result, parse2};
 
 use crate::protocol::args::parse_packet_args;
 

@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 
 use crab_config::configurable::Configurable;
-use crab_config::configuration_entry::configuration_entry_search::get_configuration_entry_from_flat_key;
 use crab_config::configuration_entry::ConfigurationEntry;
+use crab_config::configuration_entry::configuration_entry_search::get_configuration_entry_from_flat_key;
 use crab_config::handlers::yaml_handler::YamlHandler;
 use crab_config::types::config::Config;
 use crab_macros::Config;

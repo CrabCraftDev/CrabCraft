@@ -1,6 +1,6 @@
 use crate::blocks::Block;
 use crate::chunks::bit_storage::BitStorage;
-use crate::chunks::section::{ChunkSection, CHUNK_SIZE};
+use crate::chunks::section::{CHUNK_SIZE, ChunkSection};
 use crate::error::WorldError;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;

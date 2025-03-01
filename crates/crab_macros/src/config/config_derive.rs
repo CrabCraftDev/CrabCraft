@@ -7,7 +7,7 @@ use std::iter::Map;
 use quote::quote;
 use syn::punctuated::{Iter, Punctuated};
 use syn::token::Comma;
-use syn::{parse_macro_input, Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, LitStr, Meta, Token, Type};
+use syn::{Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, LitStr, Meta, Token, Type, parse_macro_input};
 
 pub fn config_macro(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);

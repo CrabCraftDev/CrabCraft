@@ -1,6 +1,6 @@
 use crab_text::utils::namespaced_key::NamespacedKey;
-use crab_world::blocks::block_registry::{BlockInformation, BlockRegistry};
 use crab_world::blocks::Block;
+use crab_world::blocks::block_registry::{BlockInformation, BlockRegistry};
 use crab_world::error::WorldError;
 use std::collections::HashMap;
 
@@ -58,9 +58,11 @@ fn get_blocks_by_namespaced_key() {
 #[test]
 fn get_invalid_blocks_by_namespaced_key() {
     let blocks = get_example_block_registry();
-    assert!(blocks
-        .block_information_by_namespaced_key(&NamespacedKey::minecraft("test").unwrap())
-        .is_err());
+    assert!(
+        blocks
+            .block_information_by_namespaced_key(&NamespacedKey::minecraft("test").unwrap())
+            .is_err()
+    );
 }
 
 #[test]

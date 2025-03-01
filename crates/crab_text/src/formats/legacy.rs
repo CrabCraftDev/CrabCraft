@@ -1,9 +1,9 @@
 use crate::error::TextError;
 use crate::formats::TextFormat;
+use crate::text::Text;
 use crate::text::color::TextColor;
 use crate::text::content::TextContent;
 use crate::text::style::TextStyle;
-use crate::text::Text;
 
 /// Support for parsing legacy §-based formatting system.
 /// For more information read [Formatting Codes](https://minecraft.wiki/w/Formatting_codes)

@@ -1,9 +1,9 @@
 use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 use syn::spanned::Spanned;
-use syn::{parse2, Attribute, Data, DataStruct, DeriveInput, Error, Index, Result, Type};
+use syn::{Attribute, Data, DataStruct, DeriveInput, Error, Index, Result, Type, parse2};
 
-use crate::protocol::args::{parse_attributes, ProtocolAttribute};
+use crate::protocol::args::{ProtocolAttribute, parse_attributes};
 
 pub(crate) fn derive_protocol_serializer_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;

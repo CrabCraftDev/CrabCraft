@@ -4,7 +4,7 @@ use chrono::Local;
 use nu_ansi_term::Color;
 use tracing::{Event, Level, Subscriber};
 use tracing_subscriber::{
-    fmt::{format::Writer, FmtContext, FormatEvent, FormatFields},
+    fmt::{FmtContext, FormatEvent, FormatFields, format::Writer},
     registry::{LookupSpan, SpanRef},
 };
 

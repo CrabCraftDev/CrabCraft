@@ -1,10 +1,10 @@
 use crate::events::asynchronous::AsyncEvent;
 use crate::utils::errors::Error;
 use crab_macros::AsyncEvent;
-use crab_text::formats::terminal::ColoredTerminalFormat;
 use crab_text::formats::TextFormat;
-use crab_text::text::color::TextColor;
+use crab_text::formats::terminal::ColoredTerminalFormat;
 use crab_text::text::Text;
+use crab_text::text::color::TextColor;
 use evenio::event::TargetedEvent;
 use std::fmt::{Display, Formatter};
 
