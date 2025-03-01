@@ -52,7 +52,7 @@ impl ProtocolSerializer for BlockPositionAndState {
         let x = self.x as i64;
         let y = self.y as i64;
         let z = self.z as i64;
-        buf.put_i64(state_id << 12 | (x << 8 | z << 4 | y));
+        buf.put_i64((state_id << 12) | ((x << 8) | (z << 4) | y));
         Ok(())
     }
 
