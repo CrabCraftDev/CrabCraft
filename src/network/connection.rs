@@ -243,13 +243,9 @@ impl NetworkConnection {
             return;
         }
 
-        println!("disconnect");
-        println!("a {:?}", self.entity_id.read().unwrap().is_some());
         // Don't send event if there is no entity spawned in ECS
         if self.entity_id.read().unwrap().is_some() {
-            println!("quit event");
             self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
-            println!("end");
         } else if self.get_state().should_entity_be_spawned() {
             panic!("Entity is not spawned in {:?} protocol state", self.get_state());
         }
@@ -302,17 +298,12 @@ impl NetworkConnection {
         &self,
         event: E,
     ) -> Result<(), Error> {
-        println!("a");
         if self.entity_id.read().unwrap().is_none() {
             return Ok(());
         }
 
-        println!("b");
         let id = *self.entity_id.clone().read().unwrap();
-        println!("c");
-        let a = AsyncEvent::send_target_event(event, &self.event_sender, id);
-        println!("d");
-        a
+        AsyncEvent::send_target_event(event, &self.event_sender, id)
     }
 
     pub async fn send_event_with_response<E: GlobalEvent + Debug + TryFrom<AsyncEvent> + Into<AsyncEvent>>(
