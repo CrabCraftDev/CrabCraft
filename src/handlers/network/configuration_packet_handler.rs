@@ -1,8 +1,8 @@
 use crate::events::player::packet::PacketEvent;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::{
-    mc_server::COMPATIBLE_SERVER_VERSIONS, network::connection::NetworkConnection, DISCORD_INVITE_URL,
-    GITHUB_ISSUES_URL,
+    DISCORD_INVITE_URL, GITHUB_ISSUES_URL, mc_server::COMPATIBLE_SERVER_VERSIONS,
+    network::connection::NetworkConnection,
 };
 use bytes::BytesMut;
 use crab_protocol::packets::common::{
@@ -20,7 +20,7 @@ use crab_protocol::{
     types::known_pack::KnownPack,
 };
 use crab_registry::REGISTRY;
-use crab_text::utils::namespaced_key::{NamespacedKey, MINECRAFT_NAMESPACE};
+use crab_text::utils::namespaced_key::{MINECRAFT_NAMESPACE, NamespacedKey};
 use evenio::event::Insert;
 use evenio::{
     entity::EntityId,

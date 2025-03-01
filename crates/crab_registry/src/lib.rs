@@ -1,5 +1,5 @@
 use crab_text::utils::namespaced_key::NamespacedKey;
-use include_dir::{include_dir, Dir};
+use include_dir::{Dir, include_dir};
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::OnceLock;

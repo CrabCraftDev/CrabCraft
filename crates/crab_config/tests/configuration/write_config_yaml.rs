@@ -1,4 +1,4 @@
-use std::fs::{remove_file, File, OpenOptions};
+use std::fs::{File, OpenOptions, remove_file};
 use std::path::Path;
 
 use serde_yml::Mapping;

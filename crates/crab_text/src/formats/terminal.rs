@@ -1,7 +1,7 @@
 use crate::error::TextError;
 use crate::formats::TextFormat;
-use crate::text::content::TextContent;
 use crate::text::Text;
+use crate::text::content::TextContent;
 use nu_ansi_term::Style;
 
 pub struct ColoredTerminalFormat;
@@ -22,7 +22,7 @@ impl ColoredTerminalFormat {
                 return Err(TextError::UnsupportedFormatOperation {
                     format: "ColoredTerminalFormat".to_string(),
                     message: format!("writing {:?}", text.content),
-                })
+                });
             }
         };
 

@@ -1,5 +1,5 @@
-use crate::text::color::TextColor;
 use crate::text::Text;
+use crate::text::color::TextColor;
 
 pub fn is_false(val: &bool) -> bool {
     !val

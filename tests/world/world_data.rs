@@ -1,6 +1,6 @@
 use crab_craft::world::World;
-use crab_registry::{RegistryManager, REGISTRY};
-use crab_world::blocks::{init_blocks, BLOCKS};
+use crab_registry::{REGISTRY, RegistryManager};
+use crab_world::blocks::{BLOCKS, init_blocks};
 
 #[test]
 fn load_missing_region_file() {

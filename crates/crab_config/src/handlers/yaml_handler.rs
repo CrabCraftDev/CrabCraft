@@ -7,8 +7,8 @@ use serde_yml::{Mapping, Value};
 
 use crate::errors::Error;
 
-use crate::configuration_entry::configuration_entry::ROOT_ENTRY_NAME;
 use crate::configuration_entry::ConfigurationEntry;
+use crate::configuration_entry::configuration_entry::ROOT_ENTRY_NAME;
 use crate::handlers::format_handler::ConfigFormatHandler;
 
 pub struct YamlHandler;

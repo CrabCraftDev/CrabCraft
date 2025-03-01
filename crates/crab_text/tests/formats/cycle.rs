@@ -1,9 +1,9 @@
+use crab_text::formats::TextFormat;
 use crab_text::formats::legacy::LegacyTextFormat;
 use crab_text::formats::nbt::NbtTextFormat;
 use crab_text::formats::terminal::ColoredTerminalFormat;
-use crab_text::formats::TextFormat;
-use crab_text::text::color::TextColor;
 use crab_text::text::Text;
+use crab_text::text::color::TextColor;
 
 #[test]
 fn test_cycle() {

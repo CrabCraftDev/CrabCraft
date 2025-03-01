@@ -5,8 +5,8 @@ use std::path::Path;
 use crate::handlers::format_handler::ConfigFormatHandler;
 use crate::version_control::modifications::processor::Processor;
 
-use crate::configuration_entry::configuration_entry::ROOT_ENTRY_NAME;
 use crate::configuration_entry::ConfigurationEntry;
+use crate::configuration_entry::configuration_entry::ROOT_ENTRY_NAME;
 use crate::errors::Error;
 use crate::types::config::Config;
 

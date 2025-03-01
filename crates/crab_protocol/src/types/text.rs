@@ -2,8 +2,8 @@ use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crab_nbt::serde::de::from_bytes_unnamed;
 use crab_protocol::protocol_serializer::ProtocolSerializer;
-use crab_text::formats::nbt::NbtTextFormat;
 use crab_text::formats::TextFormat;
+use crab_text::formats::nbt::NbtTextFormat;
 use crab_text::text::Text;
 
 impl ProtocolSerializer for Text {

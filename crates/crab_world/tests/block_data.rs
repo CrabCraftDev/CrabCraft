@@ -3,8 +3,8 @@ use strum::{Display, EnumString};
 
 use crab_macros::BlockData;
 use crab_world::blocks::block_data::{BlockData, Snowy};
-use crab_world::blocks::{init_blocks, GrassBlock};
-use crab_world::blocks::{BlockType, BLOCKS};
+use crab_world::blocks::{BLOCKS, BlockType};
+use crab_world::blocks::{GrassBlock, init_blocks};
 
 #[derive(Debug, Clone, PartialEq, Eq, BlockData)]
 struct ComplexBlockData {

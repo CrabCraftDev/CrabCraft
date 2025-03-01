@@ -8,12 +8,12 @@ use crab_protocol::{
     error::ProtocolError,
     raw_packet::RawPacket,
 };
-use flate2::bufread::ZlibEncoder;
 use flate2::Compression;
+use flate2::bufread::ZlibEncoder;
 use libdeflater::Decompressor;
 use std::io::Read;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::io::AsyncWriteExt;
 
 pub const COMPRESSION_THRESHOLD: i32 = 256;

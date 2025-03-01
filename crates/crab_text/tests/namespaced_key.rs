@@ -1,4 +1,4 @@
-use crab_text::utils::namespaced_key::{NamespacedKey, MINECRAFT_NAMESPACE};
+use crab_text::utils::namespaced_key::{MINECRAFT_NAMESPACE, NamespacedKey};
 
 #[test]
 fn test_to_string_mc_namespaced_key() {

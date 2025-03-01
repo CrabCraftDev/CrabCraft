@@ -31,8 +31,8 @@ use std::net::IpAddr;
 use std::{io, panic, sync::Arc, time::Duration};
 use tokio::{
     net::{
-        tcp::{OwnedReadHalf, OwnedWriteHalf},
         TcpStream,
+        tcp::{OwnedReadHalf, OwnedWriteHalf},
     },
     select,
     time::sleep,

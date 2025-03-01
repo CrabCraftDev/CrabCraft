@@ -3,15 +3,15 @@ use std::{backtrace::Backtrace, panic, thread};
 
 use chrono::Local;
 use crab_craft::utils::{errors::print_error_report_instructions, log};
-use crab_registry::{RegistryManager, REGISTRY};
+use crab_registry::{REGISTRY, RegistryManager};
 use crab_world::blocks::init_blocks;
-use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir, BLOCKS};
+use crab_world::blocks::{Air, BLOCKS, BlockType, CaveAir, VoidAir};
 use tracing::{error, info, info_span};
 
 use crab_craft::mc_server::McServer;
 use crab_craft::utils::files::FILES;
-use crab_craft::world::worlds_storage::WORLDS_STORAGE;
 use crab_craft::world::OVERWORLD_IDENTIFIER;
+use crab_craft::world::worlds_storage::WORLDS_STORAGE;
 
 #[tokio::main]
 async fn main() {
@@ -22,7 +22,6 @@ async fn main() {
     // Guards make sure all logs are flushed in case of panic
     let _guards = log::init();
 
-    // TODO: Make this one line once Rust 2024 Edition is out
     let span = info_span!("Init");
     let span_guard = span.enter();
 
@@ -45,7 +44,6 @@ async fn main() {
 
     mc_server.start().await;
 
-    // TODO: Make this one line once Rust 2024 Edition is out
     let span = info_span!("Exit");
     let _span_guard = span.enter();
 
