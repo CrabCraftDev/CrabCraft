@@ -20,7 +20,7 @@ bytes = "1.9.0"
 thiserror = "2.0.3"
 uuid = { version = "1.11.0", features = ["v4"] }
 tokio = { version = "1.41.1", features = ["full"] }
-crab_nbt = { version = "0.2.6", features = ["full"] }
+crab_nbt = { version = "0.2.9", features = ["full"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
 evenio = { git = "https://github.com/CrabCraftDev/CrabEvenio.git", rev = "8c9fc59" }
