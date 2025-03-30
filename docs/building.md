@@ -27,6 +27,15 @@ cargo build
 > [!NOTE] In debug mode optimizations will be disabled, which means CrabCraft
 > will have a much worse performance.
 
+## Profiling
+
+To build CrabCraft with both optimizations and debug symbols use the `profiling`
+profile:
+
+```shell
+cargo build --profile profiling
+```
+
 ## Optional features
 
 CrabCraft has optional features that can be enabled during compilation.
