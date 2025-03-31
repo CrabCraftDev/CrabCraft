@@ -51,10 +51,11 @@ impl TryFrom<&str> for NamespacedKey {
     type Error = TextError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let split: Vec<&str> = value.split(':').collect();
-        match split.len() {
-            1 => Ok(NamespacedKey::new(MINECRAFT_NAMESPACE, value)?),
-            2 => Ok(NamespacedKey::new(split[0], split[1])?),
+        let mut split = value.split(':');
+        // We take 3 elements to catch the case where there is more then one colon in the string
+        match (split.next(), split.next(), split.next()) {
+            (Some(value), None, None) => Ok(NamespacedKey::minecraft(value)?),
+            (Some(namespace), Some(value), None) => Ok(NamespacedKey::new(namespace, value)?),
             _ => Err(TextError::InvalidNamespacedKeyFormat(value.to_owned())),
         }
     }
