@@ -4,6 +4,7 @@ use crate::text::Text;
 pub mod json;
 pub mod legacy;
 pub mod nbt;
+pub mod ratatui_text;
 pub mod terminal;
 
 /// A trait for converting text between different formats.

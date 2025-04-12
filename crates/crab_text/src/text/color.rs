@@ -1,5 +1,6 @@
 use crate::error::TextError;
-use nu_ansi_term::Color;
+use nu_ansi_term::Color as AnsiColor;
+use ratatui::style::Color as RatatuiColor;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use strum::{Display, EnumString, FromRepr};
 
@@ -40,27 +41,12 @@ impl TextColor {
         }
     }
 
-    pub fn terminal_color(&self) -> Color {
-        match &self {
-            TextColor::Black => Color::Black,
-            TextColor::DarkBlue => Color::Blue,
-            TextColor::DarkGreen => Color::Green,
-            TextColor::DarkCyan => Color::Cyan,
-            TextColor::DarkRed => Color::Red,
-            TextColor::Purple => Color::Purple,
-            TextColor::Gold => Color::Yellow,
-            TextColor::Gray => Color::White,
-            TextColor::DarkGray => Color::DarkGray,
-            TextColor::Blue => Color::LightBlue,
-            TextColor::Green => Color::LightGreen,
-            TextColor::Cyan => Color::LightCyan,
-            TextColor::Red => Color::LightRed,
-            TextColor::Pink => Color::LightPurple,
-            TextColor::Yellow => Color::LightYellow,
-            TextColor::White => Color::LightGray,
-            TextColor::Rgb(r, g, b) => Color::Rgb(*r, *g, *b),
-            TextColor::Reset => Color::Default,
-        }
+    pub fn to_terminal_color(&self) -> AnsiColor {
+        self.into()
+    }
+
+    pub fn to_ratatui_color(&self) -> RatatuiColor {
+        self.into()
     }
 }
 

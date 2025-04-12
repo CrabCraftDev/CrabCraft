@@ -1,8 +1,9 @@
 use crate::error::TextError;
 use crate::formats::TextFormat;
 use crate::text::Text;
+use crate::text::color::TextColor;
 use crate::text::content::TextContent;
-use nu_ansi_term::Style;
+use nu_ansi_term::{Color, Style};
 
 pub struct ColoredTerminalFormat;
 
@@ -28,8 +29,8 @@ impl ColoredTerminalFormat {
 
         let mut style = *default_style;
 
-        if let Some(color) = text.style.color {
-            style.foreground = Some(color.terminal_color());
+        if let Some(color) = &text.style.color {
+            style.foreground = Some(color.into());
         }
 
         if let Some(bold) = text.style.bold {
@@ -78,5 +79,36 @@ impl TextFormat for ColoredTerminalFormat {
             ..Default::default()
         };
         Self::inner(text, &style)
+    }
+}
+
+impl From<TextColor> for Color {
+    fn from(value: TextColor) -> Self {
+        match value {
+            TextColor::Black => Color::Black,
+            TextColor::DarkBlue => Color::Blue,
+            TextColor::DarkGreen => Color::Green,
+            TextColor::DarkCyan => Color::Cyan,
+            TextColor::DarkRed => Color::Red,
+            TextColor::Purple => Color::Purple,
+            TextColor::Gold => Color::Yellow,
+            TextColor::Gray => Color::White,
+            TextColor::DarkGray => Color::DarkGray,
+            TextColor::Blue => Color::LightBlue,
+            TextColor::Green => Color::LightGreen,
+            TextColor::Cyan => Color::LightCyan,
+            TextColor::Red => Color::LightRed,
+            TextColor::Pink => Color::LightPurple,
+            TextColor::Yellow => Color::LightYellow,
+            TextColor::White => Color::LightGray,
+            TextColor::Rgb(r, g, b) => Color::Rgb(r, g, b),
+            TextColor::Reset => Color::Default,
+        }
+    }
+}
+
+impl From<&TextColor> for Color {
+    fn from(value: &TextColor) -> Self {
+        (*value).into()
     }
 }

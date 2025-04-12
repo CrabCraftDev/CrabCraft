@@ -27,6 +27,7 @@ let json = JsonTextFormat.write(&text).unwrap();
 Supported Formats:
 
 - Terminal: Formats text with support for terminal colors.
+- Ratatui: Converts text for use with the `ratatui` crate.
 - NBT: Used in networking, packets
 - JSON: Utilized for server list pings and command
 
