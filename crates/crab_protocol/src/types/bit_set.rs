@@ -96,7 +96,7 @@ impl<const N: usize> ProtocolSerializer for FixedBitSet<N> {
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        let bytes = buf.get_raw_bytes(N as i32);
+        let bytes = buf.get_raw_bytes((N as f32 / 8.0).ceil() as i32);
         Ok(BitSet::from_bytes(bytes.as_ref()).into())
     }
 }
