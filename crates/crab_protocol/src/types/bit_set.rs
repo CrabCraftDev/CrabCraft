@@ -100,3 +100,29 @@ impl<const N: usize> ProtocolSerializer for FixedBitSet<N> {
         Ok(BitSet::from_bytes(bytes.as_ref()).into())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use bytes::BytesMut;
+
+    use crate::{protocol_serializer::ProtocolSerializer, types::bit_set::BitSet};
+
+    use super::FixedBitSet;
+
+    #[test]
+    fn bitset_serialize() {
+        let binary: [u8; 1] = [0b00110101];
+        let mut buffer = BytesMut::with_capacity(1);
+        let bitset = FixedBitSet::<8>(BitSet::new(vec![true, false, true, false, true, true, false, false]));
+        bitset.serialize(&mut buffer).unwrap();
+        assert_eq!(buffer[..], binary);
+    }
+
+    #[test]
+    fn bitset_deserialize() {
+        let binary: [u8; 1] = [0b00110101];
+        let flags = vec![true, false, true, false, true, true, false, false];
+        let deserialized = FixedBitSet::<8>::deserialize(&mut &binary[..]).unwrap();
+        assert_eq!(deserialized, FixedBitSet(BitSet::new(flags)));
+    }
+}
