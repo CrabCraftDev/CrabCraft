@@ -25,7 +25,7 @@ impl PlayerQuitEvent {
 #[derive(Debug)]
 pub enum PlayerQuitReason {
     Disconnected,
-    Kicked(Text),
+    Kicked(Box<Text>),
     TimedOut,
 }
 

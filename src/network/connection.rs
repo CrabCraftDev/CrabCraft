@@ -234,7 +234,7 @@ impl NetworkConnection {
     }
 
     pub fn disconnect(&self, message: Text) {
-        self.disconnect_with_reason(message.clone(), PlayerQuitReason::Kicked(message));
+        self.disconnect_with_reason(message.clone(), PlayerQuitReason::Kicked(message.into()));
     }
 
     pub fn disconnect_with_reason(&self, message: Text, reason_type: PlayerQuitReason) {

@@ -146,9 +146,11 @@ impl McServer {
                 AsyncEvent::PlayerPreLogin(event) => {
                     self.world.send_with_response(event).map(AsyncEvent::PlayerPreLogin)
                 }
-                AsyncEvent::ServerListPing(event) => {
-                    self.world.send_with_response(event).map(AsyncEvent::ServerListPing)
-                }
+                AsyncEvent::ServerListPing(event) => self
+                    .world
+                    .send_with_response(*event)
+                    .map(Box::from)
+                    .map(AsyncEvent::ServerListPing),
                 AsyncEvent::PlayerQuit(event) => self
                     .world
                     .send_to_with_response(entity_id.expect("Missing entity for Quit event"), event)
