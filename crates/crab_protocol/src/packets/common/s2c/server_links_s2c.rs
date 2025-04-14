@@ -36,7 +36,7 @@ pub enum KnownServerLinkType {
 #[derive(Debug, Clone)]
 pub enum ServerLink {
     Known { link: KnownServerLinkType, url: String },
-    Custom { component: Text, url: String },
+    Custom { component: Box<Text>, url: String },
 }
 
 impl ProtocolSerializer for ServerLink {
@@ -63,7 +63,7 @@ impl ProtocolSerializer for ServerLink {
             let url = String::deserialize(buf)?;
             Ok(ServerLink::Known { link, url })
         } else {
-            let component = Text::deserialize(buf)?;
+            let component = Box::new(Text::deserialize(buf)?);
             let url = String::deserialize(buf)?;
             Ok(ServerLink::Custom { component, url })
         }

@@ -17,9 +17,15 @@ pub(crate) fn async_event_impl(item: TokenStream) -> Result<TokenStream> {
 
             fn try_from(value: AsyncEvent #type_generics) -> Result<Self, Self::Error> {
                 match value {
-                    AsyncEvent::#event_enum_ident(event) => Ok(event),
+                    AsyncEvent::#event_enum_ident(event) => Ok(event.into()),
                     _ => Err(Error::InvalidAsyncEventType),
                 }
+            }
+        }
+
+        impl From<Box<#input_name>> for #input_name {
+            fn from(boxed: Box<#input_name>) -> Self {
+                *boxed
             }
         }
     };

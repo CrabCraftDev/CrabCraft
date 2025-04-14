@@ -53,5 +53,5 @@ pub enum PlayerPreLoginStatus {
     KickBanned,
     KickFull,
     KickWhitelist,
-    KickOther(Text),
+    KickOther(Box<Text>),
 }

@@ -8,7 +8,7 @@ use crab_text::text::Text;
 pub enum NumberFormat {
     Blank,
     Styled(NbtTag),
-    Fixed(Text),
+    Fixed(Box<Text>),
 }
 
 impl ProtocolSerializer for NumberFormat {
@@ -38,7 +38,7 @@ impl ProtocolSerializer for NumberFormat {
                 Ok(NumberFormat::Styled(styling))
             }
             2 => {
-                let text_component = Text::deserialize(buf)?;
+                let text_component = Box::new(Text::deserialize(buf)?);
                 Ok(NumberFormat::Fixed(text_component))
             }
             _ => Err(ProtocolError::EnumOutOfBounds(

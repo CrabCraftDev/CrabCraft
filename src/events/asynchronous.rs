@@ -16,11 +16,17 @@ use kanal::{AsyncSender, OneshotSender};
 /// the connection thread and the main thread where the ECS (Entity Component System) lives.
 #[derive(Debug, From)]
 pub enum AsyncEvent {
+    #[from]
     WorldTick(WorldTickEvent),
+    #[from]
     PlayerLogin(PlayerLoginEvent),
-    ServerListPing(ServerListPingEvent),
+    #[from(forward)]
+    ServerListPing(Box<ServerListPingEvent>),
+    #[from]
     PlayerPreLogin(PlayerPreLoginEvent),
+    #[from]
     PlayerQuit(PlayerQuitEvent),
+    #[from]
     Packet(PacketEvent),
 }
 
