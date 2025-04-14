@@ -4,6 +4,7 @@ use crate::chunks::section::{CHUNK_SIZE, ChunkSection};
 use crate::error::WorldError;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
+use crab_protocol::packets::play::BlockEntity;
 use crab_world::chunks::palette::paletted_storage::calculate_bits_per_entry;
 use crab_world::chunks::section::CHUNK_SIZE_SHIFT;
 
@@ -12,14 +13,19 @@ pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
 
 /// Chunk is a collection of blocks with a horizontal size of 16×16, spanning the entire buildable area on the vertical axis.
 /// Each chunk consists of [sections](ChunkSection) - a 16×16×16 cube of blocks.
+/// Block entities are blocks that have additional data associated with them, such as chests, furnaces, and signs.
 #[derive(Debug, Clone)]
 pub struct Chunk {
     pub sections: Vec<ChunkSection>,
+    pub block_entities: Vec<BlockEntity>,
 }
 
 impl Chunk {
     pub fn without_sections() -> Chunk {
-        Chunk { sections: Vec::new() }
+        Chunk {
+            sections: Vec::new(),
+            block_entities: Vec::new(),
+        }
     }
 
     pub fn get_block(&self, x: u8, y: u16, z: u8) -> Option<Block> {
@@ -81,6 +87,7 @@ impl Default for Chunk {
     fn default() -> Self {
         Chunk {
             sections: vec![ChunkSection::default(); CHUNK_SECTIONS_PER_WORLD_HEIGHT],
+            block_entities: Vec::new(),
         }
     }
 }

@@ -14,9 +14,12 @@ use strum::FromRepr;
 
 use crate::chunks::chunk::Chunk;
 use crate::chunks::section::{AMOUNT_OF_BIOMES_IN_CHUNK_SECTION, AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION};
-use crate::error::AnvilError::ChunkNotGenerated;
+use crate::error::AnvilError::{ChunkNotGenerated, NbtTagNotFound};
+use crab_protocol::packets::play::BlockEntity;
+use crab_registry::RegistryManager;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::chunks::section::ChunkSection;
+use crab_world::error::AnvilError::BlockEntityDoesNotExist;
 use lz4::Decoder;
 
 #[bitfield(u32)]
@@ -45,7 +48,13 @@ pub struct Region {
 const SECTOR_SIZE: usize = 4096;
 
 impl Region {
-    pub fn read_chunk(&self, x: u8, z: u8, get_biome: impl Fn(&str) -> u64) -> Result<Chunk, AnvilError> {
+    pub fn read_chunk(
+        &self,
+        x: u8,
+        z: u8,
+        get_biome: impl Fn(&str) -> u64,
+        registry: &RegistryManager,
+    ) -> Result<Chunk, AnvilError> {
         let index: usize = x as usize + (z as usize) * 32;
         let location = self.locations[index];
         if location.offset() == 0 && location.count() == 0 {
@@ -85,9 +94,12 @@ impl Region {
         };
 
         let nbt = Nbt::read(&mut content).unwrap();
-        let sections = nbt.get_list("sections").unwrap();
 
         let mut chunk = Chunk::without_sections();
+
+        chunk.block_entities = Self::load_block_entities(&nbt, registry)?;
+
+        let sections = nbt.get_list("sections").unwrap();
         for section in sections.iter() {
             let section = section.extract_compound().unwrap();
 
@@ -130,6 +142,34 @@ impl Region {
         }
 
         Ok(chunk)
+    }
+
+    pub fn load_block_entities(nbt: &Nbt, registry: &RegistryManager) -> Result<Vec<BlockEntity>, AnvilError> {
+        let vec_binding = Vec::new();
+        let block_entities = nbt.get_list("block_entities").unwrap_or(&vec_binding);
+        let mut block_entities_vec = Vec::new();
+        for block_entity in block_entities {
+            let block_entity = block_entity.extract_compound().ok_or(NbtTagNotFound)?;
+            let x = block_entity.get_int("x").ok_or(NbtTagNotFound)?;
+            let y = block_entity.get_int("y").ok_or(NbtTagNotFound)? as i16;
+            let z = block_entity.get_int("z").ok_or(NbtTagNotFound)?;
+
+            let id = NamespacedKey::from_str(block_entity.get_string("id").ok_or(NbtTagNotFound)?)?;
+            let numeric_id = registry.block_entities.get(&id).ok_or(BlockEntityDoesNotExist(id))?;
+
+            let block_entity = BlockEntity {
+                relative_x: (x % 16) as i8,
+                relative_z: (z % 16) as i8,
+                y,
+                block_entity_type: *numeric_id as i32,
+                // todo: Some fields are not serialized, because it depends on the block entity type,
+                // for now we send everything to the client
+                data: Nbt::from(block_entity.clone()),
+            };
+
+            block_entities_vec.push(block_entity);
+        }
+        Ok(block_entities_vec)
     }
 }
 

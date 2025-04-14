@@ -1,4 +1,5 @@
 use crate::utils::errors::Error;
+use crate::utils::errors::Error::FailedToLoadRegistry;
 use crate::utils::files::FILES;
 use crate::world::OVERWORLD_IDENTIFIER;
 use bytes::{Bytes, BytesMut};
@@ -112,7 +113,12 @@ impl World {
 
         let region = Region::from(Bytes::from(bytes));
         let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
-        let chunk = region.read_chunk(local_chunk_x, local_chunk_z, Self::get_biome)?;
+        let chunk = region.read_chunk(
+            local_chunk_x,
+            local_chunk_z,
+            Self::get_biome,
+            REGISTRY.get().ok_or(FailedToLoadRegistry)?,
+        )?;
 
         Ok(chunk)
     }

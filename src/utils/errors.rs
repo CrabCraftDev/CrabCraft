@@ -38,6 +38,8 @@ pub enum Error {
     AccessUnloadedChunk { x: i32, z: i32 },
     #[error("Invalid position in chunk")]
     InvalidPositionInChunk,
+    #[error("Failed to load registry static")]
+    FailedToLoadRegistry,
 
     #[error("Invalid async event type")]
     InvalidAsyncEventType,
