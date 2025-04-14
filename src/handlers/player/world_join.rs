@@ -66,9 +66,12 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
     for x in 0..17 {
         for z in 0..17 {
             number_of_sent_chunks += 1;
-
             let mut bytes = BytesMut::new();
-            dimension.serialize_chunk(&mut bytes, x, z).unwrap();
+
+            let chunk = dimension.get_chunk_or_load(x, z).unwrap();
+            for section in &chunk.sections {
+                section.serialize_to_mc_format(&mut bytes).unwrap();
+            }
 
             let heightmap = nbt!("", {
                 "MOTION_BLOCKING": [L;],
@@ -85,7 +88,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
                 chunk_z: z,
                 heightmaps: heightmap,
                 data: bytes.freeze(),
-                block_entities: vec![],
+                block_entities: chunk.block_entities.clone(),
                 light_data: LightData {
                     sky_light_mask,
                     block_light_mask: Default::default(),

@@ -1,0 +1,137 @@
+[
+  {
+    "name": "furnace"
+  },
+  {
+    "name": "chest"
+  },
+  {
+    "name": "trapped_chest"
+  },
+  {
+    "name": "ender_chest"
+  },
+  {
+    "name": "jukebox"
+  },
+  {
+    "name": "dispenser"
+  },
+  {
+    "name": "dropper"
+  },
+  {
+    "name": "sign"
+  },
+  {
+    "name": "hanging_sign"
+  },
+  {
+    "name": "mob_spawner"
+  },
+  {
+    "name": "creaking_heart"
+  },
+  {
+    "name": "piston"
+  },
+  {
+    "name": "brewing_stand"
+  },
+  {
+    "name": "enchanting_table"
+  },
+  {
+    "name": "end_portal"
+  },
+  {
+    "name": "beacon"
+  },
+  {
+    "name": "skull"
+  },
+  {
+    "name": "daylight_detector"
+  },
+  {
+    "name": "hopper"
+  },
+  {
+    "name": "comparator"
+  },
+  {
+    "name": "banner"
+  },
+  {
+    "name": "structure_block"
+  },
+  {
+    "name": "end_gateway"
+  },
+  {
+    "name": "command_block"
+  },
+  {
+    "name": "shulker_box"
+  },
+  {
+    "name": "bed"
+  },
+  {
+    "name": "conduit"
+  },
+  {
+    "name": "barrel"
+  },
+  {
+    "name": "smoker"
+  },
+  {
+    "name": "blast_furnace"
+  },
+  {
+    "name": "lectern"
+  },
+  {
+    "name": "bell"
+  },
+  {
+    "name": "jigsaw"
+  },
+  {
+    "name": "campfire"
+  },
+  {
+    "name": "beehive"
+  },
+  {
+    "name": "sculk_sensor"
+  },
+  {
+    "name": "calibrated_sculk_sensor"
+  },
+  {
+    "name": "sculk_catalyst"
+  },
+  {
+    "name": "sculk_shrieker"
+  },
+  {
+    "name": "chiseled_bookshelf"
+  },
+  {
+    "name": "brushable_block"
+  },
+  {
+    "name": "decorated_pot"
+  },
+  {
+    "name": "crafter"
+  },
+  {
+    "name": "trial_spawner"
+  },
+  {
+    "name": "vault"
+  }
+]

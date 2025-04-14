@@ -543,6 +543,8 @@ version = "0.0.5"
 dependencies = [
  "crab_text",
  "include_dir",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
