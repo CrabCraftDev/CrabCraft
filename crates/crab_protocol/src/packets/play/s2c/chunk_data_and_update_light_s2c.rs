@@ -33,7 +33,7 @@ impl ProtocolSerializer for BlockEntity {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_i8(((self.relative_x & 15) << 4) | (self.relative_z & 0x0F));
         buf.put_i16(self.y);
-        buf.put_i32(self.block_entity_type);
+        buf.put_var_int(self.block_entity_type);
         self.data.serialize(buf)?;
         Ok(())
     }
@@ -46,7 +46,7 @@ impl ProtocolSerializer for BlockEntity {
             relative_x: x,
             relative_z: z,
             y: buf.get_i16(),
-            block_entity_type: buf.get_i32(),
+            block_entity_type: buf.get_var_int()?,
             data: Nbt::deserialize(buf)?,
         })
     }
