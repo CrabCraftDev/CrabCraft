@@ -1,0 +1,10 @@
+services:
+  crab_craft:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./server:/app
+    restart: unless-stopped
