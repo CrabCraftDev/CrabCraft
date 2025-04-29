@@ -58,18 +58,18 @@ impl RatatuiTextFormat {
             None => style,
         };
 
-        let mut split = text_string.split('\n').map(ToOwned::to_owned);
+        let mut lines = text_string.split('\n').map(ToOwned::to_owned);
 
-        if let Some(line) = split.next() {
+        if let Some(line) = lines.next() {
             let span = Span::styled(line, style);
-            if let Some(last) = buffer.last_mut() {
-                last.push(span);
+            if let Some(last_line) = buffer.last_mut() {
+                last_line.push(span);
             } else {
                 buffer.push(vec![span]);
             }
         }
 
-        for line in split {
+        for line in lines {
             if line.is_empty() {
                 buffer.push(vec![]);
             } else {
