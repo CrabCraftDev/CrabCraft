@@ -16,6 +16,7 @@ pub fn init_handlers(world: &mut World) {
     world.add_handler(player::position_handler::on_teleport);
     world.add_handler(player::position_handler::move_packet_receiver);
     world.add_handler(player::world_join::on_world_join);
+    world.add_handler(player::chat::chat_packet_receiver);
 
     // Server
     world.add_handler(server::server_shutdown);
