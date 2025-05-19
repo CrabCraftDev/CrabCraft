@@ -1,6 +1,7 @@
 use crab_text::error::TextError;
 use crab_text::text::color::TextColor;
-use nu_ansi_term::Color;
+use nu_ansi_term::Color as AnsiColor;
+use ratatui::style::Color as RatatuiColor;
 
 #[test]
 fn test_get_type_id() {
@@ -14,8 +15,17 @@ fn test_get_type_id() {
 
 #[test]
 fn test_terminal_color() {
-    assert_eq!(TextColor::Black.terminal_color(), Color::Black);
-    assert_eq!(TextColor::Rgb(255, 0, 0).terminal_color(), Color::Rgb(255, 0, 0));
+    assert_eq!(TextColor::Black.to_terminal_color(), AnsiColor::Black);
+    assert_eq!(TextColor::Rgb(255, 0, 0).to_terminal_color(), AnsiColor::Rgb(255, 0, 0));
+}
+
+#[test]
+fn test_ratatui_color() {
+    assert_eq!(TextColor::Black.to_ratatui_color(), RatatuiColor::Black);
+    assert_eq!(
+        TextColor::Rgb(255, 0, 0).to_ratatui_color(),
+        RatatuiColor::Rgb(255, 0, 0)
+    );
 }
 
 #[test]
