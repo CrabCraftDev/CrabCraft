@@ -24,7 +24,7 @@ pub fn on_quit(
     let leave_message = Text::from(format!("{name} left the game!"));
     for conn in fetcher {
         conn.send_packet(RemoveEntitiesS2CPacket {
-            entities_ids: vec![entity.index().0 as i32],
+            entities_ids: vec![entity.generation() as i32],
         });
         conn.send_packet(PlayerInfoRemoveS2CPacket {
             players_to_remove: vec![uuid.0],

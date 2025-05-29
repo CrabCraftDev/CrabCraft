@@ -5,9 +5,8 @@ use crate::events::player::movement::{PlayerMoveEvent, PlayerTeleportEvent};
 use crate::events::player::packet::PacketEvent;
 use crate::network::connection::NetworkConnection;
 use crab_protocol::packets::play::{
-    ConfirmTeleportationC2SPacket, PlayerPositionS2CPacket,
-    SetPlayerPositionAndRotationC2SPacket, SetPlayerPositionC2SPacket, SetPlayerRotationC2SPacket,
-    UpdateEntityPositionS2CPacket,
+    ConfirmTeleportationC2SPacket, PlayerPositionS2CPacket, SetPlayerPositionAndRotationC2SPacket,
+    SetPlayerPositionC2SPacket, SetPlayerRotationC2SPacket, UpdateEntityPositionS2CPacket,
 };
 use crab_protocol::types::player_movement_flags::PlayerMovementFlags;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double};
@@ -82,7 +81,7 @@ pub fn on_move(
             continue;
         }
         conn.send_packet(UpdateEntityPositionS2CPacket {
-            entity_id: entity.index().0 as i32,
+            entity_id: entity.generation() as i32,
             delta_x: (delta_x * 4096.) as i16,
             delta_y: (delta_y * 4096.) as i16,
             delta_z: (delta_z * 4096.) as i16,

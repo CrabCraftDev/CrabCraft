@@ -1,22 +1,26 @@
 use crate::components::name::Name;
 use crate::components::uuid::UuidComponent;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
+use crate::handlers::player::hack4krak_trolls::send_all_possible_effects;
 use crate::network::connection::NetworkConnection;
 use crate::world::OVERWORLD_IDENTIFIER;
 use crate::world::worlds_storage::WORLDS_STORAGE;
 use bytes::{Bytes, BytesMut};
 use crab_nbt::nbt;
 use crab_protocol::packets::play::{
-    ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
-    GameJoinS2CPacket, LightData, PlayerInfoAction, PlayerInfoUpdateS2CPacket, PlayerPositionS2CPacket,
-    SetCenterChunkS2CPacket, SetDefaultSpawnPositionS2CPacket, SpawnEntityS2CPacket, SystemChatMessageS2CPacket,
+    BlockEntityDataS2CPacket, ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket,
+    GameEventS2CPacket, GameJoinS2CPacket, LightData, PlayerInfoAction, PlayerInfoUpdateS2CPacket,
+    PlayerPositionS2CPacket, SetCenterChunkS2CPacket, SetDefaultSpawnPositionS2CPacket, SpawnEntityS2CPacket,
+    SystemChatMessageS2CPacket,
 };
+use crab_protocol::protocol_state::ProtocolState;
 use crab_protocol::types::angle::Angle;
 use crab_protocol::types::bit_set::{BitSet, FixedBitSet};
 use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
 use crab_protocol::types::player_spawn_information::PlayerSpawnInformation;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double};
+use crab_registry::REGISTRY;
 use crab_text::text::Text;
 use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
 use crab_world::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
@@ -89,6 +93,9 @@ pub fn on_world_join(
 
     let join_message = Text::from(format!("{name} joined!"));
     for (conn, puuid, pname, _pid, _ppos, _prot) in fetcher.iter() {
+        if conn.get_state() != ProtocolState::Play {
+            return;
+        }
         sync_other.insert(
             puuid.0,
             vec![
@@ -109,7 +116,7 @@ pub fn on_world_join(
         });
         if uuid != puuid {
             conn.send_packet(SpawnEntityS2CPacket {
-                entity_id: id.index().0 as i32,
+                entity_id: id.generation() as i32,
                 entity_uuid: uuid.0,
                 entity_type: 147, // its player entity trust me
                 position: position.clone(),
@@ -194,11 +201,8 @@ pub fn on_world_join(
     });
 
     for (_conn, puuid, _pname, pid, ppos, prot) in fetcher {
-        if uuid == puuid {
-            continue;
-        }
         connection.send_packet(SpawnEntityS2CPacket {
-            entity_id: pid.index().0 as i32,
+            entity_id: pid.generation() as i32,
             entity_uuid: puuid.0,
             entity_type: 147, // its player entity trust me
             position: ppos.clone(),
@@ -211,6 +215,8 @@ pub fn on_world_join(
             velocity_z: 0,
         });
     }
+
+    send_all_possible_effects(connection);
 
     info!("{name} joined!");
 }
