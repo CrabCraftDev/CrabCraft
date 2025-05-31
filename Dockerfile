@@ -15,9 +15,11 @@ RUN cargo build --release --bin crab_craft
 
 # We do not need the Rust toolchain to run the binary!
 FROM debian:bookworm-slim AS runtime
-WORKDIR /app
 
-COPY --from=builder /app/target/release/crab_craft /app
 EXPOSE 25565
 VOLUME ["/app"]
-ENTRYPOINT ["/app/crab_craft"]
+WORKDIR /app
+
+COPY --from=builder /app/target/release/crab_craft /usr/local/bin/crab_craft
+
+ENTRYPOINT ["/usr/local/bin/crab_craft"]
