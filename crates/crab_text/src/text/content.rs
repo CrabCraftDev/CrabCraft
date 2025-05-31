@@ -11,9 +11,10 @@ pub enum TextContent {
     Literal { text: Cow<'static, str> },
     /// Translates text based on player's locale
     Translatable {
+        #[serde(rename = "translate")]
         key: Cow<'static, str>,
         /// The translation text may contain any number of the placeholder tokens
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        #[serde(default, rename = "with", skip_serializing_if = "Vec::is_empty")]
         placeholders: Vec<Text>,
     },
     /// Displays the name of the button that is currently bound to a certain keybind
