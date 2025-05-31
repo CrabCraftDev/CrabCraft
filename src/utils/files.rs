@@ -66,11 +66,9 @@ impl Default for ServerFiles {
         let server_root = if let Ok(manifest_str) = env::var("CARGO_MANIFEST_DIR") {
             Path::new(&manifest_str).join("server").to_path_buf()
         } else {
-            let mut exe_path = env::current_exe()
+            env::current_dir()
                 .expect("Couldn't get server directory path! (Maybe permissions issue?)")
-                .to_path_buf();
-            exe_path.pop();
-            exe_path
+                .to_path_buf()
         };
 
         ServerFiles {
