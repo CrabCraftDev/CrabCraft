@@ -10,7 +10,7 @@ use crate::types::sound::SoundCategory;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, Debug, Clone)]
-#[packet(name = "stop_sound", id = 0x71, state = Play)]
+#[packet(name = "stop_sound", id = 0x70, state = Play)]
 pub struct StopSoundS2CPacket {
     pub sound_category: Option<SoundCategory>,
     pub sound_name: Option<NamespacedKey>,

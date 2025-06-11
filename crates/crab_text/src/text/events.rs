@@ -6,24 +6,26 @@ use std::borrow::Cow;
 
 /// Action that happens when player clicks on text component
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(tag = "action", content = "value", rename_all = "snake_case")]
+#[serde(tag = "action", rename_all = "snake_case")]
 pub enum ClickEvent {
     /// Opens a URL in default browser
-    OpenUrl(Cow<'static, str>),
+    OpenUrl { url: Cow<'static, str> },
     /// Sends message/command in chat as player
-    RunCommand(Cow<'static, str>),
-    /// Sets content of chat box to this value (not necessarily a command)
-    SuggestCommand(Cow<'static, str>),
+    RunCommand { command: Cow<'static, str> },
+    /// Sets content of the chat box to this value (not necessarily a command)
+    SuggestCommand { command: Cow<'static, str> },
     /// Only used in books
-    ChangePage(i32),
+    ChangePage { page: u32 },
     /// Copies the given text to clipboard
-    CopyToClipboard(Cow<'static, str>),
+    CopyToClipboard { value: Cow<'static, str> },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(tag = "action", content = "contents", rename_all = "snake_case")]
+#[serde(tag = "action", rename_all = "snake_case")]
 pub enum HoverEvent {
-    ShowText(Box<Text>),
+    ShowText {
+        value: Box<Text>,
+    },
     ShowItem {
         id: NamespacedKey,
         #[serde(skip_serializing_if = "is_one")]
@@ -33,9 +35,9 @@ pub enum HoverEvent {
         components: Option<Cow<'static, str>>,
     },
     ShowEntity {
-        #[serde(rename = "type")]
+        #[serde(rename = "id")]
         entity_type: NamespacedKey,
-        id: Cow<'static, str>,
+        uuid: Cow<'static, str>,
         name: Option<Box<Text>>,
     },
 }

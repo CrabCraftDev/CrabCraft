@@ -11,5 +11,5 @@ pub struct KeepAliveS2CPacket {
 
 impl Packet for KeepAliveS2CPacket {
     const NAME: &'static str = "keep_alive";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x27), (Configuration, 0x04)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x26), (Configuration, 0x04)];
 }

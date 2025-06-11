@@ -13,9 +13,16 @@ use crab_text::utils::namespaced_key::NamespacedKey;
 #[packet(name = "update_advancements", id = 0x7B, state = Play)]
 pub struct UpdateAdvancementsS2CPacket {
     pub should_reset: bool,
-    pub advancement_mapping: HashMap<NamespacedKey, Advancement>,
-    pub namespaced_keys: Vec<NamespacedKey>,
-    pub progress_mapping: HashMap<NamespacedKey, AdvancementProgress>,
+    pub added: Vec<AddedAdvancement>,
+    pub removed: Vec<NamespacedKey>,
+    pub progress: HashMap<NamespacedKey, AdvancementProgress>,
+    pub show_advancements: bool,
+}
+
+#[derive(ProtocolSerializer, Debug, Clone)]
+pub struct AddedAdvancement {
+    pub id: NamespacedKey,
+    pub advancement: Advancement,
 }
 
 #[derive(ProtocolSerializer, Clone, Debug)]

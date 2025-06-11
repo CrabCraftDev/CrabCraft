@@ -7,7 +7,7 @@ use crate::types::hand::Hand;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "use_item_on", id = 0x3C, state = Play)]
+#[packet(name = "use_item_on", id = 0x3F, state = Play)]
 pub struct UseItemOnC2SPacket {
     pub hand: Hand,
     pub block_position: BlockPosition,

@@ -1,4 +1,5 @@
 pub use add_resource_pack_s2c::*;
+pub use clear_dialog_s2c::*;
 pub use cookie_request_s2c::*;
 pub use disconnect_s2c::*;
 pub use keep_alive_s2c::*;
@@ -13,6 +14,7 @@ pub use transfer_s2c::*;
 pub use update_tags_s2c::*;
 
 mod add_resource_pack_s2c;
+mod clear_dialog_s2c;
 mod cookie_request_s2c;
 mod disconnect_s2c;
 mod keep_alive_s2c;

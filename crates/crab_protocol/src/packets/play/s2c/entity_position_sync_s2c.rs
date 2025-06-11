@@ -5,7 +5,7 @@ use crate::types::position::Position;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "entity_position_sync", id = 0x20, state = Play)]
+#[packet(name = "entity_position_sync", id = 0x1F, state = Play)]
 pub struct EntityPositionSyncS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

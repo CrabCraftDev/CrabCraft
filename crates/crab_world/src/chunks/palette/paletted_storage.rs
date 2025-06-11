@@ -53,8 +53,6 @@ impl PalettedStorage {
         match &self.palette {
             Palette::Single(value) => {
                 bytes.put_var_int(*value as i32);
-                // Bit storage with len 0
-                bytes.put_var_int(0);
             }
             Palette::Indirect {
                 values_lookup_table: palette,

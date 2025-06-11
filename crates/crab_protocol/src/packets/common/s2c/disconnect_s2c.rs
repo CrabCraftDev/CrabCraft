@@ -12,5 +12,5 @@ pub struct DisconnectS2CPacket {
 
 impl Packet for DisconnectS2CPacket {
     const NAME: &'static str = "disconnect";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x02), (Play, 0x1D)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x02), (Play, 0x1C)];
 }

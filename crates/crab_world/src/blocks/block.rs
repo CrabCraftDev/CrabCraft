@@ -52,7 +52,7 @@ impl Block {
     /// So it requires i64 instead of Block/u16 to avoid casting
     pub const fn is_air_i64(block: i64) -> bool {
         // For efficiency, those are hardcoded IDs of air, cave air and void air blocks
-        matches!(block, 0 | 13971 | 13972)
+        matches!(block, 0 | 14013 | 14014)
     }
 
     pub fn property<P: BlockData>(&self) -> Result<P::Value, WorldError> {

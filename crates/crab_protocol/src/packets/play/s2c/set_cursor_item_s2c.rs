@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::item_stack::ItemStack;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "set_cursor_item", id = 0x5A, state = Play)]
+#[packet(name = "set_cursor_item", id = 0x59, state = Play)]
 pub struct SetCursorItemS2CPacket {
     pub contents: ItemStack,
 }

@@ -6,7 +6,7 @@ use crate::types::varint::VarInt;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "set_jigsaw_block", id = 0x37, state = Play)]
+#[packet(name = "set_jigsaw_block", id = 0x38, state = Play)]
 pub struct ProgramJigsawBlockC2SPacket {
     pub position: BlockPosition,
     pub name: NamespacedKey,

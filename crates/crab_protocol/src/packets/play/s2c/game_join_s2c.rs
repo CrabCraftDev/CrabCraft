@@ -7,7 +7,7 @@ use crate::types::varint::VarInt;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "login", id = 0x2C, state = Play)]
+#[packet(name = "login", id = 0x2B, state = Play)]
 pub struct GameJoinS2CPacket {
     pub entity_id: i32,
     pub is_hardcore: bool,

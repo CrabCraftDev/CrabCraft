@@ -6,7 +6,7 @@ use crate::types::position::{Position, Rotation, Vec3Double};
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "player_position", id = 0x42, state = Play)]
+#[packet(name = "player_position", id = 0x41, state = Play)]
 pub struct PlayerPositionS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub teleport_id: i32,

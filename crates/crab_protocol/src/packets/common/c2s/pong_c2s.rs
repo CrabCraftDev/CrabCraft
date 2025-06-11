@@ -11,5 +11,5 @@ pub struct PongC2SPacket {
 
 impl Packet for PongC2SPacket {
     const NAME: &'static str = "pong";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x2B), (Configuration, 0x05)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x2C), (Configuration, 0x05)];
 }

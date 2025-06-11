@@ -7,7 +7,7 @@ use crate::protocol_state::ProtocolState::*;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "seen_advancements", id = 0x30, state = Play)]
+#[packet(name = "seen_advancements", id = 0x31, state = Play)]
 pub struct SeenAdvancementsC2SPacket {
     pub action: SeenAdvancementsAction,
 }

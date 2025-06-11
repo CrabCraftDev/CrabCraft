@@ -4,7 +4,6 @@ use crate::network::connection::NetworkConnection;
 use crate::world::OVERWORLD_IDENTIFIER;
 use crate::world::worlds_storage::WORLDS_STORAGE;
 use bytes::{Bytes, BytesMut};
-use crab_nbt::nbt;
 use crab_protocol::packets::play::{
     ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
     GameJoinS2CPacket, LightData, PlayerPositionS2CPacket, SetCenterChunkS2CPacket, SetDefaultSpawnPositionS2CPacket,
@@ -14,9 +13,11 @@ use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
 use crab_protocol::types::player_spawn_information::PlayerSpawnInformation;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double};
+use crab_protocol::types::varint::VarInt;
 use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
 use crab_world::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use evenio::event::Receiver;
+use std::collections::HashMap;
 use tracing::info;
 
 #[allow(clippy::type_complexity)]
@@ -73,10 +74,8 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
                 section.serialize_to_mc_format(&mut bytes).unwrap();
             }
 
-            let heightmap = nbt!("", {
-                "MOTION_BLOCKING": [L;],
-                "WORLD_SURFACE": [L;],
-            });
+            // FIXME: Temporary implementation of heightmap #162
+            let heightmap = HashMap::from([(VarInt(4), vec![]), (VarInt(1), vec![])]);
 
             // Temporary implementation of light
             let sky_light_mask = BitSet::new(vec![true; CHUNK_SECTIONS_PER_WORLD_HEIGHT + 2]);

@@ -5,7 +5,7 @@ use crate::types::varint::VarInt;
 use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "disguised_chat", id = 0x1E, state = Play)]
+#[packet(name = "disguised_chat", id = 0x1D, state = Play)]
 pub struct DisguisedChatMessageS2CPacket {
     pub message: Text,
     #[protocol_attribute(protocol_type = VarInt)]

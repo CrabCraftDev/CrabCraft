@@ -53,5 +53,5 @@ pub struct DisplayedSkinParts {
 
 impl Packet for ClientInformationC2SPacket {
     const NAME: &'static str = "client_information";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x0C), (Configuration, 0x00)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x0D), (Configuration, 0x00)];
 }

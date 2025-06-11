@@ -27,5 +27,5 @@ pub enum ResourcePackStatus {
 
 impl Packet for ResourcePackResponseC2SPacket {
     const NAME: &'static str = "resource_pack";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x06), (Play, 0x2F)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x06), (Play, 0x30)];
 }
