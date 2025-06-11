@@ -5,7 +5,7 @@ use crate::types::block_position::BlockPosition;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "block_event", id = 0x08, state = Play)]
+#[packet(name = "block_event", id = 0x07, state = Play)]
 pub struct BlockActionS2CPacket {
     pub position: BlockPosition,
     pub action_id: u8,

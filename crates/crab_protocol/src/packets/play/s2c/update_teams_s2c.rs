@@ -9,8 +9,10 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
 use crab_text::text::Text;
 
+// FIXME: This packet is probably completly invalid, but it was broken before 1.20.6
+
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "set_player_team", id = 0x67, state = Play)]
+#[packet(name = "set_player_team", id = 0x66, state = Play)]
 pub struct UpdateTeamsS2CPacket {
     pub team_name: String,
     pub method: UpdateTeamsMethod,

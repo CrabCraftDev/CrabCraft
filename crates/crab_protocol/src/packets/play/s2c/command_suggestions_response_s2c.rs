@@ -5,7 +5,7 @@ use crate::types::varint::VarInt;
 use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "command_suggestions", id = 0x10, state = Play)]
+#[packet(name = "command_suggestions", id = 0x0F, state = Play)]
 pub struct CommandSuggestionsResponseS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub transaction_id: i32,

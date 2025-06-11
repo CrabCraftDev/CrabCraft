@@ -2037,6 +2037,21 @@
     "default_state_offset": 0
   },
   {
+    "name": "bush",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "short_dry_grass",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "tall_dry_grass",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
     "name": "seagrass",
     "properties": [],
     "default_state_offset": 0
@@ -2489,18 +2504,19 @@
     "name": "creaking_heart",
     "properties": [
       {
-        "name": "active",
-        "values": [
-          "true",
-          "false"
-        ]
-      },
-      {
         "name": "axis",
         "values": [
           "x",
           "y",
           "z"
+        ]
+      },
+      {
+        "name": "creaking_heart_state",
+        "values": [
+          "uprooted",
+          "dormant",
+          "awake"
         ]
       },
       {
@@ -2511,7 +2527,7 @@
         ]
       }
     ],
-    "default_state_offset": 9
+    "default_state_offset": 7
   },
   {
     "name": "oak_stairs",
@@ -4530,6 +4546,11 @@
         ]
       }
     ],
+    "default_state_offset": 0
+  },
+  {
+    "name": "cactus_flower",
+    "properties": [],
     "default_state_offset": 0
   },
   {
@@ -12956,6 +12977,37 @@
     "default_state_offset": 0
   },
   {
+    "name": "dried_ghast",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "hydration",
+        "values": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      {
+        "name": "waterlogged",
+        "values": [
+          "true",
+          "false"
+        ]
+      }
+    ],
+    "default_state_offset": 1
+  },
+  {
     "name": "dead_tube_coral_block",
     "properties": [],
     "default_state_offset": 0
@@ -16369,6 +16421,26 @@
       }
     ],
     "default_state_offset": 10
+  },
+  {
+    "name": "test_block",
+    "properties": [
+      {
+        "name": "mode",
+        "values": [
+          "start",
+          "log",
+          "fail",
+          "accept"
+        ]
+      }
+    ],
+    "default_state_offset": 0
+  },
+  {
+    "name": "test_instance_block",
+    "properties": [],
+    "default_state_offset": 0
   },
   {
     "name": "composter",
@@ -20078,6 +20150,54 @@
     "default_state_offset": 0
   },
   {
+    "name": "wildflowers",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "flower_amount",
+        "values": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      }
+    ],
+    "default_state_offset": 0
+  },
+  {
+    "name": "leaf_litter",
+    "properties": [
+      {
+        "name": "facing",
+        "values": [
+          "north",
+          "south",
+          "west",
+          "east"
+        ]
+      },
+      {
+        "name": "segment_amount",
+        "values": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      }
+    ],
+    "default_state_offset": 0
+  },
+  {
     "name": "moss_block",
     "properties": [],
     "default_state_offset": 0
@@ -20994,6 +21114,11 @@
   },
   {
     "name": "potted_closed_eyeblossom",
+    "properties": [],
+    "default_state_offset": 0
+  },
+  {
+    "name": "firefly_bush",
     "properties": [],
     "default_state_offset": 0
   }

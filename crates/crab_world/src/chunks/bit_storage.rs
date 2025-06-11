@@ -1,6 +1,5 @@
 use crate::error::WorldError;
 use bytes::{BufMut, BytesMut};
-use crab_protocol::buf::WriteByteBuf;
 
 /// Stores n-bits data inside packed vector of longs
 /// Thanks to Feather for [original implementation](https://github.com/feather-rs/feather/blob/main/feather/base/src/chunk/packed_array.rs)
@@ -35,7 +34,6 @@ impl BitStorage {
     }
 
     pub fn write(&self, bytes: &mut BytesMut) {
-        bytes.put_var_int(self.data.len() as i32);
         for value in &self.data {
             bytes.put_i64(*value);
         }

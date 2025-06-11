@@ -11,7 +11,7 @@ use crate::protocol_state::ProtocolState::*;
 use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "boss_event", id = 0x0A, state = Play)]
+#[packet(name = "boss_event", id = 0x09, state = Play)]
 pub struct BossBarS2CPacket {
     pub boss_bar_id: Uuid,
     pub method: BossBarMethod,

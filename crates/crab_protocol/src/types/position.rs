@@ -1,6 +1,7 @@
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
 use crate::protocol_serializer::ProtocolSerializer;
+use crate::types::varint::VarInt;
 use crab_macros::ProtocolSerializer;
 use derive_more::{From, Into};
 use evenio::component::Component;
@@ -15,6 +16,16 @@ impl Rotation {
     pub fn new(yaw: f32, pitch: f32) -> Self {
         Self { yaw, pitch }
     }
+}
+
+#[derive(ProtocolSerializer, Debug, Clone, PartialEq, Default)]
+pub struct Vec3Int {
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub x: i32,
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub y: i32,
+    #[protocol_attribute(protocol_type = VarInt)]
+    pub z: i32,
 }
 
 #[derive(ProtocolSerializer, Debug, Clone, PartialEq, Default)]

@@ -5,7 +5,7 @@ use crate::types::item_stack::ItemStack;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "merchant_offers", id = 0x2E, state = Play)]
+#[packet(name = "merchant_offers", id = 0x2D, state = Play)]
 pub struct MerchantOffersS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub window_id: i32,

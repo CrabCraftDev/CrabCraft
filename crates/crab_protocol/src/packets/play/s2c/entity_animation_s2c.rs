@@ -6,7 +6,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "animate", id = 0x03, state = Play)]
+#[packet(name = "animate", id = 0x02, state = Play)]
 pub struct EntityAnimationS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub entity_id: i32,

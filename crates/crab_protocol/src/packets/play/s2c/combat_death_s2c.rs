@@ -5,7 +5,7 @@ use crate::types::varint::VarInt;
 use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "player_combat_kill", id = 0x3E, state = Play)]
+#[packet(name = "player_combat_kill", id = 0x3D, state = Play)]
 pub struct CombatDeathS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub player_id: i32,

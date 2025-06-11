@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::sound::{SoundCategory, SoundEffect};
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "sound", id = 0x6F, state = Play)]
+#[packet(name = "sound", id = 0x6E, state = Play)]
 pub struct SoundEffectS2CPacket {
     pub sound_effect: SoundEffect,
     pub sound_category: SoundCategory,

@@ -6,7 +6,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "tag_query", id = 0x75, state = Play)]
+#[packet(name = "tag_query", id = 0x74, state = Play)]
 pub struct TagQueryResponseS2CPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub transaction_id: i32,

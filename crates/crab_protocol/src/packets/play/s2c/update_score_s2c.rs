@@ -6,7 +6,7 @@ use crate::types::varint::VarInt;
 use crab_text::text::Text;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "set_score", id = 0x68, state = Play)]
+#[packet(name = "set_score", id = 0x67, state = Play)]
 pub struct UpdateScoreS2CPacket {
     /// For players, this is their username; for other entities, it is their UUID.
     pub entity_name: String,

@@ -42,12 +42,12 @@ pub struct TextStyle {
     pub obfuscated: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub font: Option<NamespacedKey>,
-    /// Text to be inserted to chat when shift clicked on component
+    /// Text to be inserted to chat when shift clicked on a component
     #[serde(skip_serializing_if = "Option::is_none")]
     pub insertion: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none", rename = "clickEvent")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "click_event")]
     pub click_event: Option<ClickEvent>,
-    #[serde(skip_serializing_if = "Option::is_none", rename = "hoverEvent")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hover_event")]
     pub hover_event: Option<HoverEvent>,
 }
 

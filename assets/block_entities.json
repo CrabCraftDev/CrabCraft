@@ -133,5 +133,11 @@
   },
   {
     "name": "vault"
+  },
+  {
+    "name": "test_block"
+  },
+  {
+    "name": "test_instance_block"
   }
 ]

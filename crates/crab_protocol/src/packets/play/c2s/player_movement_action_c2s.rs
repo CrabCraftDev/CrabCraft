@@ -6,7 +6,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "player_command", id = 0x28, state = Play)]
+#[packet(name = "player_command", id = 0x29, state = Play)]
 pub struct PlayerMovementActionC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub player_id: i32,
@@ -18,9 +18,7 @@ pub struct PlayerMovementActionC2SPacket {
 
 #[derive(ProtocolSerializer, FromRepr, Copy, Clone, Debug)]
 pub enum PlayerMovementAction {
-    StartSneaking,
-    StopSneaking,
-    LeaveBed,
+    StopSleeping,
     StartSprinting,
     StopSprinting,
     StartJumpWithHose,

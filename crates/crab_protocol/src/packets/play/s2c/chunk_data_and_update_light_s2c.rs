@@ -1,5 +1,6 @@
 use bytes::Bytes;
 use crab_nbt::Nbt;
+use std::collections::HashMap;
 
 use crab_macros::{Packet, ProtocolSerializer};
 
@@ -8,13 +9,14 @@ use crate::error::ProtocolError;
 use crate::packets::play::s2c::update_light_s2c::LightData;
 use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
+use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "level_chunk_with_light", id = 0x28, state = Play)]
+#[packet(name = "level_chunk_with_light", id = 0x27, state = Play)]
 pub struct ChunkDataAndUpdateLightS2CPacket {
     pub chunk_x: i32,
     pub chunk_z: i32,
-    pub heightmaps: Nbt,
+    pub heightmaps: HashMap<VarInt, Vec<i64>>,
     pub data: Bytes,
     pub block_entities: Vec<BlockEntity>,
     pub light_data: LightData,

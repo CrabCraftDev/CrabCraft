@@ -7,7 +7,7 @@ use crate::types::block_position::BlockPosition;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "block_entity_data", id = 0x07, state = Play)]
+#[packet(name = "block_entity_data", id = 0x06, state = Play)]
 pub struct BlockEntityDataS2CPacket {
     pub position: BlockPosition,
     #[protocol_attribute(protocol_type = VarInt)]

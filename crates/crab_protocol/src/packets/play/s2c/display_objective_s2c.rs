@@ -6,7 +6,7 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "set_display_objective", id = 0x5C, state = Play)]
+#[packet(name = "set_display_objective", id = 0x5B, state = Play)]
 pub struct DisplayObjectiveS2CPacket {
     pub objective_position: ObjectivePosition,
     pub score_name: String,

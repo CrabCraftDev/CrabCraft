@@ -6,7 +6,7 @@ use crate::protocol_serializer::ProtocolSerializer;
 use crate::protocol_state::ProtocolState::*;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "section_blocks_update", id = 0x4E, state = Play)]
+#[packet(name = "section_blocks_update", id = 0x4D, state = Play)]
 pub struct UpdateSectionBlocksS2CPacket {
     pub chunk_section_position: ChunkSectionPosition,
     pub blocks: Vec<BlockPositionAndState>,

@@ -4,7 +4,7 @@ use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 
 #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-#[packet(name = "place_recipe", id = 0x25, state = Play)]
+#[packet(name = "place_recipe", id = 0x26, state = Play)]
 pub struct PlaceRecipeC2SPacket {
     pub window_id: i8,
     #[protocol_attribute(protocol_type = VarInt)]

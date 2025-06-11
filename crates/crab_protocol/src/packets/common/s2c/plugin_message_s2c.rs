@@ -15,5 +15,5 @@ pub struct PluginMessageS2CPacket {
 
 impl Packet for PluginMessageS2CPacket {
     const NAME: &'static str = "custom_payload";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x01), (Play, 0x19)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x01), (Play, 0x18)];
 }

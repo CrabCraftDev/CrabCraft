@@ -20,5 +20,5 @@ pub struct AddResourcePackS2CPacket {
 
 impl Packet for AddResourcePackS2CPacket {
     const NAME: &'static str = "resource_pack_push";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x09), (Play, 0x4B)];
+    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x09), (Play, 0x4A)];
 }
