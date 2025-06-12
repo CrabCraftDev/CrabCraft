@@ -81,11 +81,10 @@ crab_macros = { path = "crates/crab_macros" }
 crab_text = { path = "crates/crab_text" }
 
 [dev-dependencies]
-cargo-husky = { version = "1.5.0", features = [
+cargo-husky = { version = "1.5.0", default-features = false, features = [
     "precommit-hook",
     "run-for-all",
     "run-cargo-test",
-    "run-cargo-check",
     "run-cargo-clippy",
     "run-cargo-fmt",
 ] }
