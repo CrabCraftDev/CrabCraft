@@ -16,4 +16,8 @@ target/
 .vscode
 
 # Minecraft server files
-/server/*
+server/
+
+# Flamegraph files
+**/flamegraph.svg
+**/perf.data*
