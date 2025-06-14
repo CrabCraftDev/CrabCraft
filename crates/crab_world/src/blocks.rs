@@ -1,5 +1,5 @@
-use crab_world::blocks::block_registry::BlockRegistry;
-use crab_world::error::WorldError;
+use crate::blocks::block_registry::BlockRegistry;
+use crate::error::WorldError;
 use std::sync::OnceLock;
 
 mod block;

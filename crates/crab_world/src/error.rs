@@ -1,6 +1,7 @@
 use std::io;
 use thiserror::Error;
 
+use crab_nbt::error::Error as NbtError;
 use crab_protocol::error::ProtocolError;
 use crab_text::error::TextError;
 use crab_text::utils::namespaced_key::NamespacedKey;
@@ -41,8 +42,8 @@ pub enum AnvilError {
     InvalidCompressionScheme(u8),
     #[error(transparent)]
     IO(#[from] io::Error),
-    #[error("Chunk {x} {z} has not been generated yet")]
-    ChunkNotGenerated { x: u8, z: u8 },
+    #[error("Chunk at {x} {z} does not exist")]
+    ChunkDoesNotExist { x: u8, z: u8 },
     #[error("NBT tag not found")]
     NbtTagNotFound,
     #[error("BlockType {0} doesn't exist!")]
@@ -52,4 +53,8 @@ pub enum AnvilError {
     Protocol(#[from] ProtocolError),
     #[error(transparent)]
     Text(#[from] TextError),
+    #[error(transparent)]
+    Nbt(#[from] NbtError),
+    #[error(transparent)]
+    World(#[from] WorldError),
 }
