@@ -12,6 +12,8 @@ bytes.workspace = true
 crab_nbt.workspace = true
 bitfield-struct.workspace = true
 flate2.workspace = true
+serde.workspace = true
+bitvec.workspace = true
 nohash-hasher = "0.2.0"
 lz4 = "1.28.0"
 
