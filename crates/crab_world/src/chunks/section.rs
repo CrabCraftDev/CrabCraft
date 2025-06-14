@@ -13,7 +13,7 @@ pub const AMOUNT_OF_BIOMES_IN_CHUNK_SECTION: u16 = 4 * 4 * 4;
 pub const AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION: usize = CHUNK_SIZE as usize * CHUNK_SIZE as usize * CHUNK_SIZE as usize;
 
 /// Chunk section is a 16×16×16 collection of blocks.
-/// It stores blocks and biomes in a [paletted](crab_world::paletted_container::PalettedContainer) format.
+/// It stores blocks and biomes in a [paletted](crate::paletted_container::PalettedContainer) format.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ChunkSection {
     pub non_air_block_amount: u16,

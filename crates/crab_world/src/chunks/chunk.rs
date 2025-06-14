@@ -1,12 +1,12 @@
 use crate::blocks::Block;
 use crate::chunks::bit_storage::BitStorage;
+use crate::chunks::palette::paletted_storage::calculate_bits_per_entry;
+use crate::chunks::section::CHUNK_SIZE_SHIFT;
 use crate::chunks::section::{CHUNK_SIZE, ChunkSection};
 use crate::error::WorldError;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
 use crab_protocol::packets::play::BlockEntity;
-use crab_world::chunks::palette::paletted_storage::calculate_bits_per_entry;
-use crab_world::chunks::section::CHUNK_SIZE_SHIFT;
 
 /// The number of chunk sections that fit in the standard overworld height (384 blocks)
 pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
