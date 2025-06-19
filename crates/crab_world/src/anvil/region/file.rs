@@ -1,5 +1,5 @@
 use crate::anvil::chunk_format;
-use crate::anvil::region::compression::AnvilCompression;
+use crate::anvil::region::anvil_compression::AnvilCompression;
 use crate::anvil::region::header::RegionHeader;
 use crate::anvil::sectors::{SECTOR_SIZE, SectorAllocator};
 use crate::chunks::chunk::Chunk;

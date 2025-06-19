@@ -15,7 +15,7 @@ flate2.workspace = true
 serde.workspace = true
 bitvec.workspace = true
 nohash-hasher = "0.2.0"
-lz4 = "1.28.0"
+lz4-java-wrc = "0.2.0"
 
 crab_registry = { path = "../crab_registry" }
 crab_protocol = { path = "../crab_protocol" }
