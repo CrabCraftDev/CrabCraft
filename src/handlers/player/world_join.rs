@@ -2,20 +2,15 @@ use crate::components::name::Name;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::network::connection::NetworkConnection;
 use crate::world::OVERWORLD_IDENTIFIER;
-use crate::world::worlds_storage::WORLDS_STORAGE;
-use bytes::{Bytes, BytesMut};
-use crab_nbt::nbt;
+use crate::world::chunk_sender::{VIEW_DISTANCE, send_chunks_on_join};
 use crab_protocol::packets::play::{
-    ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,
-    GameJoinS2CPacket, LightData, PlayerPositionS2CPacket, SetCenterChunkS2CPacket, SetDefaultSpawnPositionS2CPacket,
+    ChunkBatchStartS2CPacket, GameEventS2CPacket, GameJoinS2CPacket, PlayerPositionS2CPacket, SetCenterChunkS2CPacket,
+    SetDefaultSpawnPositionS2CPacket,
 };
-use crab_protocol::types::bit_set::BitSet;
 use crab_protocol::types::block_position::BlockPosition;
 use crab_protocol::types::game_mode::GameMode;
 use crab_protocol::types::player_spawn_information::PlayerSpawnInformation;
 use crab_protocol::types::position::{Position, Rotation, Vec3Double};
-use crab_world::chunks::chunk::CHUNK_SECTIONS_PER_WORLD_HEIGHT;
-use crab_world::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use evenio::event::Receiver;
 use tracing::info;
 
@@ -28,7 +23,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
         is_hardcore: false,
         dimension_names: vec![OVERWORLD_IDENTIFIER.clone()],
         max_players: 100,
-        view_distance: 16,
+        view_distance: VIEW_DISTANCE,
         simulation_distance: 20,
         reduced_debug_info: false,
         enable_respawn_screen: true,
@@ -59,51 +54,7 @@ pub fn on_world_join(receiver: Receiver<PlayerJoinWorldEvent, (&NetworkConnectio
     connection.send_packet(SetCenterChunkS2CPacket { x: 0, z: 0 });
 
     connection.send_packet(ChunkBatchStartS2CPacket);
-
-    let dimension = WORLDS_STORAGE.worlds.get_mut(&OVERWORLD_IDENTIFIER).unwrap();
-
-    let mut number_of_sent_chunks = 0;
-    for x in 0..17 {
-        for z in 0..17 {
-            number_of_sent_chunks += 1;
-            let mut bytes = BytesMut::new();
-
-            let chunk = dimension.get_chunk_or_load(x, z).unwrap();
-            for section in &chunk.sections {
-                section.serialize_to_mc_format(&mut bytes).unwrap();
-            }
-
-            let heightmap = nbt!("", {
-                "MOTION_BLOCKING": [L;],
-                "WORLD_SURFACE": [L;],
-            });
-
-            // Temporary implementation of light
-            let sky_light_mask = BitSet::new(vec![true; CHUNK_SECTIONS_PER_WORLD_HEIGHT + 2]);
-            let chunk_section_sky_light_array = Bytes::from(vec![u8::MAX; AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION / 2]);
-            let chunk_sky_light_array = vec![chunk_section_sky_light_array; CHUNK_SECTIONS_PER_WORLD_HEIGHT + 2];
-
-            connection.send_packet(ChunkDataAndUpdateLightS2CPacket {
-                chunk_x: x,
-                chunk_z: z,
-                heightmaps: heightmap,
-                data: bytes.freeze(),
-                block_entities: chunk.block_entities.clone(),
-                light_data: LightData {
-                    sky_light_mask,
-                    block_light_mask: Default::default(),
-                    empty_sky_light_mask: Default::default(),
-                    empty_block_light_mask: Default::default(),
-                    sky_light_array: chunk_sky_light_array,
-                    block_light_array: Default::default(),
-                },
-            });
-        }
-    }
-
-    connection.send_packet(ChunkBatchFinishedS2CPacket {
-        number_of_chunks: number_of_sent_chunks,
-    });
+    send_chunks_on_join(connection, position);
 
     connection.send_packet(PlayerPositionS2CPacket {
         teleport_id: 0,

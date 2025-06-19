@@ -3,6 +3,7 @@ use crate::components::player::LastTeleport;
 use crate::events::player::movement::{PlayerMoveEvent, PlayerTeleportEvent};
 use crate::events::player::packet::PacketEvent;
 use crate::network::connection::NetworkConnection;
+use crate::world::chunk_sender::send_chunks_on_movement;
 use crab_protocol::packets::play::{
     ConfirmTeleportationC2SPacket, PlayerPositionS2CPacket, SetPlayerPositionAndRotationC2SPacket,
     SetPlayerPositionC2SPacket, SetPlayerRotationC2SPacket,
@@ -32,18 +33,18 @@ pub fn on_teleport(receiver: Receiver<PlayerTeleportEvent, (&NetworkConnection, 
 }
 
 pub fn on_move(
-    receiver: Receiver<PlayerMoveEvent, (EntityId, &mut Position, &mut LastTeleport, &Name)>,
+    receiver: Receiver<PlayerMoveEvent, (EntityId, &mut Position, &mut LastTeleport, &Name, &NetworkConnection)>,
     teleport: Sender<PlayerTeleportEvent>,
 ) {
     let PlayerMoveEvent { position, rotation } = receiver.event;
-    let (entity, old_pos, last_teleport, name) = receiver.query;
+    let (entity, old_pos, last_teleport, name, connection) = receiver.query;
 
     if !last_teleport.confirmed {
         return;
     }
-    let delta_x = (position.0.x - old_pos.0.x).abs();
-    let delta_y = (position.0.y - old_pos.0.y).abs();
-    let delta_z = (position.0.z - old_pos.0.z).abs();
+    let delta_x = position.0.x - old_pos.0.x;
+    let delta_y = position.0.y - old_pos.0.y;
+    let delta_z = position.0.z - old_pos.0.z;
     let delta_sq = delta_x.powi(2) + delta_y.powi(2) + delta_z.powi(2);
 
     if delta_sq > MAX_SINGLE_PACKET_MOVE_SQ {
@@ -60,6 +61,7 @@ pub fn on_move(
         );
     }
 
+    send_chunks_on_movement(connection, old_pos, position);
     old_pos.0 = position.0.clone();
 }
 

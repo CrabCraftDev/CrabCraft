@@ -13,9 +13,11 @@ use crab_world::error::AnvilError::ChunkDoesNotExist;
 use dashmap::DashMap;
 use dashmap::mapref::one::{Ref, RefMut};
 use nohash_hasher::BuildNoHashHasher;
+use std::collections::HashMap;
 use std::fs::File;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
 use tracing::warn;
 
 const REGION_SIZE_IN_CHUNKS: i32 = 32;
