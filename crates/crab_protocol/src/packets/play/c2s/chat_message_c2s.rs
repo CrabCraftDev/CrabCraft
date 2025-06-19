@@ -16,4 +16,5 @@ pub struct ChatMessageC2SPacket {
     #[protocol_attribute(protocol_type = VarInt)]
     pub message_count: i32,
     pub acknowledged: FixedBitSet<20>,
+    pub checksum: i8,
 }
