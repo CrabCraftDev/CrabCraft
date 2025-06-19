@@ -1,7 +1,7 @@
 use crate::error::AnvilError;
 use bytes::{Buf, Bytes};
 use flate2::read::{GzDecoder, ZlibDecoder};
-use lz4::Decoder;
+use lz4_java_wrc::Lz4BlockInput;
 use std::io::Read;
 use strum::FromRepr;
 
@@ -30,7 +30,7 @@ impl AnvilCompression {
             }
             AnvilCompression::Gzip => Self::decompress_inner(GzDecoder::new(&compressed[1..])),
             AnvilCompression::Zlib => Self::decompress_inner(ZlibDecoder::new(&compressed[1..])),
-            AnvilCompression::LZ4 => Self::decompress_inner(Decoder::new(compressed)),
+            AnvilCompression::LZ4 => Self::decompress_inner(Lz4BlockInput::new(&compressed[1..])),
             _ => Err(AnvilError::InvalidCompressionScheme(compression_scheme)),
         }
     }
