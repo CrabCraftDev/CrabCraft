@@ -7,9 +7,11 @@ use crate::error::AnvilError;
 use crate::error::AnvilError::ChunkDoesNotExist;
 use crate::utils::{MEGABYTE, read_u32};
 use crab_nbt::serde::de::from_bytes;
+use crab_nbt::serde::ser::to_bytes;
 use crab_registry::RegistryManager;
+use crab_text::utils::namespaced_key::NamespacedKey;
 use std::fs::File;
-use std::io::{Read, Seek, SeekFrom};
+use std::io::{Read, Seek, SeekFrom, Write};
 
 /// The Region file format is a binary format used to store Minecraft chunks.
 ///
@@ -20,6 +22,7 @@ use std::io::{Read, Seek, SeekFrom};
 /// Chunks are compressed using a specified compression method within their sectors.
 ///
 /// For details, see the [Minecraft Wiki](https://minecraft.wiki/w/Region_file_format).
+#[derive(Debug)]
 pub struct RegionFile {
     file_handle: File,
     header: RegionHeader,
@@ -56,6 +59,47 @@ impl RegionFile {
         let anvil_chunk = from_bytes::<chunk_format::AnvilChunk>(&mut decompressed)?;
         let chunk = anvil_chunk.to_chunk(get_biome, registry)?;
         Ok(chunk)
+    }
+
+    pub fn write_chunk(&mut self, x: u8, z: u8, chunk: &Chunk, registry: &RegistryManager) -> Result<(), AnvilError> {
+        let sector = self.header.sector(x, z);
+        if !sector.exists() {
+            return Err(AnvilError::ChunkDoesNotExist { x, z });
+        }
+
+        let biome_registry_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
+
+        // registry.by_numeric_id(&biome_registry_namespaced_key, abc);
+        // todo: not relative x, z
+        let anvil_chunk = chunk_format::AnvilChunk::from_chunk(
+            chunk.clone(),
+            |abc| {
+                registry
+                    .by_numeric_id(&biome_registry_key, abc as usize)
+                    .unwrap()
+                    .to_string()
+            },
+            registry,
+            x as i32,
+            z as i32,
+            -1,
+            0,
+            "abc".to_string(),
+            0,
+        )?;
+        let content = to_bytes(&anvil_chunk, "".to_string())?;
+        let compressed_content = AnvilCompression::compress(&content, AnvilCompression::Zlib)?;
+
+        let compressed_len = compressed_content.len();
+        if compressed_len > MEGABYTE || compressed_len == 0 {
+            return Err(AnvilError::InvalidChunkSize { size: compressed_len });
+        }
+
+        self.file_handle.seek(SeekFrom::Start(sector.binary_offset()))?;
+        self.file_handle.write_all(&(compressed_len as u32).to_be_bytes())?;
+        self.file_handle.write_all(&compressed_content)?;
+
+        Ok(())
     }
 
     pub fn load(mut file_handle: File) -> Result<Self, AnvilError> {

@@ -2,7 +2,7 @@ use crate::error::AnvilError;
 use bytes::{Buf, Bytes};
 use flate2::read::{GzDecoder, ZlibDecoder};
 use lz4_java_wrc::Lz4BlockInput;
-use std::io::Read;
+use std::io::{Read, Write};
 use strum::FromRepr;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash, FromRepr)]
@@ -39,5 +39,33 @@ impl AnvilCompression {
         let mut decompressed = Vec::new();
         decoder.read_to_end(&mut decompressed)?;
         Ok(Bytes::from(decompressed))
+    }
+
+    pub fn compress(data: &[u8], compression: AnvilCompression) -> Result<Vec<u8>, AnvilError> {
+        let mut compressed = Vec::with_capacity(data.len() + 1);
+        compressed.push(compression as u8);
+
+        match compression {
+            AnvilCompression::Uncompressed => {
+                compressed.extend_from_slice(data);
+            }
+            AnvilCompression::Gzip => {
+                let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+                encoder.write_all(data)?;
+                compressed.extend(encoder.finish()?);
+            }
+            AnvilCompression::Zlib => {
+                let mut encoder = flate2::write::ZlibEncoder::new(Vec::new(), flate2::Compression::default());
+                encoder.write_all(data)?;
+                compressed.extend(encoder.finish()?);
+            }
+            AnvilCompression::LZ4 => {
+                let mut encoder = lz4_java_wrc::Lz4BlockOutput::new(&mut compressed);
+                encoder.write_all(data)?;
+            }
+            _ => return Err(AnvilError::InvalidCompressionScheme(compression as u8)),
+        }
+
+        Ok(compressed)
     }
 }

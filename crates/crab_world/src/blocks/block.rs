@@ -31,7 +31,16 @@ impl Block {
         Ok(properties)
     }
 
-    /// Creates new Block based on Hashmap<&str, String>
+    pub fn properties2(&self) -> Result<(&NamespacedKey, HashMap<&'static str, String>), WorldError> {
+        let namespaced_key = self.namespaced_key()?;
+        let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
+        let local_state = self.0 - block_information.starting_state_id;
+        let properties = (block_information.properties)(local_state)?;
+
+        Ok((namespaced_key, properties))
+    }
+
+    /// Creates a new Block based on Hashmap<&str, String>
     pub fn from_properties(
         namespaced_key: &NamespacedKey,
         properties: &HashMap<&str, String>,
