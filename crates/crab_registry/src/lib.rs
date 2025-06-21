@@ -1,3 +1,4 @@
+use bimap::BiMap;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use include_dir::{Dir, include_dir};
 use serde::Deserialize;
@@ -12,21 +13,22 @@ pub static REGISTRY: OnceLock<RegistryManager> = OnceLock::new();
 #[derive(Debug)]
 pub struct RegistryManager {
     pub data: HashMap<NamespacedKey, Vec<NamespacedKey>>,
-    pub block_entities: HashMap<NamespacedKey, u16>,
+    pub block_entities: BiMap<NamespacedKey, u16>,
 }
 
 impl RegistryManager {
-    pub fn new(data: HashMap<NamespacedKey, Vec<NamespacedKey>>, block_entities: HashMap<NamespacedKey, u16>) -> Self {
-        Self { data, block_entities }
-    }
-
-    pub fn get_numeric_id(&self, namespace: &NamespacedKey, entry: &NamespacedKey) -> Option<usize> {
-        let entries = self.data.get(namespace)?;
+    pub fn get_numeric_id(&self, registry: &NamespacedKey, entry: &NamespacedKey) -> Option<usize> {
+        let entries = self.data.get(registry)?;
         entries.iter().position(|x| x == entry)
     }
 
-    pub fn get_length(&self, namespace: &NamespacedKey) -> Option<usize> {
-        Some(self.data.get(namespace)?.len())
+    pub fn by_numeric_id(&self, registry: &NamespacedKey, id: usize) -> Option<&NamespacedKey> {
+        let entries = self.data.get(registry)?;
+        entries.get(id)
+    }
+
+    pub fn get_entry_count(&self, registry: &NamespacedKey) -> Option<usize> {
+        Some(self.data.get(registry)?.len())
     }
 
     fn find_registry_files(root_dir: &Dir) -> HashMap<NamespacedKey, Vec<NamespacedKey>> {
@@ -53,18 +55,18 @@ impl RegistryManager {
         result
     }
 
-    fn load_block_entities() -> HashMap<NamespacedKey, u16> {
+    fn load_block_entities() -> BiMap<NamespacedKey, u16> {
         const BLOCK_ENTITIES: &str = include_str!("../../../assets/block_entities.json");
 
         let block_entities: Vec<BlockEntity> = serde_json::from_str(BLOCK_ENTITIES).unwrap();
 
-        let mut hashmap = HashMap::new();
+        let mut bimap = BiMap::new();
         for (i, block_entity) in block_entities.iter().enumerate() {
             let key = NamespacedKey::minecraft(&block_entity.name).unwrap();
-            hashmap.insert(key, i as u16);
+            bimap.insert(key.clone(), i as u16);
         }
 
-        hashmap
+        bimap
     }
 }
 
@@ -74,7 +76,7 @@ impl Default for RegistryManager {
         let data = Self::find_registry_files(&root_dir);
         let block_entities = Self::load_block_entities();
 
-        Self::new(data, block_entities)
+        Self { data, block_entities }
     }
 }
 

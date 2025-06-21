@@ -7,6 +7,7 @@ use std::fs::File;
 /// This header mainly serves to locate chunks within the file.
 ///
 /// For details, see the [Minecraft Wiki](https://minecraft.wiki/w/Region_file_format#Header)
+#[derive(Debug)]
 pub struct RegionHeader {
     /// Chunk locations with offset and size for each chunk, in sectors.
     pub locations: Vec<Sector>,

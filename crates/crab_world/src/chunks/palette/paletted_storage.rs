@@ -195,6 +195,20 @@ impl PalettedStorage {
 
         Ok(result)
     }
+
+    pub fn into_parts(self) -> (Vec<u32>, Option<BitStorage>) {
+        match self.palette {
+            Palette::Single(value) => (vec![value], None),
+            Palette::Indirect {
+                values_lookup_table,
+                storage,
+            } => (values_lookup_table, Some(storage)),
+            Palette::Direct(storage) => {
+                let unique_values: Vec<u32> = storage.iter().map(|v| v as u32).collect();
+                (unique_values, Some(storage))
+            }
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]

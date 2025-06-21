@@ -26,6 +26,7 @@ impl Sector {
 
 /// Manages allocation of 4096-byte sectors in a region file.
 /// Each chunk can occupy multiple contiguous sectors.
+#[derive(Debug)]
 pub struct SectorAllocator {
     used_sectors: BitVec,
 }

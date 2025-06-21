@@ -13,7 +13,7 @@ use crab_world::error::AnvilError::ChunkDoesNotExist;
 use dashmap::DashMap;
 use dashmap::mapref::one::{Ref, RefMut};
 use nohash_hasher::BuildNoHashHasher;
-use std::fs::File;
+use std::fs::OpenOptions;
 use std::str::FromStr;
 use std::sync::Arc;
 use tracing::warn;
@@ -26,6 +26,7 @@ type ChunkCoordinates = i64;
 pub struct World {
     pub min_y: i16,
     pub chunks: Arc<DashMap<ChunkCoordinates, Chunk, BuildNoHashHasher<ChunkCoordinates>>>,
+    pub regions: DashMap<(i32, i32), RegionFile>,
 }
 
 impl World {
@@ -105,13 +106,8 @@ impl World {
     }
 
     fn load_chunk_from_anvil(&self, x: i32, z: i32) -> Result<Chunk, Error> {
-        let region_folder_path = FILES.world_region_path(&OVERWORLD_IDENTIFIER)?;
-        let region_file_name = Self::get_region_name(x, z);
+        let mut region = self.get_or_load_region_file(x, z)?;
 
-        let file = File::open(region_folder_path.join(&region_file_name))
-            .map_err(|_| Error::MissingWorldFile(region_file_name.clone()))?;
-
-        let mut region = RegionFile::load(file)?;
         let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
         let chunk = region.read_chunk(
             local_chunk_x,
@@ -123,7 +119,33 @@ impl World {
         Ok(chunk)
     }
 
-    // todo: save chunk
+    fn get_or_load_region_file(&self, x: i32, z: i32) -> Result<RefMut<'_, (i32, i32), RegionFile>, Error> {
+        let region_folder_path = FILES.world_region_path(&OVERWORLD_IDENTIFIER)?;
+        let region_file_name = Self::get_region_name(x, z);
+        let region_coordinates = Self::region_coordinates(x, z);
+
+        if !self.regions.contains_key(&region_coordinates) {
+            let file = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(region_folder_path.join(&region_file_name))
+                .map_err(|_| Error::MissingWorldFile(region_file_name.clone()))?;
+
+            let region_file = RegionFile::load(file)?;
+            self.regions.insert(region_coordinates, region_file);
+        }
+
+        Ok(self.regions.get_mut(&region_coordinates).unwrap())
+    }
+
+    pub fn save_chunk(&self, x: i32, z: i32, chunk: &Chunk) -> Result<(), Error> {
+        let mut region = self.get_or_load_region_file(x, z)?;
+
+        let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
+        region.write_chunk(local_chunk_x, local_chunk_z, chunk, REGISTRY.get().unwrap())?;
+
+        Ok(())
+    }
 
     pub fn unload_chunk(&mut self, x: i32, z: i32) {
         self.chunks.remove(&Self::get_key(x, z));
@@ -135,11 +157,18 @@ impl World {
 
         registry
             .get_numeric_id(&biome_registry_namespaced_key, &NamespacedKey::from_str(biome).unwrap())
-            .unwrap() as u64
+            .expect("Invalid biome id") as u64
     }
 
+    // todo: move those methods to impl ChunkCoordinates
     pub fn get_key(region_x: i32, region_z: i32) -> ChunkCoordinates {
         ((region_x as ChunkCoordinates) << i32::BITS) | region_z as ChunkCoordinates
+    }
+
+    pub fn unpack_key(key: ChunkCoordinates) -> (i32, i32) {
+        let region_x = (key >> i32::BITS) as i32;
+        let region_z = key as i32;
+        (region_x, region_z)
     }
 
     fn chunk_coordinates(block_x: i32, block_z: i32) -> (i32, i32) {
@@ -150,9 +179,14 @@ impl World {
         ((x % REGION_SIZE_IN_CHUNKS) as u8, (z % REGION_SIZE_IN_CHUNKS) as u8)
     }
 
-    fn get_region_name(chunk_x: i32, chunk_z: i32) -> String {
+    fn region_coordinates(x: i32, z: i32) -> (i32, i32) {
         // Floor of dividing the chunk coordinates by 32 (REGION_SIZE_IN_CHUNKS)
-        format!("r.{}.{}.mca", chunk_x >> 5, chunk_z >> 5)
+        (x >> 5, z >> 5)
+    }
+
+    fn get_region_name(chunk_x: i32, chunk_z: i32) -> String {
+        let (region_x, region_z) = Self::region_coordinates(chunk_x, chunk_z);
+        format!("r.{}.{}.mca", region_x, region_z)
     }
 }
 
