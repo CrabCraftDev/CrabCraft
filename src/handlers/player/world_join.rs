@@ -2,7 +2,7 @@ use crate::components::name::Name;
 use crate::events::player::player_join_world::PlayerJoinWorldEvent;
 use crate::network::connection::NetworkConnection;
 use crate::world::OVERWORLD_IDENTIFIER;
-use crate::world::worlds_storage::WORLDS_STORAGE;
+use crate::world::storage::WORLDS_STORAGE;
 use bytes::{Bytes, BytesMut};
 use crab_protocol::packets::play::{
     ChunkBatchFinishedS2CPacket, ChunkBatchStartS2CPacket, ChunkDataAndUpdateLightS2CPacket, GameEventS2CPacket,

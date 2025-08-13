@@ -11,7 +11,7 @@ use tracing::{error, info, info_span};
 use crab_craft::mc_server::McServer;
 use crab_craft::utils::files::FILES;
 use crab_craft::world::OVERWORLD_IDENTIFIER;
-use crab_craft::world::worlds_storage::WORLDS_STORAGE;
+use crab_craft::world::storage::WORLDS_STORAGE;
 
 #[tokio::main]
 async fn main() {

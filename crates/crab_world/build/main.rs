@@ -63,9 +63,9 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn properties(local_state: u16) -> Result<HashMap<&'static str, String>, WorldError> {
+                fn properties(local_state: u16) -> Result<HashMap<&'static str, String>, BlockError> {
                     if local_state > #states_amount {
-                        return Err(WorldError::InvalidLocalState(local_state, #states_amount));
+                        return Err(BlockError::InvalidLocalState(local_state, #states_amount));
                     }
 
                     let mut hashmap: HashMap<&'static str, String> = HashMap::new();
@@ -81,7 +81,7 @@ pub fn generate() -> TokenStream {
                 }
 
                 #[allow(unused_mut, unused)]
-                fn from_properties(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError> {
+                fn from_properties(hashmap: &HashMap<&str, String>) -> Result<Block, BlockError> {
                     let mut state_id_offset: u16 = Self::starting_state_id()?.0;
                     let mut multiplier: u16 = 1;
                     #(
@@ -122,15 +122,15 @@ fn process_states(block: &Block) -> (Vec<u16>, Vec<TokenStream>, Vec<TokenStream
 
         let mut string_to_id_matches = vec![];
         for (i, value) in property.values.iter().enumerate() {
-            string_to_id_matches.push(quote! {#value => Ok::<usize, crate::error::WorldError>(#i)});
+            string_to_id_matches.push(quote! {#value => Ok::<usize, crate::error::BlockError>(#i)});
         }
         string_to_id.push(quote! {
             match hashmap.get(#property_name) {
                 Some(value) => match value.as_str() {
                     #(#string_to_id_matches,)*
-                    _ => return Err(crate::error::WorldError::InvalidPropertyValue),
+                    _ => return Err(crate::error::BlockError::InvalidPropertyValue),
                 },
-                None => return Err(crate::error::WorldError::InvalidPropertyName),
+                None => return Err(crate::error::BlockError::InvalidPropertyName),
             }
         });
 

@@ -30,14 +30,6 @@ pub enum Error {
     #[error(transparent)]
     OneshotReceive(#[from] OneshotReceiveError),
 
-    #[error("Missing world file {0}")]
-    MissingWorldFile(String),
-    #[error("Failed to load chunk ({x}, {z})")]
-    FailedToLoadChunk { x: i32, z: i32 },
-    #[error("Trying to access not loaded tried ({x}, {z})")]
-    AccessUnloadedChunk { x: i32, z: i32 },
-    #[error("Invalid position in chunk")]
-    InvalidPositionInChunk,
     #[error("Failed to load registry static")]
     FailedToLoadRegistry,
 

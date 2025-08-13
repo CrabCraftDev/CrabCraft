@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crab_macros::BlockData;
 
-use crate::error::WorldError;
+use crate::error::BlockError;
 
 /// The `BlockData` trait provides a way to create typed access to block properties/data.
 ///
@@ -20,11 +20,11 @@ pub trait BlockData {
 
     fn get(self) -> Self::Value;
 
-    fn from_properties(properties: HashMap<&'static str, String>) -> Result<Self, WorldError>
+    fn from_properties(properties: HashMap<&'static str, String>) -> Result<Self, BlockError>
     where
         Self: Sized;
 
-    fn apply(property: &Self::Value, properties: &mut HashMap<&'static str, String>) -> Result<(), WorldError>
+    fn apply(property: &Self::Value, properties: &mut HashMap<&'static str, String>) -> Result<(), BlockError>
     where
         Self: Sized;
 }

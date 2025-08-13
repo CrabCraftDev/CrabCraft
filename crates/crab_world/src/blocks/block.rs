@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use crate::blocks::block_data::BlockData;
 use crate::blocks::block_registry::BlockInformation;
 use crate::blocks::{BLOCKS, get_block_registry};
-use crate::error::WorldError;
+use crate::error::BlockError;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use derive_more::{From, Into};
 
@@ -15,14 +15,14 @@ use derive_more::{From, Into};
 pub struct Block(pub u16);
 
 impl Block {
-    pub fn namespaced_key(&self) -> Result<&NamespacedKey, WorldError> {
+    pub fn namespaced_key(&self) -> Result<&NamespacedKey, BlockError> {
         BLOCKS
             .get()
-            .ok_or(WorldError::BlocksNotInitialized)?
+            .ok_or(BlockError::BlocksNotInitialized)?
             .namespaced_key_by_state_id(self.0)
     }
 
-    pub fn properties(&self) -> Result<HashMap<&'static str, String>, WorldError> {
+    pub fn properties(&self) -> Result<HashMap<&'static str, String>, BlockError> {
         let namespaced_key = self.namespaced_key()?;
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
         let local_state = self.0 - block_information.starting_state_id;
@@ -31,7 +31,7 @@ impl Block {
         Ok(properties)
     }
 
-    pub fn properties2(&self) -> Result<(&NamespacedKey, HashMap<&'static str, String>), WorldError> {
+    pub fn properties2(&self) -> Result<(&NamespacedKey, HashMap<&'static str, String>), BlockError> {
         let namespaced_key = self.namespaced_key()?;
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
         let local_state = self.0 - block_information.starting_state_id;
@@ -44,7 +44,7 @@ impl Block {
     pub fn from_properties(
         namespaced_key: &NamespacedKey,
         properties: &HashMap<&str, String>,
-    ) -> Result<Block, WorldError> {
+    ) -> Result<Block, BlockError> {
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
         (block_information.from_properties)(properties)
     }
@@ -64,11 +64,11 @@ impl Block {
         matches!(block, 0 | 14013 | 14014)
     }
 
-    pub fn property<P: BlockData>(&self) -> Result<P::Value, WorldError> {
+    pub fn property<P: BlockData>(&self) -> Result<P::Value, BlockError> {
         P::from_properties(self.properties()?).map(P::get)
     }
 
-    pub fn apply_property<P: BlockData>(&mut self, property: &P::Value) -> Result<(), WorldError> {
+    pub fn apply_property<P: BlockData>(&mut self, property: &P::Value) -> Result<(), BlockError> {
         let mut properties = self.properties()?;
         P::apply(property, &mut properties)?;
         let new_block = Self::from_properties(self.namespaced_key()?, &properties)?;
@@ -84,23 +84,23 @@ pub trait BlockType {
     /// For example `minecraft:stone`
     fn namespaced_key() -> NamespacedKey;
 
-    fn properties(local_state: u16) -> Result<HashMap<&'static str, String>, WorldError>;
-    fn from_properties(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError>;
+    fn properties(local_state: u16) -> Result<HashMap<&'static str, String>, BlockError>;
+    fn from_properties(hashmap: &HashMap<&str, String>) -> Result<Block, BlockError>;
 
     fn is_same_type_as(block: &Block) -> bool {
         matches!(block.namespaced_key(), Ok(block_key) if *block_key == Self::namespaced_key())
     }
 
-    fn information() -> Result<&'static BlockInformation, WorldError> {
+    fn information() -> Result<&'static BlockInformation, BlockError> {
         let blocks = get_block_registry()?;
         blocks.block_information_by_namespaced_key(&Self::namespaced_key())
     }
 
-    fn default_state_id() -> Result<Block, WorldError> {
+    fn default_state_id() -> Result<Block, BlockError> {
         Ok(Block(Self::information()?.default_state_id))
     }
 
-    fn starting_state_id() -> Result<Block, WorldError> {
+    fn starting_state_id() -> Result<Block, BlockError> {
         Ok(Block(Self::information()?.starting_state_id))
     }
 }

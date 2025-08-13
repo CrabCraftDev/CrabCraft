@@ -1,5 +1,7 @@
-use crate::world::world_data::World;
+use crate::utils::files::FILES;
 use crab_text::utils::namespaced_key::NamespacedKey;
+use crab_world::error::WorldError;
+use crab_world::world::World;
 use dashmap::DashMap;
 use std::sync::{Arc, LazyLock};
 
@@ -11,12 +13,23 @@ pub struct WorldsStorage {
 }
 
 impl WorldsStorage {
+    pub fn save(&self) -> Result<(), WorldError> {
+        for world in self.worlds.iter() {
+            world.save()?;
+        }
+
+        Ok(())
+    }
+
     pub fn init_dimension(&self, dimension: NamespacedKey, min_y: i16) {
         self.worlds.insert(
-            dimension,
+            dimension.clone(),
             World {
                 min_y,
-                ..Default::default()
+                identifier: dimension.clone(),
+                path: FILES.world_region_path(&dimension).unwrap(),
+                chunks: Default::default(),
+                regions: Default::default(),
             },
         );
     }
