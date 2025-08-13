@@ -1,14 +1,14 @@
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::blocks::Block;
 use crab_world::blocks::block_registry::{BlockInformation, BlockRegistry};
-use crab_world::error::WorldError;
+use crab_world::error::BlockError;
 use std::collections::HashMap;
 
-fn from_properties(_hashmap: &HashMap<&str, String>) -> Result<Block, WorldError> {
+fn from_properties(_hashmap: &HashMap<&str, String>) -> Result<Block, BlockError> {
     unreachable!()
 }
 
-fn properties(_id: u16) -> Result<HashMap<&'static str, String>, WorldError> {
+fn properties(_id: u16) -> Result<HashMap<&'static str, String>, BlockError> {
     unreachable!()
 }
 

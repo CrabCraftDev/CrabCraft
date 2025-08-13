@@ -7,7 +7,12 @@ use crab_text::error::TextError;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
 #[derive(Debug, Error)]
-pub enum WorldError {
+pub enum BlockError {
+    #[error("Invalid property value")]
+    InvalidPropertyValue,
+    #[error("Invalid property name")]
+    InvalidPropertyName,
+
     #[error("Blocks registry has not been initialized")]
     BlocksNotInitialized,
     #[error("Provided local id {0} exceeds maximum {1}")]
@@ -16,15 +21,14 @@ pub enum WorldError {
     BlockDoesNotExist(NamespacedKey),
     #[error("There is not block corresponding to ID {0}")]
     BlockIdDoesNotExist(u16),
-    #[error("Invalid property value")]
-    InvalidPropertyValue,
-    #[error("Invalid property name")]
-    InvalidPropertyName,
     #[error("BlockType with id {0} was already registered")]
     DuplicateBlock(NamespacedKey),
+}
 
-    #[error("Index outside of bounds! Index: {0}, Length: {1}")]
-    IndexOutsideOfBounds(usize, usize),
+#[derive(Debug, Error)]
+pub enum WorldError {
+    #[error("Attempted to set index {0} in BitStorage of size {1}")]
+    BitStorageSetOutOfRange(usize, usize),
     #[error("Value {0} exceeds bit mask {1}")]
     ValueExceedsMask(i64, i64),
     #[error("Missing block in chunk section at {0} {1} {2}")]
@@ -32,8 +36,21 @@ pub enum WorldError {
     #[error("Invalid block position inside chunk section {0} {1} {2}")]
     InvalidPositionInChunkSection(u8, u8, u8),
 
+    #[error("Missing world file {0}")]
+    MissingWorldFile(String),
+    #[error("Failed to load chunk ({x}, {z})")]
+    FailedToLoadChunk { x: i32, z: i32 },
+    #[error("Trying to access not loaded chunk at {x}, {z}")]
+    AccessUnloadedChunk { x: i32, z: i32 },
+    #[error("Invalid position in chunk")]
+    InvalidPositionInChunk,
+
     #[error(transparent)]
     Protocol(#[from] ProtocolError),
+    #[error(transparent)]
+    Block(#[from] BlockError),
+    #[error(transparent)]
+    Anvil(#[from] AnvilError),
 }
 
 #[derive(Debug, Error)]
@@ -58,5 +75,5 @@ pub enum AnvilError {
     #[error(transparent)]
     Nbt(#[from] NbtError),
     #[error(transparent)]
-    World(#[from] WorldError),
+    Block(#[from] BlockError),
 }

@@ -521,7 +521,6 @@ dependencies = [
  "evenio",
  "futures",
  "kanal",
- "nohash-hasher",
  "nu-ansi-term 0.50.1",
  "parking_lot",
  "serde",
@@ -628,6 +627,7 @@ dependencies = [
  "crab_registry",
  "crab_text",
  "criterion",
+ "dashmap",
  "derive_more 1.0.0",
  "flate2",
  "heck",
@@ -639,6 +639,7 @@ dependencies = [
  "serde_json",
  "strum",
  "thiserror 2.0.11",
+ "tracing",
 ]
 
 [[package]]

@@ -53,9 +53,9 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
         property_parsing.push(quote! {
             let value = match properties.get(stringify!(#field_name)) {
                 Some(value) => value,
-                None => return Err(::crab_world::error::WorldError::InvalidPropertyName),
+                None => return Err(::crab_world::error::BlockError::InvalidPropertyName),
             };
-            let #field_name = value.parse().map_err(|_| ::crab_world::error::WorldError::InvalidPropertyValue)?;
+            let #field_name = value.parse().map_err(|_| ::crab_world::error::BlockError::InvalidPropertyValue)?;
         });
 
         apply_properties.push(quote! {
@@ -73,14 +73,14 @@ pub(crate) fn derive_block_property_impl(item: TokenStream) -> Result<TokenStrea
                 #get_impl
             }
 
-            fn from_properties(properties: ::std::collections::HashMap<&str, String>) -> Result<Self, ::crab_world::error::WorldError> {
+            fn from_properties(properties: ::std::collections::HashMap<&str, String>) -> Result<Self, ::crab_world::error::BlockError> {
                 #(#property_parsing)*
                 Ok(Self {
                     #(#field_names,)*
                 })
             }
 
-            fn apply(property: &Self::Value, properties: &mut ::std::collections::HashMap<&str, String>) -> Result<(), ::crab_world::error::WorldError> {
+            fn apply(property: &Self::Value, properties: &mut ::std::collections::HashMap<&str, String>) -> Result<(), ::crab_world::error::BlockError> {
                 #(#apply_properties)*
                 Ok(())
             }

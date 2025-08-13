@@ -1,12 +1,12 @@
 use crate::blocks::Block;
-use crate::error::WorldError;
+use crate::error::BlockError;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::collections::{BTreeMap, HashMap};
 
 #[derive(Debug, Clone)]
 pub struct BlockInformation {
-    pub from_properties: fn(hashmap: &HashMap<&str, String>) -> Result<Block, WorldError>,
-    pub properties: fn(local_state: u16) -> Result<HashMap<&'static str, String>, WorldError>,
+    pub from_properties: fn(hashmap: &HashMap<&str, String>) -> Result<Block, BlockError>,
+    pub properties: fn(local_state: u16) -> Result<HashMap<&'static str, String>, BlockError>,
     pub starting_state_id: u16,
     pub default_state_id: u16,
 }
@@ -24,9 +24,9 @@ impl BlockRegistry {
         states_amount: u16,
         namespaced_key: &NamespacedKey,
         mut information: BlockInformation,
-    ) -> Result<(), WorldError> {
+    ) -> Result<(), BlockError> {
         if self.block_information_by_key.contains_key(namespaced_key) {
-            return Err(WorldError::DuplicateBlock(namespaced_key.clone()));
+            return Err(BlockError::DuplicateBlock(namespaced_key.clone()));
         }
 
         information.starting_state_id = self.last_state_id;
@@ -39,20 +39,20 @@ impl BlockRegistry {
         Ok(())
     }
 
-    pub fn namespaced_key_by_state_id(&self, key: u16) -> Result<&NamespacedKey, WorldError> {
+    pub fn namespaced_key_by_state_id(&self, key: u16) -> Result<&NamespacedKey, BlockError> {
         if key > self.last_state_id {
-            return Err(WorldError::BlockIdDoesNotExist(key));
+            return Err(BlockError::BlockIdDoesNotExist(key));
         }
         let block_id = self.by_state_id.range(..=key).next_back().map(|(_, v)| v);
-        block_id.ok_or(WorldError::BlockIdDoesNotExist(key))
+        block_id.ok_or(BlockError::BlockIdDoesNotExist(key))
     }
 
     pub fn block_information_by_namespaced_key(
         &self,
         namespaced_key: &NamespacedKey,
-    ) -> Result<&BlockInformation, WorldError> {
+    ) -> Result<&BlockInformation, BlockError> {
         self.block_information_by_key
             .get(namespaced_key)
-            .ok_or(WorldError::BlockDoesNotExist(namespaced_key.clone()))
+            .ok_or(BlockError::BlockDoesNotExist(namespaced_key.clone()))
     }
 }
