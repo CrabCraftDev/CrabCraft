@@ -97,7 +97,7 @@ pub fn config_macro(input: TokenStream) -> TokenStream {
 
 fn fields_to_configuration_node(
     named_fields: &Punctuated<Field, Comma>,
-) -> Map<Iter<Field>, fn(&Field) -> proc_macro2::TokenStream> {
+) -> Map<Iter<'_, Field>, fn(&Field) -> proc_macro2::TokenStream> {
     named_fields.iter().map(|field| {
         let field_name = &field.ident;
 
@@ -128,15 +128,13 @@ fn collect_docs(field: &Field) -> String {
         .attrs
         .iter()
         .filter_map(|attr| {
-            if attr.path().is_ident("doc") {
-                if let Meta::NameValue(meta) = &attr.meta {
-                    if let Expr::Lit(ExprLit {
-                        lit: Lit::Str(lit_str), ..
-                    }) = &meta.value
-                    {
-                        return Some(lit_str.value());
-                    }
-                }
+            if attr.path().is_ident("doc")
+                && let Meta::NameValue(meta) = &attr.meta
+                && let Expr::Lit(ExprLit {
+                    lit: Lit::Str(lit_str), ..
+                }) = &meta.value
+            {
+                return Some(lit_str.value());
             }
             None
         })
@@ -179,10 +177,10 @@ fn collect_default_value(field: &Field) -> Option<Expr> {
             continue;
         }
 
-        if let Meta::List(meta) = &attr.meta {
-            if let Ok(val) = meta.parse_args::<Expr>() {
-                return Some(val);
-            }
+        if let Meta::List(meta) = &attr.meta
+            && let Ok(val) = meta.parse_args::<Expr>()
+        {
+            return Some(val);
         }
     }
 

@@ -24,10 +24,10 @@ impl RawPacket {
         }
 
         let mut buffer = self.data.as_ref();
-        if let Ok(pkt) = P::deserialize(&mut buffer) {
-            if buffer.is_empty() {
-                return Some(pkt);
-            }
+        if let Ok(pkt) = P::deserialize(&mut buffer)
+            && buffer.is_empty()
+        {
+            return Some(pkt);
         }
 
         None

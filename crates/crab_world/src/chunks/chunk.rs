@@ -66,11 +66,11 @@ impl Chunk {
             for x in 0..16 {
                 for y in (0..self.world_height()).rev() {
                     let block = self.get_block(x, y as u16, z);
-                    if let Some(block) = block {
-                        if !block.is_air() {
-                            heightmap[(z * 16 + x) as usize] = y as u16;
-                            break;
-                        }
+                    if let Some(block) = block
+                        && !block.is_air()
+                    {
+                        heightmap[(z * 16 + x) as usize] = y as u16;
+                        break;
                     }
                 }
             }
