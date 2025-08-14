@@ -1,4 +1,4 @@
-use crate::utils::TestConfig;
+use crate::utils::{TestConfig, TestEnum};
 use crab_config::SemverVersion;
 use crab_config::configurable::Configurable;
 use crab_config::handlers::yaml_handler::YamlHandler;
@@ -45,6 +45,7 @@ fn migration_test() {
         .write_node(
             TestConfig {
                 _version: SemverVersion::new(0, 0, 0).to_string(),
+                test_enum: TestEnum::T2,
                 test: 0,
             }
             .as_configuration_node(),
@@ -55,7 +56,7 @@ fn migration_test() {
     let test_config = configurable.read_config_and_update(migration_list).unwrap();
 
     assert_eq!(test_config.test, 69420);
-
+    assert_eq!(test_config.test_enum, TestEnum::T2);
     assert_eq!(test_config._version, "0.0.2");
     fs::remove_file(TEST_FILE).unwrap();
 }
@@ -70,6 +71,7 @@ fn multiple_migrations_test() {
         .write_node(
             TestConfig {
                 _version: SemverVersion::new(0, 0, 0).to_string(),
+                test_enum: TestEnum::T2,
                 test: 0,
             }
             .as_configuration_node(),
@@ -81,6 +83,7 @@ fn multiple_migrations_test() {
     let test_config = configurable.read_config_and_update(migration_list).unwrap();
 
     assert_eq!(test_config.test, 420);
+    assert_eq!(test_config.test_enum, TestEnum::T2);
     assert_eq!(test_config._version, "0.0.2");
 
     fs::remove_file(TEST_FILE_MULTIPLE).unwrap();

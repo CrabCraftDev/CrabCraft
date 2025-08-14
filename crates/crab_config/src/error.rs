@@ -16,6 +16,17 @@ pub enum ConfigError {
     FoundValueExpectedMapping,
     #[error("Invalid field value ({})", serde_error.to_string())]
     InvalidFieldValue { serde_error: serde_yml::Error },
+    #[error(
+        "Invalid enum config value for enum {} found value: {} Expected values: {:?}",
+        enum_name,
+        found_value,
+        expected_values
+    )]
+    InvalidEnumConfigValue {
+        enum_name: &'static str,
+        found_value: String,
+        expected_values: &'static str,
+    },
 
     #[error("Config version wasn't found in configuration entry during verification process")]
     ConfigVersionNotFound,
