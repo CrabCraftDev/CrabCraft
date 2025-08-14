@@ -6,13 +6,26 @@ use serde_yml::Value;
 use std::fs;
 use std::fs::OpenOptions;
 use std::path::Path;
+#[derive(Default, Config, Deserialize, Serialize, PartialEq, Debug)]
+#[serde(rename_all = "snake_case")]
+pub enum TestEnum {
+    #[default]
+    /// Every day, we thank borbert for the crab
+    HelloWorld,
+    /// Second variant documentation
+    T2,
+    /// Third variant documentation
+    T3 { value: String },
+}
 
-#[derive(Config, Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Config, Deserialize, Serialize, PartialEq, Debug)]
 pub struct TestConfig {
     /// First value documentation
     /// Which has second line :3
     #[default_value("0.0.2".to_string())]
     pub _version: String,
+    #[default_value(TestEnum::HelloWorld)]
+    pub test_enum: TestEnum,
     /// Second value "documentation"
     #[default_value(264306)]
     pub test: u32,

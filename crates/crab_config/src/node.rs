@@ -51,6 +51,20 @@ impl ConfigurationNode {
         }
     }
 
+    pub fn add_doc(mut self, doc: Option<String>) -> ConfigurationNode {
+        if let Some(new_doc) = doc {
+            if let Some(existing_doc) = &mut self.documentation {
+                let mut combined_doc = new_doc;
+                combined_doc.push('\n');
+                combined_doc.push_str(existing_doc);
+                self.documentation = Some(combined_doc);
+            } else {
+                self.documentation = Some(new_doc);
+            }
+        }
+        self
+    }
+
     pub fn with_value(value: Value) -> ConfigurationNode {
         Self::new(NodeContent::Value(value))
     }

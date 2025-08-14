@@ -26,7 +26,6 @@ fn set_value_by_flat_path() {
     let mut node = ConfigurationNode::default();
     let value = Value::String("test_value".to_string());
     assert!(node.set_value_by_flat_path("a.b.c", value.clone()));
-    println!("{:?}", node);
     assert_eq!(node.get_value_from_flat_path("a.b.c"), Some(&value));
 }
 
