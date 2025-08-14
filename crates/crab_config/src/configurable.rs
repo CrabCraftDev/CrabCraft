@@ -115,9 +115,9 @@ impl<T: Config, V: ConfigVersion> Configurable<T, V> {
         }
     }
 
-    /// Despite having almost same name as `read_config_and_verify` it returns `ConfigurationEntry`
+    /// Despite having almost same name as `read_config_and_verify` it returns `ConfigurationNode`
     /// due to not having certainty of type this function doesn't check for type
-    /// just dumps config into more manageable format of `ConfigurationEntry`
+    /// just dumps config into more manageable format of `ConfigurationNode`
     pub fn read_config(&self) -> Result<ConfigurationNode, ConfigError> {
         let config_file_path = self.config_file_path.clone();
         let mut configuration_node = self.implementation.read(config_file_path)?;
