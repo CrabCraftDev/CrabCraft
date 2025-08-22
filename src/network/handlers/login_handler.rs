@@ -11,7 +11,7 @@ use crate::utils::errors::Error;
 use crab_protocol::protocol_state::ProtocolState;
 
 pub async fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) -> Result<(), Error> {
-    let state = connection.get_state();
+    let state = connection.state();
     if let Some(packet) = raw_packet.decode::<LoginStartC2SPacket>(state) {
         connection.set_prefix(&packet.username);
 

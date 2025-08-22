@@ -63,14 +63,14 @@ impl AsyncEvent {
     pub fn send_target_event<E: TargetedEvent + TryFrom<AsyncEvent> + Into<AsyncEvent>>(
         event: E,
         sender: &AsyncSender<AsyncEventHolder>,
-        entity_id: Option<EntityId>,
+        entity_id: EntityId,
     ) -> Result<(), Error> {
         let async_event: AsyncEvent = event.into();
 
         sender.as_sync().send(AsyncEventHolder {
             event: async_event,
             response_channel: None,
-            entity_id,
+            entity_id: Some(entity_id),
         })?;
 
         Ok(())

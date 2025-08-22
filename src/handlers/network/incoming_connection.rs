@@ -9,7 +9,6 @@ use evenio::{
     event::{Receiver, ReceiverMut, Sender, Spawn},
     fetch::Fetcher,
 };
-use std::sync::Arc;
 
 pub fn player_login_checks(
     mut receiver: ReceiverMut<PlayerLoginEvent>,
@@ -48,7 +47,6 @@ pub fn on_player_login_event(
         return;
     }
 
-    let entity_id = Arc::clone(&event.connection.entity_id);
     let id = sender.spawn((
         Name(event.username().to_string()),
         event.connection.clone(),
@@ -60,5 +58,5 @@ pub fn on_player_login_event(
         LastTeleport::default(),
         CurrentWorld(OVERWORLD_IDENTIFIER.clone()),
     ));
-    *entity_id.write().unwrap() = Some(id);
+    event.connection.set_entity_id(id);
 }

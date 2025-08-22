@@ -5,7 +5,7 @@ use crab_protocol::packets::status::{StatusRequestC2SPacket, StatusResponseS2CPa
 use crab_protocol::raw_packet::RawPacket;
 
 pub async fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) {
-    let state = connection.get_state();
+    let state = connection.state();
     if let Some(packet) = raw_packet.decode::<PingRequestC2SPacket>(state) {
         connection.send_packet(PingResponseS2CPacket { id: packet.id });
         connection.close();

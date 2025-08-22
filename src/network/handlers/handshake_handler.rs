@@ -8,7 +8,7 @@ use crate::mc_server::SERVER_VERSION;
 use crate::{mc_server::SERVER_PROTOCOL_VERSION, network::connection::NetworkConnection};
 
 pub fn handle_packet(connection: &NetworkConnection, raw_packet: RawPacket) {
-    let state = connection.get_state();
+    let state = connection.state();
     let Some(packet) = raw_packet.decode::<HandshakeC2SPacket>(state) else {
         return;
     };

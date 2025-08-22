@@ -46,9 +46,9 @@ const KEEPALIVE_INTERVAL: Duration = Duration::from_millis(15_000);
 #[derive(Debug, Clone, Component)]
 pub struct NetworkConnection {
     pub ip_address: IpAddr,
-    pub entity_id: Arc<ShardedLock<Option<EntityId>>>,
+    entity_id: Arc<ShardedLock<Option<EntityId>>>,
     /// State is accessed from the main thread and connection thread
-    pub state: Arc<ShardedLock<ProtocolState>>,
+    state: Arc<ShardedLock<ProtocolState>>,
     pub keep_alive_state: Arc<Mutex<KeepAliveState>>,
     pub transformer: PacketTransformer,
     pub outgoing_packets_sender: Sender<RawPacket>,
@@ -101,7 +101,7 @@ impl NetworkConnection {
         }
 
         if !self.is_closed() {
-            if self.get_state().should_entity_be_spawned() && self.entity_id.read().unwrap().is_none() {
+            if self.state().should_entity_be_spawned() && self.entity_id().is_none() {
                 error!("Player entity is not spawned!")
             }
             self.close();
@@ -117,8 +117,7 @@ impl NetworkConnection {
             let Ok(packet) = receiver.recv().await else {
                 break;
             };
-
-            let state = *connection.state.read().unwrap();
+            let state = connection.state();
 
             match transformer.encode_and_write(packet, state, &mut read_half).await {
                 Ok(_) => {}
@@ -165,7 +164,7 @@ impl NetworkConnection {
     pub async fn keep_connection_alive(&self) {
         loop {
             sleep(KEEPALIVE_INTERVAL).await;
-            let state = self.get_state();
+            let state = self.state();
             if state != ProtocolState::Configuration && state != ProtocolState::Play {
                 continue;
             }
@@ -201,7 +200,7 @@ impl NetworkConnection {
     }
 
     pub async fn process_packet(&self, raw_packet: RawPacket) -> Result<(), Error> {
-        let state = self.get_state();
+        let state = self.state();
         match state {
             ProtocolState::Status => status_handler::handle_packet(self, raw_packet).await,
             ProtocolState::Handshake => handshake_handler::handle_packet(self, raw_packet),
@@ -212,7 +211,7 @@ impl NetworkConnection {
                 } else {
                     self.send_target_event(PacketEvent {
                         packet: raw_packet,
-                        protocol_state: self.get_state(),
+                        protocol_state: state,
                     })?;
                 }
             }
@@ -221,7 +220,7 @@ impl NetworkConnection {
     }
 
     pub fn send_packet<P: Packet>(&self, packet: P) {
-        match RawPacket::try_from_packet(packet, self.get_state()) {
+        match RawPacket::try_from_packet(packet, self.state()) {
             Ok(raw_packet) => {
                 if self.outgoing_packets_sender.send(raw_packet).is_err() {
                     warn!("{}Tried to send packet while connection closed", self.prefix());
@@ -242,15 +241,16 @@ impl NetworkConnection {
             warn!("Called disconnect() on a closed connection");
             return;
         }
+        let state = self.state();
 
         // Don't send event if there is no entity spawned in ECS
-        if self.entity_id.read().unwrap().is_some() {
+        if self.entity_id().is_some() {
             self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
-        } else if self.get_state().should_entity_be_spawned() {
-            panic!("Entity is not spawned in {:?} protocol state", self.get_state());
+        } else if state.should_entity_be_spawned() {
+            panic!("Entity is not spawned in {:?} protocol state", self.state());
         }
 
-        match self.get_state() {
+        match state {
             ProtocolState::Configuration | ProtocolState::Play => {
                 self.send_packet(DisconnectS2CPacket { reason: message });
             }
@@ -271,12 +271,20 @@ impl NetworkConnection {
         self.outgoing_packets_sender.close();
     }
 
-    pub fn get_state(&self) -> ProtocolState {
+    pub fn state(&self) -> ProtocolState {
         *self.state.read().unwrap()
     }
 
     pub fn set_state(&self, new_state: ProtocolState) {
         *self.state.write().unwrap() = new_state;
+    }
+
+    pub fn entity_id(&self) -> Option<EntityId> {
+        *self.entity_id.read().unwrap()
+    }
+
+    pub fn set_entity_id(&self, id: EntityId) {
+        *self.entity_id.write().unwrap() = Some(id);
     }
 
     pub fn prefix(&self) -> String {
@@ -298,12 +306,10 @@ impl NetworkConnection {
         &self,
         event: E,
     ) -> Result<(), Error> {
-        if self.entity_id.read().unwrap().is_none() {
-            return Ok(());
+        match self.entity_id() {
+            Some(id) => AsyncEvent::send_target_event(event, &self.event_sender, id),
+            None => Ok(()),
         }
-
-        let id = *self.entity_id.clone().read().unwrap();
-        AsyncEvent::send_target_event(event, &self.event_sender, id)
     }
 
     pub async fn send_event_with_response<E: GlobalEvent + Debug + TryFrom<AsyncEvent> + Into<AsyncEvent>>(
