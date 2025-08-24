@@ -2,7 +2,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{DeriveInput, Result, parse2};
 
-use crate::protocol::args::{RootPacketArgs, parse_packet_args};
+use crate::protocol::args::{RootPacketArgs, StateIdMapping, parse_packet_args};
 
 pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;
@@ -11,9 +11,18 @@ pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
 
     let RootPacketArgs {
         name: packet_name,
-        id: packet_id,
-        state,
+        state_id_mapping,
     } = packet_args;
+
+    let state_ids = match state_id_mapping {
+        StateIdMapping::OneState { id, state } => {
+            quote! {&[(#state, #id)]}
+        }
+        StateIdMapping::ManyStates { ids } => {
+            let ids = ids.iter().map(|(state, id)| quote! {(#state, #id)});
+            quote! {&[#(#ids),*]}
+        }
+    };
 
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
@@ -22,7 +31,7 @@ pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
         #where_clause
         {
             const NAME: &'static str = #packet_name;
-            const STATE_IDS: &'static [(::crab_protocol::protocol_state::ProtocolState, i32)] = &[(#state, #packet_id)];
+            const STATE_IDS: &'static [(::crab_protocol::protocol_state::ProtocolState, i32)] = #state_ids;
         }
     })
 }

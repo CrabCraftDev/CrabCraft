@@ -2,13 +2,12 @@ use bitfield_struct::bitfield;
 use evenio::component::Component;
 use strum::FromRepr;
 
-use crab_macros::ProtocolSerializer;
+use crab_macros::{Packet, ProtocolSerializer};
 
-use crate::packet::Packet;
-use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 
-#[derive(ProtocolSerializer, Component, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Component, Debug, Clone)]
+#[packet(name = "client_information", ids(Play = 0x0D, Configuration = 0x00))]
 pub struct ClientInformation {
     #[protocol_attribute(bounded = 16)]
     pub locale: String,
@@ -49,9 +48,4 @@ pub struct DisplayedSkinParts {
     pub hat_enabled: bool,
     #[bits(1)]
     __: u8,
-}
-
-impl Packet for ClientInformationC2SPacket {
-    const NAME: &'static str = "client_information";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x0D), (Configuration, 0x00)];
 }

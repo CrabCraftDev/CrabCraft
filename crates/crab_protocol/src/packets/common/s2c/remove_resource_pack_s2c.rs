@@ -1,17 +1,11 @@
 use uuid::Uuid;
 
-use crab_macros::ProtocolSerializer;
+use crab_macros::{Packet, ProtocolSerializer};
 
-use crate::packet::Packet;
-use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
+#[packet(name = "resource_pack_pop", ids(Play = 0x49, Configuration = 0x08))]
 pub struct RemoveResourcePackS2CPacket {
     pub resource_pack_uuid: Option<Uuid>,
-}
-
-impl Packet for RemoveResourcePackS2CPacket {
-    const NAME: &'static str = "resource_pack_pop";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x49), (Configuration, 0x08)];
 }

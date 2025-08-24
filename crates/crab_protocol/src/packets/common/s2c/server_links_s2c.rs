@@ -1,22 +1,16 @@
 use crate::buf::{ReadByteBuf, WriteByteBuf};
 use crate::error::ProtocolError;
-use crate::packet::Packet;
 use crate::protocol_serializer::ProtocolSerializer;
-use crate::protocol_state::ProtocolState;
-use crab_macros::ProtocolSerializer;
+use crab_macros::{Packet, ProtocolSerializer};
 use strum::FromRepr;
 
 use crate::protocol_state::ProtocolState::*;
 use crab_text::text::Text;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
+#[packet(name = "server_links", ids(Play = 0x82, Configuration = 0x10))]
 pub struct ServerLinksS2CPacket {
     pub links: Vec<ServerLink>,
-}
-
-impl Packet for ServerLinksS2CPacket {
-    const NAME: &'static str = "server_links";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x82), (Configuration, 0x10)];
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, ProtocolSerializer, FromRepr)]

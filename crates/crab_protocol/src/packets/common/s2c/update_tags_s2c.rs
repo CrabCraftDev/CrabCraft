@@ -1,14 +1,13 @@
 use std::collections::HashMap;
 
-use crab_macros::ProtocolSerializer;
+use crab_macros::{Packet, ProtocolSerializer};
 
-use crate::packet::Packet;
-use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 use crate::types::varint::VarInt;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
+#[packet(name = "update_tags", ids(Play = 0x7F, Configuration = 0x0D))]
 pub struct UpdateTagsS2CPacket {
     pub tags: HashMap<NamespacedKey, Vec<Tag>>,
 }
@@ -18,9 +17,4 @@ pub struct Tag {
     pub name: NamespacedKey,
     #[protocol_attribute(protocol_type = Vec<VarInt>)]
     pub entries: Vec<i32>,
-}
-
-impl Packet for UpdateTagsS2CPacket {
-    const NAME: &'static str = "update_tags";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x7F), (Configuration, 0x0D)];
 }

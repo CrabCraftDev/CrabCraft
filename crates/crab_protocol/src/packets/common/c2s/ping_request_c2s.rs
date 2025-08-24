@@ -1,15 +1,9 @@
-use crab_macros::ProtocolSerializer;
+use crab_macros::{Packet, ProtocolSerializer};
 
-use crate::packet::Packet;
-use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
+#[packet(name = "ping_request", ids(Play = 0x25, Status = 0x01))]
 pub struct PingRequestC2SPacket {
     pub id: i64,
-}
-
-impl Packet for PingRequestC2SPacket {
-    const NAME: &'static str = "ping_request";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Play, 0x25), (Status, 0x01)];
 }
