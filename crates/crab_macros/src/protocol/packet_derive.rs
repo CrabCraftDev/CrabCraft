@@ -1,19 +1,19 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{DeriveInput, Error, Expr, Result, parse2};
+use syn::{DeriveInput, Result, parse2};
 
-use crate::protocol::args::parse_packet_args;
+use crate::protocol::args::{RootPacketArgs, parse_packet_args};
 
 pub(crate) fn derive_packet_impl(item: TokenStream) -> Result<TokenStream> {
     let input = parse2::<DeriveInput>(item)?;
     let packet_args = parse_packet_args(&input.attrs)?.expect("Packet attribute missing!");
     let name = input.ident;
 
-    let packet_name: Expr = packet_args.name.unwrap();
-    let packet_id: Expr = packet_args.id.unwrap();
-    let state = packet_args
-        .state
-        .ok_or_else(|| Error::new(packet_args.span, "State not provided for packet"))?;
+    let RootPacketArgs {
+        name: packet_name,
+        id: packet_id,
+        state,
+    } = packet_args;
 
     let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 

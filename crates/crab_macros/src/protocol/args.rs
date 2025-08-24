@@ -1,13 +1,12 @@
-use proc_macro2::{Ident, Span};
+use proc_macro2::Ident;
 use syn::parse::{Parse, ParseStream};
 use syn::spanned::Spanned;
 use syn::{Attribute, Error, Expr, Meta, Token, Type, parse2};
 
 pub(crate) struct RootPacketArgs {
-    pub(crate) span: Span,
-    pub(crate) id: Option<Expr>,
-    pub(crate) state: Option<Expr>,
-    pub(crate) name: Option<Expr>,
+    pub(crate) id: Expr,
+    pub(crate) state: Expr,
+    pub(crate) name: Expr,
 }
 
 pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootPacketArgs>> {
@@ -16,27 +15,30 @@ pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootP
             continue;
         }
 
-        let mut res = RootPacketArgs {
-            span: attr.span(),
-            id: None,
-            state: None,
-            name: None,
-        };
+        let mut id = None;
+        let mut state = None;
+        let mut name = None;
 
         attr.parse_nested_meta(|meta| {
             if meta.path.is_ident("id") {
-                res.id = Some(meta.value()?.parse::<Expr>()?);
+                id = Some(meta.value()?.parse::<Expr>()?);
                 Ok(())
             } else if meta.path.is_ident("state") {
-                res.state = Some(meta.value()?.parse::<Expr>()?);
+                state = Some(meta.value()?.parse::<Expr>()?);
                 Ok(())
             } else if meta.path.is_ident("name") {
-                res.name = Some(meta.value()?.parse::<Expr>()?);
+                name = Some(meta.value()?.parse::<Expr>()?);
                 Ok(())
             } else {
                 Err(meta.error("Unrecognized packet argument"))
             }
         })?;
+
+        let res = RootPacketArgs {
+            id: id.ok_or_else(|| Error::new(attr.span(), "Id not provided for packet"))?,
+            state: state.ok_or_else(|| Error::new(attr.span(), "State not provided for packet"))?,
+            name: name.ok_or_else(|| Error::new(attr.span(), "Name not provided for packet"))?,
+        };
 
         return Ok(Some(res));
     }
