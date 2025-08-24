@@ -1,20 +1,14 @@
 use bytes::Bytes;
 
-use crab_macros::ProtocolSerializer;
+use crab_macros::{Packet, ProtocolSerializer};
 
-use crate::packet::Packet;
-use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
+#[packet(name = "cookie_response", ids(Configuration = 0x01, Login = 0x04, Play = 0x14))]
 pub struct CookieResponseC2SPacket {
     pub key: NamespacedKey,
     #[protocol_attribute(bounded = 5120)]
     pub payload: Option<Bytes>,
-}
-
-impl Packet for CookieResponseC2SPacket {
-    const NAME: &'static str = "cookie_response";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x01), (Login, 0x04), (Play, 0x14)];
 }

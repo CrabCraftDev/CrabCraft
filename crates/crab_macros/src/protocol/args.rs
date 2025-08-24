@@ -1,12 +1,20 @@
 use proc_macro2::Ident;
-use syn::parse::{Parse, ParseStream};
 use syn::spanned::Spanned;
 use syn::{Attribute, Error, Expr, Meta, Token, Type, parse2};
+use syn::{
+    LitInt,
+    parse::{Parse, ParseStream},
+};
 
 pub(crate) struct RootPacketArgs {
-    pub(crate) id: Expr,
-    pub(crate) state: Expr,
+    pub(crate) state_id_mapping: StateIdMapping,
     pub(crate) name: Expr,
+}
+
+#[allow(clippy::large_enum_variant)]
+pub(crate) enum StateIdMapping {
+    OneState { id: Expr, state: Expr },
+    ManyStates { ids: Vec<(Ident, LitInt)> },
 }
 
 pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootPacketArgs>> {
@@ -18,10 +26,23 @@ pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootP
         let mut id = None;
         let mut state = None;
         let mut name = None;
+        let mut state_id_mapping = None;
 
         attr.parse_nested_meta(|meta| {
             if meta.path.is_ident("id") {
                 id = Some(meta.value()?.parse::<Expr>()?);
+                Ok(())
+            } else if meta.path.is_ident("ids") {
+                let mut state_id_pairs = Vec::new();
+
+                meta.parse_nested_meta(|meta| {
+                    let state = meta.path.require_ident()?.clone();
+                    let id: LitInt = meta.value()?.parse()?;
+                    state_id_pairs.push((state, id));
+                    Ok(())
+                })?;
+
+                state_id_mapping = Some(state_id_pairs);
                 Ok(())
             } else if meta.path.is_ident("state") {
                 state = Some(meta.value()?.parse::<Expr>()?);
@@ -34,10 +55,17 @@ pub(crate) fn parse_packet_args(attrs: &[Attribute]) -> syn::Result<Option<RootP
             }
         })?;
 
+        let state_id_mapping = match state_id_mapping {
+            Some(state_id_mapping) => StateIdMapping::ManyStates { ids: state_id_mapping },
+            None => StateIdMapping::OneState {
+                id: id.ok_or_else(|| Error::new(attr.span(), "Id not provided for packet"))?,
+                state: state.ok_or_else(|| Error::new(attr.span(), "State not provided for packet"))?,
+            },
+        };
+
         let res = RootPacketArgs {
-            id: id.ok_or_else(|| Error::new(attr.span(), "Id not provided for packet"))?,
-            state: state.ok_or_else(|| Error::new(attr.span(), "State not provided for packet"))?,
             name: name.ok_or_else(|| Error::new(attr.span(), "Name not provided for packet"))?,
+            state_id_mapping,
         };
 
         return Ok(Some(res));

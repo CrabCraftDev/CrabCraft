@@ -1,13 +1,12 @@
 use strum::FromRepr;
 use uuid::Uuid;
 
-use crab_macros::ProtocolSerializer;
+use crab_macros::{Packet, ProtocolSerializer};
 
-use crate::packet::Packet;
-use crate::protocol_state::ProtocolState;
 use crate::protocol_state::ProtocolState::*;
 
-#[derive(ProtocolSerializer, Debug, Clone)]
+#[derive(Packet, ProtocolSerializer, Debug, Clone)]
+#[packet(name = "resource_pack", ids(Configuration = 0x06, Play = 0x30))]
 pub struct ResourcePackResponseC2SPacket {
     pub resource_pack_uuid: Uuid,
     pub result: ResourcePackStatus,
@@ -23,9 +22,4 @@ pub enum ResourcePackStatus {
     InvalidUrl,
     FailedToReload,
     Discarded,
-}
-
-impl Packet for ResourcePackResponseC2SPacket {
-    const NAME: &'static str = "resource_pack";
-    const STATE_IDS: &'static [(ProtocolState, i32)] = &[(Configuration, 0x06), (Play, 0x30)];
 }
