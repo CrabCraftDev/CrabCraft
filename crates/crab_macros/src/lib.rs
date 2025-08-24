@@ -66,28 +66,48 @@ pub fn derive_protocol_serializer(item: TokenStream) -> TokenStream {
     }
 }
 
-/// Procedural macro that is used to derive the `Packet` trait for a struct.
+/// Derive macro to implement the `Packet` trait for a struct.
+/// This macro allows you to attach packet metadata using the `#[packet(...)]` attribute.
 ///
-/// The `Packet` trait requires three associated constants: `ID`, `SIDE`, and `STATE`.
-/// These constants are provided through the `#[packet(id = "...", state = "...")]` attribute on the struct.
-/// The `SIDE` constant is determined based on the name of the struct (whether it contains "S2C" or "C2S").
+/// # Attributes
+/// - `name`: A string literal representing the packet's name (used in the Minecraft codebase).
 ///
-/// The `Packet` trait requires method for serialization and deserialization provided by `ProtocolSerializer`.
-/// So it is recommended to use the `ProtocolSerializer` derive macro for the struct or implement `ProtocolSerializer` trait.
+/// For packets used only in one protocol state, you can use:
+/// - `id`: An integer literal representing the packet ID for a specific protocol state.
+/// - `state`: An expression evaluating to a `ProtocolState` variant.
+///
+/// For packets that have different IDs depending on the protocol state, you can use:
+/// - `ids(...)`: Specify multiple `state = id` pairs.
+///
+/// # Serialization
+/// The `Packet` trait requires methods for serialization and deserialization.
+/// It is recommended to also derive or implement `ProtocolSerializer` for your struct.
 ///
 /// # Examples
 ///
+/// Single-state packet:
 /// ```ignore
 /// use crab_protocol::types::varint::VarInt;
 /// use crab_macros::Packet;
 ///
 /// #[derive(Packet, ProtocolSerializer, Debug, Clone)]
-/// #[packet(id = 0, state = Handshake)]
+/// #[packet(name = "intention", id = 0x00, state = Handshake)]
 /// pub struct HandshakeC2SPacket {
 ///     pub protocol_version: VarInt,
 ///     pub server_address: String,
 ///     pub server_port: u16,
 ///     pub next_state: VarInt,
+/// }
+/// ```
+///
+/// Multi-state packet:
+/// ```ignore
+/// use crab_macros::Packet;
+///
+/// #[derive(Packet, ProtocolSerializer, Debug, Clone)]
+/// #[packet(name = "ping_request", ids(Play = 0x25, Status = 0x01))]
+/// pub struct PingRequestC2SPacket {
+///     pub id: i64,
 /// }
 /// ```
 #[proc_macro_derive(Packet, attributes(packet, protocol_attribute))]
