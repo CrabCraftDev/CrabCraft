@@ -185,6 +185,8 @@ impl McServer {
 
     #[tracing::instrument(name = "Shutdown", skip_all)]
     async fn do_shutdown(&mut self) {
+        let start = std::time::Instant::now();
+
         info!("Stopping server...");
         if self.running {
             warn!("Stopping server while it is still running!");
@@ -193,6 +195,6 @@ impl McServer {
 
         self.world.send(ServerShutdownEvent);
 
-        info!("CrabCraft has stopped! Bye!")
+        info!("CrabCraft has stopped in {:?}! Bye!", start.elapsed());
     }
 }
