@@ -1,7 +1,8 @@
 use crate::anvil::sectors::{SECTOR_SIZE, Sector};
 use crate::error::AnvilError;
-use crate::utils::read_u32;
+use crate::utils::{read_u32, write_u32};
 use std::fs::File;
+use std::io::Write;
 
 /// Represents the header of a region file in the Anvil format.
 /// This header mainly serves to locate chunks within the file.
@@ -36,9 +37,26 @@ impl RegionHeader {
         Ok(header)
     }
 
+    pub fn write<W: Write>(&self, writer: &mut W) -> Result<(), AnvilError> {
+        for sector in &self.locations {
+            write_u32(writer, sector.into_bits())?;
+        }
+
+        for timestamp in &self.timestamps {
+            write_u32(writer, *timestamp)?;
+        }
+
+        Ok(())
+    }
+
     pub fn sector(&self, x: u8, z: u8) -> Sector {
         let index = Self::index(x, z);
         self.locations[index]
+    }
+
+    pub fn set_sector(&mut self, x: u8, z: u8, sector: Sector) {
+        let index = Self::index(x, z);
+        self.locations[index] = sector;
     }
 
     fn index(x: u8, z: u8) -> usize {

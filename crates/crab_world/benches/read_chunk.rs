@@ -9,7 +9,7 @@ pub fn read_chunk(criterion: &mut Criterion) {
     BLOCKS.get_or_init(init_blocks);
     REGISTRY.get_or_init(RegistryManager::default);
 
-    let mut region = RegionFile::load(File::open("./benches/r.0.0.mca").unwrap()).unwrap();
+    let mut region = RegionFile::load(File::open("./tests/data/r.0.0.mca").unwrap()).unwrap();
 
     criterion.bench_with_input(BenchmarkId::new("read_chunk", 1), &1, |b, &_| {
         b.iter(|| {

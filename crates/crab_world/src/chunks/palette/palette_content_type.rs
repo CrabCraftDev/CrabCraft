@@ -37,7 +37,7 @@ impl PaletteContentType {
             PaletteContentType::Biomes => {
                 let registry = REGISTRY.get().unwrap();
                 let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
-                registry.get_length(&biome_registry_namespaced_key).unwrap()
+                registry.get_entry_count(&biome_registry_namespaced_key).unwrap()
             }
             PaletteContentType::Blocks => BLOCKS.get().unwrap().last_state_id as usize,
         };
