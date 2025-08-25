@@ -1,4 +1,4 @@
-use crate::error::WorldError;
+use crate::error::{AnvilError, WorldError};
 use crab_registry::REGISTRY;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::anvil::region::file::RegionFile;
@@ -74,14 +74,14 @@ impl World {
                 self.chunks.insert(key, chunk);
                 Ok(())
             }
-            Err(WorldError::MissingWorldFile { .. }) => {
+            Err(WorldError::MissingWorldFile { .. }) | Err(WorldError::Anvil(AnvilError::ChunkDoesNotExist { .. })) => {
                 warn!("World generator is not implemented in CrabCraft!");
                 warn!("Ensure the required pre-generated world files exist in: worlds/overworld/region/");
 
                 self.chunks.insert(key, Chunk::default());
                 Ok(())
             }
-            Err(err) => Err(err),
+            Err(error) => Err(error),
         }
     }
 
@@ -101,15 +101,9 @@ impl World {
 
     pub fn save_chunk(&self, x: i32, z: i32, chunk: &Chunk) -> Result<(), WorldError> {
         let mut region = self.get_or_load_region_file(x, z)?;
-
-        let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
-        region.write_chunk(local_chunk_x, local_chunk_z, chunk, REGISTRY.get().unwrap())?;
+        region.write_chunk(x, z, chunk, REGISTRY.get().unwrap())?;
 
         Ok(())
-    }
-
-    pub fn unload_chunk(&mut self, x: i32, z: i32) {
-        self.chunks.remove(&Self::get_key(x, z));
     }
 
     fn get_biome(biome: &str) -> u64 {
@@ -136,7 +130,7 @@ impl World {
         (block_x >> CHUNK_SIZE_SHIFT, block_z >> CHUNK_SIZE_SHIFT)
     }
 
-    fn chunk_coordinates_inside_region(x: i32, z: i32) -> (u8, u8) {
+    pub fn chunk_coordinates_inside_region(x: i32, z: i32) -> (u8, u8) {
         ((x % REGION_SIZE_IN_CHUNKS) as u8, (z % REGION_SIZE_IN_CHUNKS) as u8)
     }
 }

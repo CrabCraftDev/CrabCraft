@@ -66,7 +66,7 @@ impl BitStorage {
 
     pub fn set(&mut self, index: usize, value: i64) -> Result<(), WorldError> {
         if index >= self.amount_of_entries {
-            return Err(WorldError::IndexOutsideOfBounds(index, self.amount_of_entries));
+            return Err(WorldError::BitStorageSetOutOfRange(index, self.amount_of_entries));
         }
 
         let mask = self.mask();

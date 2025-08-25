@@ -50,12 +50,12 @@ impl AnvilCompression {
                 compressed.extend_from_slice(data);
             }
             AnvilCompression::Gzip => {
-                let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+                let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
                 encoder.write_all(data)?;
                 compressed.extend(encoder.finish()?);
             }
             AnvilCompression::Zlib => {
-                let mut encoder = flate2::write::ZlibEncoder::new(Vec::new(), flate2::Compression::default());
+                let mut encoder = flate2::write::ZlibEncoder::new(Vec::new(), flate2::Compression::fast());
                 encoder.write_all(data)?;
                 compressed.extend(encoder.finish()?);
             }

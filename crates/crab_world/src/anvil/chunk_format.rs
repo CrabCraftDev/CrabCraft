@@ -15,6 +15,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::str::FromStr;
 
+pub const ANVIL_DATA_VERSION: i32 = 4435;
+
+/// Represents a Minecraft chunk in the Anvil file format.
+/// https://minecraft.wiki/w/Chunk_format
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AnvilChunk {
     #[serde(rename = "DataVersion")]
@@ -26,7 +30,7 @@ pub struct AnvilChunk {
     #[serde(rename = "yPos")]
     pub y_pos: i32,
     #[serde(rename = "Status")]
-    pub status: String,
+    pub status: NamespacedKey,
     #[serde(rename = "LastUpdate")]
     pub last_update: i64,
     sections: Vec<RawSection>,
@@ -83,7 +87,7 @@ impl AnvilChunk {
         z_pos: i32,
         y_pos: i32,
         data_version: i32,
-        status: String,
+        status: NamespacedKey,
         last_update: i64,
     ) -> Result<Self, AnvilError> {
         let sections = chunk

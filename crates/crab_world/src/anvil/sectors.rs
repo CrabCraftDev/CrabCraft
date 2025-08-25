@@ -28,6 +28,8 @@ impl Sector {
 /// Each chunk can occupy multiple contiguous sectors.
 #[derive(Debug)]
 pub struct SectorAllocator {
+    // It is a bit counterintuitive to use a BitVec here,
+    // but for our use case it is fast and simpler than a Segment Tree
     used_sectors: BitVec,
 }
 
@@ -40,6 +42,44 @@ impl SectorAllocator {
 
     pub fn force_set(&mut self, index: usize) {
         self.used_sectors.set(index, true);
+    }
+
+    pub fn allocate(&mut self, size: usize) -> Sector {
+        let total_sectors = self.used_sectors.len();
+
+        let mut start = 0;
+        let mut consecutive_free = 0;
+
+        for i in 0..total_sectors {
+            if !self.used_sectors[i] {
+                if consecutive_free == 0 {
+                    start = i;
+                }
+                consecutive_free += 1;
+
+                if consecutive_free == size {
+                    for j in start..start + size {
+                        self.used_sectors.set(j, true);
+                    }
+                    return Sector::new().with_size(size as u8).with_offset(start as u32);
+                }
+            } else {
+                consecutive_free = 0;
+            }
+        }
+
+        let sector = Sector::new().with_size(size as u8).with_offset(total_sectors as u32);
+        self.used_sectors.extend(std::iter::repeat_n(true, size));
+        sector
+    }
+
+    pub fn free(&mut self, sector: Sector) {
+        let offset = sector.offset() as usize;
+        for i in offset..(offset + sector.size() as usize) {
+            if i < self.used_sectors.len() {
+                self.used_sectors.set(i, false);
+            }
+        }
     }
 }
 
@@ -90,5 +130,42 @@ mod tests {
     fn sector_allocator_force_set_panics_on_out_of_bounds() {
         let mut allocator = SectorAllocator::new(2);
         allocator.force_set(2);
+    }
+
+    #[test]
+    fn allocate_multiple_contiguous() {
+        let mut alloc = SectorAllocator::new(16);
+        let a = alloc.allocate(3);
+        let b = alloc.allocate(2);
+        assert_eq!(a.offset(), 0);
+        assert_eq!(a.size(), 3);
+        assert_eq!(b.offset(), 3);
+        assert_eq!(b.size(), 2);
+    }
+
+    #[test]
+    fn free_allows_reuse() {
+        let mut alloc = SectorAllocator::new(8);
+        let a = alloc.allocate(3);
+        let _b = alloc.allocate(3);
+        // free middle of first allocation (simulate freeing part)
+        alloc.free(Sector::new().with_size(1).with_offset(a.offset() + 1));
+        // next allocate(1) should reuse the freed slot at offset a.offset()+1
+        let c = alloc.allocate(1);
+        assert_eq!(c.offset(), a.offset() + 1);
+        assert_eq!(c.size(), 1);
+        // free entire first allocation and ensure space can be reclaimed
+        alloc.free(a);
+        let d = alloc.allocate(3);
+        assert_eq!(d.offset(), a.offset());
+    }
+
+    #[test]
+    fn force_set_blocks_allocation() {
+        let mut alloc = SectorAllocator::new(4);
+        alloc.force_set(0);
+        // first available should be at 1
+        let s = alloc.allocate(1);
+        assert_eq!(s.offset(), 1);
     }
 }
