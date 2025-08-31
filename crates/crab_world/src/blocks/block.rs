@@ -22,16 +22,7 @@ impl Block {
             .namespaced_key_by_state_id(self.0)
     }
 
-    pub fn properties(&self) -> Result<HashMap<&'static str, String>, BlockError> {
-        let namespaced_key = self.namespaced_key()?;
-        let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
-        let local_state = self.0 - block_information.starting_state_id;
-        let properties = (block_information.properties)(local_state)?;
-
-        Ok(properties)
-    }
-
-    pub fn properties2(&self) -> Result<(&NamespacedKey, HashMap<&'static str, String>), BlockError> {
+    pub fn properties(&self) -> Result<(&NamespacedKey, HashMap<&'static str, String>), BlockError> {
         let namespaced_key = self.namespaced_key()?;
         let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
         let local_state = self.0 - block_information.starting_state_id;
@@ -65,13 +56,13 @@ impl Block {
     }
 
     pub fn property<P: BlockData>(&self) -> Result<P::Value, BlockError> {
-        P::from_properties(self.properties()?).map(P::get)
+        P::from_properties(self.properties()?.1).map(P::get)
     }
 
     pub fn apply_property<P: BlockData>(&mut self, property: &P::Value) -> Result<(), BlockError> {
-        let mut properties = self.properties()?;
+        let (key, mut properties) = self.properties()?;
         P::apply(property, &mut properties)?;
-        let new_block = Self::from_properties(self.namespaced_key()?, &properties)?;
+        let new_block = Self::from_properties(key, &properties)?;
         self.0 = new_block.0;
         Ok(())
     }

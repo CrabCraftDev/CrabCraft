@@ -9,8 +9,7 @@ fn get_block_struct_information() {
     BLOCKS.get_or_init(init_blocks);
 
     let block = GrassBlock::default_state_id().unwrap();
-    let properties = block.properties().unwrap();
-    let id = block.namespaced_key().unwrap();
+    let (id, properties) = block.properties().unwrap();
 
     let mut expected_properties = HashMap::new();
     expected_properties.insert("snowy", "false".to_string());
