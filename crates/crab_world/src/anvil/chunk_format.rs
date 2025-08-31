@@ -214,8 +214,8 @@ impl RawSection {
         let block_palette = block_palette
             .into_iter()
             .map(|id| {
-                let b = Block(id as u16);
-                let (key, props) = b.properties2()?;
+                let block = Block(id as u16);
+                let (key, props) = block.properties()?;
                 Ok(BlockStatePaletteEntry {
                     name: key.to_string(),
                     properties: Some(props.into_iter().map(|(k, v)| (k.to_string(), v)).collect()),
