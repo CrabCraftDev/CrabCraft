@@ -41,7 +41,7 @@ criterion = { version = "0.5.1", features = ["html_reports"] }
 
 # Tracing
 tracing = { version = "0.1.41", features = ["attributes"] }
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 tracing-appender = "0.2.3"
 
 # Code generation, macros etc.
