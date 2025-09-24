@@ -164,27 +164,22 @@ impl NetworkConnection {
     pub async fn keep_connection_alive(&self) {
         loop {
             sleep(KEEPALIVE_INTERVAL).await;
+
+            let mut keep_alive_state = self.keep_alive_state.lock();
             let state = self.state();
-            if state != ProtocolState::Configuration && state != ProtocolState::Play {
+
+            if keep_alive_state.keep_alive_pending
+                || (state != ProtocolState::Configuration && state != ProtocolState::Play)
+            {
+                self.disconnect_with_reason(PlayerQuitReason::TimedOut);
                 continue;
             }
 
-            let current_time;
-            {
-                let mut keep_alive_state = self.keep_alive_state.lock();
-
-                if keep_alive_state.keep_alive_pending {
-                    self.disconnect("Timeout!".into());
-                    continue;
-                }
-
-                current_time = Local::now().timestamp_millis();
-                keep_alive_state.keep_alive_pending = true;
-                keep_alive_state.last_keep_alive_time = current_time;
-            }
+            keep_alive_state.keep_alive_pending = true;
+            keep_alive_state.last_keep_alive_time = Local::now().timestamp_millis();
 
             self.send_packet(KeepAliveS2CPacket {
-                keep_alive_id: current_time,
+                keep_alive_id: keep_alive_state.last_keep_alive_time,
             });
         }
     }
@@ -233,31 +228,35 @@ impl NetworkConnection {
     }
 
     pub fn disconnect(&self, message: Text) {
-        self.disconnect_with_reason(message.clone(), PlayerQuitReason::Kicked(message.into()));
+        self.disconnect_with_reason(PlayerQuitReason::Kicked(message.into()));
     }
 
-    pub fn disconnect_with_reason(&self, message: Text, reason_type: PlayerQuitReason) {
+    pub fn disconnect_with_reason(&self, reason_type: PlayerQuitReason) {
         if self.is_closed() {
             warn!("Called disconnect() on a closed connection");
             return;
         }
         let state = self.state();
 
+        match state {
+            ProtocolState::Configuration | ProtocolState::Play => {
+                self.send_packet(DisconnectS2CPacket {
+                    reason: reason_type.to_string().into(),
+                });
+            }
+            ProtocolState::Login => {
+                self.send_packet(LoginDisconnectS2CPacket {
+                    reason: reason_type.to_string().into(),
+                });
+            }
+            _ => {}
+        }
+
         // Don't send event if there is no entity spawned in ECS
         if self.entity_id().is_some() {
             self.send_target_event(PlayerQuitEvent::new(reason_type)).unwrap();
         } else if state.should_entity_be_spawned() {
-            panic!("Entity is not spawned in {:?} protocol state", self.state());
-        }
-
-        match state {
-            ProtocolState::Configuration | ProtocolState::Play => {
-                self.send_packet(DisconnectS2CPacket { reason: message });
-            }
-            ProtocolState::Login => {
-                self.send_packet(LoginDisconnectS2CPacket { reason: message });
-            }
-            _ => {}
+            panic!("Entity is not spawned in {:?} protocol state", state);
         }
 
         self.close();
