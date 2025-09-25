@@ -92,7 +92,7 @@ impl NetworkConnection {
         let result = select! {
              result = reader => result,
              result = writer => result,
-             _ = self.keep_connection_alive() => Ok(()),
+             _ = self.keep_alive() => Ok(()),
         };
 
         if let Err(err) = result {
@@ -161,21 +161,17 @@ impl NetworkConnection {
         }
     }
 
-    pub async fn keep_connection_alive(&self) {
+    pub async fn keep_alive(&self) {
         loop {
             sleep(KEEPALIVE_INTERVAL).await;
 
             let mut keep_alive_state = self.keep_alive_state.lock();
-            let state = self.state();
-
-            if keep_alive_state.keep_alive_pending
-                || (state != ProtocolState::Configuration && state != ProtocolState::Play)
-            {
+            if keep_alive_state.pending {
                 self.disconnect_with_reason(PlayerQuitReason::TimedOut);
                 continue;
             }
 
-            keep_alive_state.keep_alive_pending = true;
+            keep_alive_state.pending = true;
             keep_alive_state.last_keep_alive_time = Local::now().timestamp_millis();
 
             self.send_packet(KeepAliveS2CPacket {
@@ -276,6 +272,11 @@ impl NetworkConnection {
 
     pub fn set_state(&self, new_state: ProtocolState) {
         *self.state.write().unwrap() = new_state;
+        if new_state == ProtocolState::Configuration {
+            self.send_packet(KeepAliveS2CPacket {
+                keep_alive_id: self.keep_alive_state.lock().last_keep_alive_time,
+            });
+        }
     }
 
     pub fn entity_id(&self) -> Option<EntityId> {
