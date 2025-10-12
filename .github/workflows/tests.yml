@@ -16,6 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt, clippy
       - name: Run Clippy
         run: cargo clippy --all-targets --all-features --all
       - name: Run formatter
