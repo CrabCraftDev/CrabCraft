@@ -1,5 +1,6 @@
 use crate::error::{AnvilError, WorldError};
 use crab_registry::REGISTRY;
+use crab_registry::error::RegistryError;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::anvil::region::file::RegionFile;
 use crab_world::chunks::chunk::Chunk;
@@ -93,7 +94,7 @@ impl World {
             local_chunk_x,
             local_chunk_z,
             Self::get_biome,
-            REGISTRY.get().expect("TODO: Throw CrabRegistry error"),
+            REGISTRY.get().ok_or(RegistryError::RegistryNotInitialized)?,
         )?;
 
         Ok(chunk)

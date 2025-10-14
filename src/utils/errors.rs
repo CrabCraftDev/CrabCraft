@@ -2,6 +2,7 @@ use crate::GITHUB_ISSUES_URL;
 use crab_config::error::ConfigError;
 use crab_nbt::error::Error as CrabNbtError;
 use crab_protocol::error::ProtocolError;
+use crab_registry::error::RegistryError;
 use crab_world::error::{AnvilError, WorldError};
 use kanal::{OneshotReceiveError, SendError};
 use std::{any::Any, io};
@@ -24,14 +25,13 @@ pub enum Error {
     Anvil(#[from] AnvilError),
     #[error(transparent)]
     Config(#[from] ConfigError),
+    #[error(transparent)]
+    Registry(#[from] RegistryError),
 
     #[error(transparent)]
     SendChannel(#[from] SendError),
     #[error(transparent)]
     OneshotReceive(#[from] OneshotReceiveError),
-
-    #[error("Failed to load registry static")]
-    FailedToLoadRegistry,
 
     #[error("Invalid async event type")]
     InvalidAsyncEventType,
