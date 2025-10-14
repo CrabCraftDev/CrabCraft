@@ -3,6 +3,7 @@ use thiserror::Error;
 
 use crab_nbt::error::Error as NbtError;
 use crab_protocol::error::ProtocolError;
+use crab_registry::error::RegistryError;
 use crab_text::error::TextError;
 use crab_text::utils::namespaced_key::NamespacedKey;
 
@@ -51,6 +52,8 @@ pub enum WorldError {
     Block(#[from] BlockError),
     #[error(transparent)]
     Anvil(#[from] AnvilError),
+    #[error(transparent)]
+    Registry(#[from] RegistryError),
 }
 
 #[derive(Debug, Error)]

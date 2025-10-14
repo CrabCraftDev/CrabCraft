@@ -6,6 +6,8 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::OnceLock;
 
+pub mod error;
+
 pub static REGISTRY: OnceLock<RegistryManager> = OnceLock::new();
 
 /// RegistryManager is a struct that holds all dynamic registries like biomes.
