@@ -10,7 +10,7 @@ pub fn count_blocks(criterion: &mut Criterion) {
         BLOCKS.get_or_init(init_blocks);
         REGISTRY.get_or_init(RegistryManager::default);
 
-        let mut region = RegionFile::load(File::open("./benches/r.0.0.mca").unwrap()).unwrap();
+        let mut region = RegionFile::load(File::open("./tests/data/r.0.0.mca").unwrap()).unwrap();
         let mut chunk = region.read_chunk(0, 0, |_| 0, REGISTRY.get().unwrap()).unwrap();
 
         b.iter(|| {
