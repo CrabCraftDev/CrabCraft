@@ -18,12 +18,12 @@ pub struct ChunkDataAndUpdateLightS2CPacket {
     pub chunk_z: i32,
     pub heightmaps: HashMap<VarInt, Vec<i64>>,
     pub data: Bytes,
-    pub block_entities: Vec<BlockEntity>,
+    pub block_entities: Vec<ChunkDataBlockEntity>,
     pub light_data: LightData,
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct BlockEntity {
+pub struct ChunkDataBlockEntity {
     pub relative_x: i8,
     pub relative_z: i8,
     pub y: i16,
@@ -31,7 +31,7 @@ pub struct BlockEntity {
     pub data: Nbt,
 }
 
-impl ProtocolSerializer for BlockEntity {
+impl ProtocolSerializer for ChunkDataBlockEntity {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
         buf.put_i8(((self.relative_x & 15) << 4) | (self.relative_z & 0x0F));
         buf.put_i16(self.y);
@@ -44,7 +44,7 @@ impl ProtocolSerializer for BlockEntity {
         let packed_xz = buf.get_i8();
         let x = packed_xz >> 4;
         let z = packed_xz & 0x0F;
-        Ok(BlockEntity {
+        Ok(ChunkDataBlockEntity {
             relative_x: x,
             relative_z: z,
             y: buf.get_i16(),
