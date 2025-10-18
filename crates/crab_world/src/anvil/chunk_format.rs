@@ -8,8 +8,8 @@ use crate::chunks::section::ChunkSection;
 use crate::error::AnvilError;
 use crate::error::AnvilError::BlockEntityDoesNotExist;
 use crab_nbt::NbtCompound;
-use crab_protocol::packets::play::BlockEntity;
 use crab_registry::RegistryManager;
+use crab_protocol::packets::play::ChunkDataBlockEntity;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -142,7 +142,7 @@ impl AnvilChunk {
     fn load_block_entities(
         block_entities: Vec<AnvilBlockEntity>,
         registry: &RegistryManager,
-    ) -> Result<Vec<BlockEntity>, AnvilError> {
+    ) -> Result<Vec<ChunkDataBlockEntity>, AnvilError> {
         block_entities
             .into_iter()
             .map(|entity| {
@@ -151,7 +151,7 @@ impl AnvilChunk {
                     .get_by_left(&entity.id)
                     .ok_or(BlockEntityDoesNotExist(entity.id))?;
 
-                Ok(BlockEntity {
+                Ok(ChunkDataBlockEntity {
                     relative_x: (entity.x % 16) as i8,
                     relative_z: (entity.z % 16) as i8,
                     y: entity.y as i16,
