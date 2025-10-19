@@ -6,7 +6,7 @@ use crate::chunks::section::{CHUNK_SIZE, ChunkSection};
 use crate::error::WorldError;
 use bytes::BytesMut;
 use crab_nbt::NbtTag;
-use crab_protocol::packets::play::BlockEntity;
+use crab_protocol::packets::play::ChunkDataBlockEntity;
 
 /// The number of chunk sections that fit in the standard overworld height (384 blocks)
 pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
@@ -17,7 +17,7 @@ pub const CHUNK_SECTIONS_PER_WORLD_HEIGHT: usize = 24;
 #[derive(Debug, Clone)]
 pub struct Chunk {
     pub sections: Vec<ChunkSection>,
-    pub block_entities: Vec<BlockEntity>,
+    pub block_entities: Vec<ChunkDataBlockEntity>,
 }
 
 impl Chunk {

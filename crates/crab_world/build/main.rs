@@ -41,12 +41,14 @@ pub fn generate() -> TokenStream {
         let block_name = &block.name;
 
         blocks_initialization.push(quote! {
-            blocks.add_block(#states_amount, &#name::namespaced_key(), BlockInformation {
+            blocks.register_multiple(#name::namespaced_key(), BlockInformation {
                 from_properties: #name::from_properties,
                 properties: #name::properties,
-                starting_state_id: 0,
-                default_state_id: #default_state_offset
-            }).unwrap();
+                starting_state_id: i,
+                default_state_id: #default_state_offset + i
+            }, #states_amount as usize);
+
+            i += #states_amount;
         });
 
         states_combinations_amounts.reverse();
@@ -98,12 +100,17 @@ pub fn generate() -> TokenStream {
     quote! {
         use crab_text::utils::namespaced_key::NamespacedKey;
         use std::collections::HashMap;
-        use crab_world::blocks::block_registry::BlockInformation;
+        use crab_world::blocks::block_information::BlockInformation;
+        use crab_registry::{registry::MultiIdRegistry, Registrable, registry::RootRegistry, error::RegistryError};
 
-        pub fn init_blocks() -> BlockRegistry {
-            let mut blocks = BlockRegistry::default();
+        #[allow(unused_assignments, clippy::identity_op)]
+        pub fn populate_blocks(root_registry: &mut RootRegistry) -> Result<(), RegistryError> {
+            let mut i = 0;
+            let mut blocks = MultiIdRegistry::<BlockInformation>::default();
             #(#blocks_initialization)*
-            blocks
+            root_registry.register_registry(BlockInformation::REGISTRY, blocks);
+
+            Ok(())
         }
 
         #(#blocks)*

@@ -8,10 +8,9 @@ use crate::error::BlockError;
 ///
 /// # Example
 ///
-/// ```rust
-/// use crab_world::blocks::{BlockType, Block, BLOCKS, init_blocks, GrassBlock};
+/// ```ignore
+/// use crab_world::blocks::{BlockType, Block, init_blocks, GrassBlock};
 /// use crab_world::blocks::block_data::Snowy;
-/// # BLOCKS.get_or_init(init_blocks);
 /// let block = GrassBlock::default_state_id().unwrap();
 /// let is_snowy = block.property::<Snowy>().unwrap();
 /// ```

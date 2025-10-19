@@ -1,6 +1,4 @@
 use crate::error::{AnvilError, WorldError};
-use crab_registry::REGISTRY;
-use crab_registry::error::RegistryError;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::anvil::region::file::RegionFile;
 use crab_world::chunks::chunk::Chunk;
@@ -9,7 +7,6 @@ use dashmap::DashMap;
 use dashmap::mapref::one::{Ref, RefMut};
 use nohash_hasher::BuildNoHashHasher;
 use std::path::PathBuf;
-use std::str::FromStr;
 use std::sync::Arc;
 use tracing::warn;
 
@@ -90,30 +87,16 @@ impl World {
         let mut region = self.get_or_load_region_file(x, z)?;
 
         let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
-        let chunk = region.read_chunk(
-            local_chunk_x,
-            local_chunk_z,
-            Self::get_biome,
-            REGISTRY.get().ok_or(RegistryError::RegistryNotInitialized)?,
-        )?;
+        let chunk = region.read_chunk(local_chunk_x, local_chunk_z)?;
 
         Ok(chunk)
     }
 
     pub fn save_chunk(&self, x: i32, z: i32, chunk: &Chunk) -> Result<(), WorldError> {
         let mut region = self.get_or_load_region_file(x, z)?;
-        region.write_chunk(x, z, chunk, REGISTRY.get().unwrap())?;
+        region.write_chunk(x, z, chunk)?;
 
         Ok(())
-    }
-
-    fn get_biome(biome: &str) -> u64 {
-        let registry = REGISTRY.get().unwrap();
-        let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
-
-        registry
-            .get_numeric_id(&biome_registry_namespaced_key, &NamespacedKey::from_str(biome).unwrap())
-            .expect("Invalid biome id") as u64
     }
 
     // FIXME: Create struct ChunkCoordinates and move these methods there (#255)

@@ -1,9 +1,10 @@
-use crate::blocks::BLOCKS;
+use crate::blocks::block_information::BlockInformation;
 use crate::chunks::palette::paletted_storage::calculate_bits_per_entry;
 use crate::chunks::section::AMOUNT_OF_BIOMES_IN_CHUNK_SECTION;
 use crate::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use crab_registry::REGISTRY;
-use crab_text::utils::namespaced_key::NamespacedKey;
+use crab_registry::minecraft::Biome;
+use crab_registry::registry::RegistryBase;
 
 #[derive(Clone, Debug, Copy, PartialEq)]
 pub enum PaletteContentType {
@@ -33,13 +34,10 @@ impl PaletteContentType {
 
     /// Returns the number of bits necessary to fit all possible values for given type of content
     pub fn direct(&self) -> u8 {
+        let registry = REGISTRY.load();
         let value = match self {
-            PaletteContentType::Biomes => {
-                let registry = REGISTRY.get().unwrap();
-                let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
-                registry.get_entry_count(&biome_registry_namespaced_key).unwrap()
-            }
-            PaletteContentType::Blocks => BLOCKS.get().unwrap().last_state_id as usize,
+            PaletteContentType::Biomes => registry.registry_by_type::<Biome>().len(),
+            PaletteContentType::Blocks => registry.registry_by_type::<BlockInformation>().len(),
         };
         calculate_bits_per_entry(value)
     }

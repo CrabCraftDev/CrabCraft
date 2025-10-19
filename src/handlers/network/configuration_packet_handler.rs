@@ -28,6 +28,7 @@ use evenio::{
     event::{Receiver, Sender},
 };
 use std::collections::HashMap;
+use std::str::FromStr;
 
 pub fn configuration_packets(
     receiver: Receiver<PacketEvent, (EntityId, &NetworkConnection)>,
@@ -112,10 +113,16 @@ pub fn configuration_packets(
         );
         connection.send_packet(UpdateTagsS2CPacket { tags });
 
-        let registry_data = &REGISTRY.get().unwrap().data;
-        for (registry_name, values) in registry_data.iter() {
+        // FIXME: Verify the minimal set of registries the client actually needs
+        //       I don't think that sending all registries with namespace minecraft is a good idea
+        let registry_data = &REGISTRY.load();
+        for (registry_name, values) in registry_data.all_registries() {
+            if !registry_name.starts_with("minecraft:") {
+                continue;
+            }
+
             let data_entries = values
-                .iter()
+                .keys()
                 .map(|value| RegistryDataEntry {
                     id: value.clone(),
                     data: None,
@@ -123,7 +130,7 @@ pub fn configuration_packets(
                 .collect();
 
             connection.send_packet(RegistryDataS2CPacket {
-                registry_id: registry_name.clone(),
+                registry_id: NamespacedKey::from_str(registry_name).unwrap(),
                 entries: data_entries,
             });
         }

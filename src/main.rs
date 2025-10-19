@@ -1,9 +1,8 @@
 use chrono::Local;
 use crab_craft::config::manager::ConfigManager;
 use crab_craft::utils::{errors::print_error_report_instructions, log};
-use crab_registry::{REGISTRY, RegistryManager};
-use crab_world::blocks::init_blocks;
-use crab_world::blocks::{Air, BLOCKS, BlockType, CaveAir, VoidAir};
+use crab_registry::REGISTRY;
+use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir};
 use std::process::exit;
 use std::{backtrace::Backtrace, panic, thread};
 use tracing::{error, info, info_span};
@@ -32,8 +31,8 @@ async fn main() {
         exit(1);
     }
 
-    REGISTRY.get_or_init(RegistryManager::default);
-    BLOCKS.get_or_init(init_blocks);
+    REGISTRY.load();
+
     WORLDS_STORAGE.init_dimension(OVERWORLD_IDENTIFIER.clone(), -64);
 
     assert!(CaveAir::default_state_id().unwrap().is_air());

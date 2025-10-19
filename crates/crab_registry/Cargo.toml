@@ -1,5 +1,6 @@
 [package]
 name = "crab_registry"
+description = "A central, type-safe, data-driven registry architecture for CrabCraft inspired by Minecraft's registry model."
 version.workspace = true
 edition.workspace = true
 
@@ -7,7 +8,10 @@ edition.workspace = true
 thiserror.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+linkme.workspace = true
 include_dir = "0.7.4"
-bimap = "0.6.3"
+ahash = "0.8.12"
+arc-swap = "1.7.1"
+ordermap = "1.0.0"
 
 crab_text = { path = "../../crates/crab_text" }

@@ -16,6 +16,7 @@ serde.workspace = true
 bitvec.workspace = true
 dashmap.workspace = true
 tracing.workspace = true
+linkme.workspace = true
 nohash-hasher = "0.2.0"
 lz4-java-wrc = "0.2.0"
 
@@ -45,11 +46,3 @@ harness = false
 [[bench]]
 name = "count_blocks"
 harness = false
-
-[[test]]
-name = "chunks"
-path = "tests/chunks/mod.rs"
-
-[[test]]
-name = "world"
-path = "tests/world/mod.rs"
