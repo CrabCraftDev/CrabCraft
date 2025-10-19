@@ -1,6 +1,6 @@
 use crate::error::{AnvilError, WorldError};
 use crab_registry::REGISTRY;
-use crab_registry::error::RegistryError;
+use crab_registry::minecraft::Biome;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::anvil::region::file::RegionFile;
 use crab_world::chunks::chunk::Chunk;
@@ -89,30 +89,27 @@ impl World {
     fn load_chunk_from_anvil(&self, x: i32, z: i32) -> Result<Chunk, WorldError> {
         let mut region = self.get_or_load_region_file(x, z)?;
 
+        // todo:map_err(RegistryError::RegistryNotInitialized)?
         let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
-        let chunk = region.read_chunk(
-            local_chunk_x,
-            local_chunk_z,
-            Self::get_biome,
-            REGISTRY.get().ok_or(RegistryError::RegistryNotInitialized)?,
-        )?;
+        let chunk = region.read_chunk(local_chunk_x, local_chunk_z, Self::get_biome)?;
 
         Ok(chunk)
     }
 
     pub fn save_chunk(&self, x: i32, z: i32, chunk: &Chunk) -> Result<(), WorldError> {
         let mut region = self.get_or_load_region_file(x, z)?;
-        region.write_chunk(x, z, chunk, REGISTRY.get().unwrap())?;
+        // todo: error
+        region.write_chunk(x, z, chunk)?;
 
         Ok(())
     }
 
+    // FIXME: Remove this, there is no need to pass it to 20 methods
     fn get_biome(biome: &str) -> u64 {
-        let registry = REGISTRY.get().unwrap();
-        let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
-
+        let registry = REGISTRY.load();
+        let registry = registry.get_registry(Biome::REGISTRY).unwrap();
         registry
-            .get_numeric_id(&biome_registry_namespaced_key, &NamespacedKey::from_str(biome).unwrap())
+            .key_to_id(&NamespacedKey::from_str(biome).unwrap())
             .expect("Invalid biome id") as u64
     }
 

@@ -28,6 +28,7 @@ use evenio::{
     event::{Receiver, Sender},
 };
 use std::collections::HashMap;
+use std::str::FromStr;
 
 pub fn configuration_packets(
     receiver: Receiver<PacketEvent, (EntityId, &NetworkConnection)>,
@@ -112,9 +113,15 @@ pub fn configuration_packets(
         );
         connection.send_packet(UpdateTagsS2CPacket { tags });
 
-        let registry_data = &REGISTRY.get().unwrap().data;
-        for (registry_name, values) in registry_data.iter() {
+        // todo: check what datapacks are sent in notchian
+        let registry_data = &REGISTRY.load();
+        for (registry_name, values) in registry_data.get_all_registries() {
+            if !registry_name.starts_with("minecraft:") {
+                continue;
+            }
+
             let data_entries = values
+                .ids()
                 .iter()
                 .map(|value| RegistryDataEntry {
                     id: value.clone(),
@@ -123,7 +130,7 @@ pub fn configuration_packets(
                 .collect();
 
             connection.send_packet(RegistryDataS2CPacket {
-                registry_id: registry_name.clone(),
+                registry_id: NamespacedKey::from_str(registry_name).unwrap(),
                 entries: data_entries,
             });
         }

@@ -1,7 +1,13 @@
 use crate::blocks::Block;
 use crate::error::BlockError;
-use crab_text::utils::namespaced_key::NamespacedKey;
-use std::collections::{BTreeMap, HashMap};
+use crab_registry::registry_key::RegistryKey;
+use std::collections::HashMap;
+
+// todo: maybe new arc
+// pub fn get_block_registry() -> &'static Registry<BlockInformation> {
+//     let registry = REGISTRY.load();
+//     registry.get_registry(BlockInformation::REGISTRY).unwrap()
+// }
 
 #[derive(Debug, Clone)]
 pub struct BlockInformation {
@@ -11,48 +17,6 @@ pub struct BlockInformation {
     pub default_state_id: u16,
 }
 
-#[derive(Debug, Default, Clone)]
-pub struct BlockRegistry {
-    pub last_state_id: u16,
-    pub(crate) block_information_by_key: HashMap<NamespacedKey, BlockInformation>,
-    pub(crate) by_state_id: BTreeMap<u16, NamespacedKey>,
-}
-
-impl BlockRegistry {
-    pub fn add_block(
-        &mut self,
-        states_amount: u16,
-        namespaced_key: &NamespacedKey,
-        mut information: BlockInformation,
-    ) -> Result<(), BlockError> {
-        if self.block_information_by_key.contains_key(namespaced_key) {
-            return Err(BlockError::DuplicateBlock(namespaced_key.clone()));
-        }
-
-        information.starting_state_id = self.last_state_id;
-        information.default_state_id += information.starting_state_id;
-        self.block_information_by_key
-            .insert(namespaced_key.clone(), information);
-        self.by_state_id.insert(self.last_state_id, namespaced_key.clone());
-        self.last_state_id += states_amount;
-
-        Ok(())
-    }
-
-    pub fn namespaced_key_by_state_id(&self, key: u16) -> Result<&NamespacedKey, BlockError> {
-        if key > self.last_state_id {
-            return Err(BlockError::BlockIdDoesNotExist(key));
-        }
-        let block_id = self.by_state_id.range(..=key).next_back().map(|(_, v)| v);
-        block_id.ok_or(BlockError::BlockIdDoesNotExist(key))
-    }
-
-    pub fn block_information_by_namespaced_key(
-        &self,
-        namespaced_key: &NamespacedKey,
-    ) -> Result<&BlockInformation, BlockError> {
-        self.block_information_by_key
-            .get(namespaced_key)
-            .ok_or(BlockError::BlockDoesNotExist(namespaced_key.clone()))
-    }
+impl BlockInformation {
+    pub const REGISTRY: RegistryKey<Self> = RegistryKey::new("crabcraft:block_state");
 }

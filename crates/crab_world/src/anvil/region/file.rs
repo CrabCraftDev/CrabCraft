@@ -10,7 +10,8 @@ use crate::utils::{MEGABYTE, read_u32};
 use crate::world::World;
 use crab_nbt::serde::de::from_bytes;
 use crab_nbt::serde::ser::to_bytes;
-use crab_registry::RegistryManager;
+use crab_registry::REGISTRY;
+use crab_registry::minecraft::Biome;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom, Write};
@@ -32,13 +33,7 @@ pub struct RegionFile {
 }
 
 impl RegionFile {
-    pub fn read_chunk(
-        &mut self,
-        x: u8,
-        z: u8,
-        get_biome: impl Fn(&str) -> u64,
-        registry: &RegistryManager,
-    ) -> Result<Chunk, AnvilError> {
+    pub fn read_chunk(&mut self, x: u8, z: u8, get_biome: impl Fn(&str) -> u64) -> Result<Chunk, AnvilError> {
         let sector = self.header.sector(x, z);
         if !sector.exists() {
             return Err(ChunkDoesNotExist { x, z });
@@ -57,29 +52,25 @@ impl RegionFile {
         let mut decompressed = AnvilCompression::decompress(compressed_content)?;
 
         let anvil_chunk = from_bytes::<chunk_format::AnvilChunk>(&mut decompressed)?;
-        let chunk = anvil_chunk.to_chunk(get_biome, registry)?;
+        // println!("{:?}", anvil_chunk);
+        let chunk = anvil_chunk.to_chunk(get_biome)?;
         Ok(chunk)
     }
 
-    pub fn write_chunk(&mut self, x: i32, z: i32, chunk: &Chunk, registry: &RegistryManager) -> Result<(), AnvilError> {
+    pub fn write_chunk(&mut self, x: i32, z: i32, chunk: &Chunk) -> Result<(), AnvilError> {
         let (local_chunk_x, local_chunk_z) = World::chunk_coordinates_inside_region(x, z);
         let sector = self.header.sector(local_chunk_x, local_chunk_z);
         if sector.exists() {
             self.allocator.free(sector);
         }
 
-        let biome_registry_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
+        let root_registry = REGISTRY.load();
+        let registry = root_registry.get_registry(Biome::REGISTRY).unwrap();
 
         // FIXME: The values below are placeholders and should be replaced with actual values
         let anvil_chunk = chunk_format::AnvilChunk::from_chunk(
             chunk.clone(),
-            |abc| {
-                registry
-                    .by_numeric_id(&biome_registry_key, abc as usize)
-                    .unwrap()
-                    .to_string()
-            },
-            registry,
+            |biome_id| registry.id_to_key(biome_id as usize).unwrap().to_string(),
             x,
             z,
             -4,

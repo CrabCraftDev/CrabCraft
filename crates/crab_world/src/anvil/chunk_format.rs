@@ -8,8 +8,9 @@ use crate::chunks::section::ChunkSection;
 use crate::error::AnvilError;
 use crate::error::AnvilError::BlockEntityDoesNotExist;
 use crab_nbt::NbtCompound;
-use crab_registry::RegistryManager;
 use crab_protocol::packets::play::ChunkDataBlockEntity;
+use crab_registry::REGISTRY;
+use crab_registry::minecraft::BlockEntity;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -71,10 +72,10 @@ struct BlockStatePaletteEntry {
 }
 
 impl AnvilChunk {
-    pub fn to_chunk(self, get_biome: impl Fn(&str) -> u64, registry: &RegistryManager) -> Result<Chunk, AnvilError> {
+    pub fn to_chunk(self, get_biome: impl Fn(&str) -> u64) -> Result<Chunk, AnvilError> {
         Ok(Chunk {
             sections: Self::load_sections(self.sections, get_biome)?,
-            block_entities: Self::load_block_entities(self.block_entities.unwrap_or_default(), registry)?,
+            block_entities: Self::load_block_entities(self.block_entities.unwrap_or_default())?,
         })
     }
 
@@ -82,7 +83,6 @@ impl AnvilChunk {
     pub fn from_chunk(
         chunk: Chunk,
         get_biome_name: impl Fn(u64) -> String,
-        registry: &RegistryManager,
         x_pos: i32,
         z_pos: i32,
         y_pos: i32,
@@ -97,15 +97,14 @@ impl AnvilChunk {
             .map(|(y_index, section)| RawSection::from_chunk_section(y_index as i8, section, &get_biome_name))
             .collect::<Result<Vec<_>, _>>()?;
 
+        let root_registry = REGISTRY.load();
+        let registry = root_registry.get_registry(BlockEntity::REGISTRY).unwrap();
+
         let block_entities = chunk
             .block_entities
             .into_iter()
             .map(|entity| {
-                let key = registry
-                    .block_entities
-                    .get_by_right(&(entity.block_entity_type as u16))
-                    .unwrap()
-                    .clone();
+                let key = registry.id_to_key(entity.block_entity_type as usize).unwrap().clone();
 
                 Ok(AnvilBlockEntity {
                     id: key,
@@ -139,16 +138,15 @@ impl AnvilChunk {
             .collect()
     }
 
-    fn load_block_entities(
-        block_entities: Vec<AnvilBlockEntity>,
-        registry: &RegistryManager,
-    ) -> Result<Vec<ChunkDataBlockEntity>, AnvilError> {
+    fn load_block_entities(block_entities: Vec<AnvilBlockEntity>) -> Result<Vec<ChunkDataBlockEntity>, AnvilError> {
         block_entities
             .into_iter()
             .map(|entity| {
-                let numeric_id = *registry
-                    .block_entities
-                    .get_by_left(&entity.id)
+                let root_registry = REGISTRY.load();
+                let registry = root_registry.get_registry(BlockEntity::REGISTRY).unwrap();
+
+                let numeric_id = registry
+                    .key_to_id(&entity.id)
                     .ok_or(BlockEntityDoesNotExist(entity.id))?;
 
                 Ok(ChunkDataBlockEntity {

@@ -4,8 +4,10 @@ use crate::chunks::palette::paletted_storage::{Palette, PalettedStorage};
 use crate::error::WorldError;
 use bytes::{BufMut, BytesMut};
 use crab_registry::REGISTRY;
+use crab_registry::minecraft::Biome;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::fmt::Debug;
+use std::str::FromStr;
 
 pub const CHUNK_SIZE: u16 = 16;
 pub const CHUNK_SIZE_SHIFT: u32 = CHUNK_SIZE.trailing_zeros();
@@ -101,12 +103,10 @@ impl ChunkSection {
 
 impl Default for ChunkSection {
     fn default() -> Self {
-        let registry = REGISTRY.get().unwrap();
-        let biome_registry_namespaced_key = NamespacedKey::minecraft("worldgen/biome").unwrap();
-        let plains_biome_namespace = NamespacedKey::minecraft("plains").unwrap();
-
+        let registry = REGISTRY.load();
+        let registry = registry.get_registry(Biome::REGISTRY).unwrap();
         let plains_biome_id = registry
-            .get_numeric_id(&biome_registry_namespaced_key, &plains_biome_namespace)
+            .key_to_id(&NamespacedKey::from_str(Biome::PLAINS.id).unwrap())
             .unwrap() as u32;
 
         ChunkSection {

@@ -1,13 +1,11 @@
-use crab_registry::{REGISTRY, RegistryManager};
+use crate::init_registries;
 use crab_text::utils::namespaced_key::NamespacedKey;
-use crab_world::blocks::{BLOCKS, init_blocks};
 use crab_world::world::World;
 use std::sync::Arc;
 
 #[test]
 fn load_missing_region_file() {
-    BLOCKS.get_or_init(init_blocks);
-    REGISTRY.get_or_init(RegistryManager::default);
+    init_registries();
 
     let world = World {
         identifier: NamespacedKey::minecraft("world").unwrap(),

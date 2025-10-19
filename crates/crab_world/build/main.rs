@@ -41,12 +41,15 @@ pub fn generate() -> TokenStream {
         let block_name = &block.name;
 
         blocks_initialization.push(quote! {
-            blocks.add_block(#states_amount, &#name::namespaced_key(), BlockInformation {
-                from_properties: #name::from_properties,
-                properties: #name::properties,
-                starting_state_id: 0,
-                default_state_id: #default_state_offset
-            }).unwrap();
+            for _i in 0..#states_amount {
+                blocks.register(#name::namespaced_key(), BlockInformation {
+                    from_properties: #name::from_properties,
+                    properties: #name::properties,
+                    starting_state_id: i,
+                    default_state_id: #default_state_offset + i
+                });
+            }
+            i += #states_amount;
         });
 
         states_combinations_amounts.reverse();
@@ -99,9 +102,12 @@ pub fn generate() -> TokenStream {
         use crab_text::utils::namespaced_key::NamespacedKey;
         use std::collections::HashMap;
         use crab_world::blocks::block_registry::BlockInformation;
+        use crab_registry::registry_key::Registry;
 
-        pub fn init_blocks() -> BlockRegistry {
-            let mut blocks = BlockRegistry::default();
+        #[allow(unused_assignments)]
+        pub fn init_blocks() -> Registry<BlockInformation> {
+            let mut i = 0;
+            let mut blocks = Registry::<BlockInformation>::new();
             #(#blocks_initialization)*
             blocks
         }
