@@ -1,12 +1,11 @@
-use std::cmp::PartialEq;
-use std::collections::HashMap;
-
 use crate::blocks::block_data::BlockData;
-use crate::blocks::block_registry::BlockInformation;
-use crate::blocks::{BLOCKS, get_block_registry};
+use crate::blocks::block_information::BlockInformation;
 use crate::error::BlockError;
+use crab_registry::REGISTRY;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use derive_more::{From, Into};
+use std::cmp::PartialEq;
+use std::collections::HashMap;
 
 /// Represents a block used in our codebase
 /// u16 is block state id (mostly used in protocol), which is unique id for each block state
@@ -15,16 +14,17 @@ use derive_more::{From, Into};
 pub struct Block(pub u16);
 
 impl Block {
-    pub fn namespaced_key(&self) -> Result<&NamespacedKey, BlockError> {
-        BLOCKS
-            .get()
-            .ok_or(BlockError::BlocksNotInitialized)?
-            .namespaced_key_by_state_id(self.0)
+    pub fn namespaced_key(&self) -> Result<NamespacedKey, BlockError> {
+        let registry = REGISTRY.load();
+        Ok(registry.try_id_to_key::<BlockInformation>(self.0 as usize)?.clone())
     }
 
-    pub fn properties(&self) -> Result<(&NamespacedKey, HashMap<&'static str, String>), BlockError> {
+    pub fn properties(&self) -> Result<(NamespacedKey, HashMap<&'static str, String>), BlockError> {
         let namespaced_key = self.namespaced_key()?;
-        let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
+
+        let registry = REGISTRY.load();
+        let block_information = registry.try_value_by_key::<BlockInformation>(&namespaced_key)?;
+
         let local_state = self.0 - block_information.starting_state_id;
         let properties = (block_information.properties)(local_state)?;
 
@@ -36,7 +36,9 @@ impl Block {
         namespaced_key: &NamespacedKey,
         properties: &HashMap<&str, String>,
     ) -> Result<Block, BlockError> {
-        let block_information = get_block_registry()?.block_information_by_namespaced_key(namespaced_key)?;
+        let registry = REGISTRY.load();
+        let block_information = registry.try_value_by_key::<BlockInformation>(namespaced_key)?;
+
         (block_information.from_properties)(properties)
     }
 
@@ -62,7 +64,7 @@ impl Block {
     pub fn apply_property<P: BlockData>(&mut self, property: &P::Value) -> Result<(), BlockError> {
         let (key, mut properties) = self.properties()?;
         P::apply(property, &mut properties)?;
-        let new_block = Self::from_properties(key, &properties)?;
+        let new_block = Self::from_properties(&key, &properties)?;
         self.0 = new_block.0;
         Ok(())
     }
@@ -79,19 +81,20 @@ pub trait BlockType {
     fn from_properties(hashmap: &HashMap<&str, String>) -> Result<Block, BlockError>;
 
     fn is_same_type_as(block: &Block) -> bool {
-        matches!(block.namespaced_key(), Ok(block_key) if *block_key == Self::namespaced_key())
-    }
-
-    fn information() -> Result<&'static BlockInformation, BlockError> {
-        let blocks = get_block_registry()?;
-        blocks.block_information_by_namespaced_key(&Self::namespaced_key())
+        matches!(block.namespaced_key(), Ok(block_key) if block_key == Self::namespaced_key())
     }
 
     fn default_state_id() -> Result<Block, BlockError> {
-        Ok(Block(Self::information()?.default_state_id))
+        let registry = REGISTRY.load();
+        let block = registry.try_value_by_key::<BlockInformation>(&Self::namespaced_key())?;
+
+        Ok(Block(block.default_state_id))
     }
 
     fn starting_state_id() -> Result<Block, BlockError> {
-        Ok(Block(Self::information()?.starting_state_id))
+        let registry = REGISTRY.load();
+        let block = registry.try_value_by_key::<BlockInformation>(&Self::namespaced_key())?;
+
+        Ok(Block(block.starting_state_id))
     }
 }

@@ -30,11 +30,4 @@ let block = GrassBlock::default_state_id().unwrap();
 let is_snowy = block.property::<Snowy>().unwrap();
 
 assert_eq!(is_snowy, Snowy { snowy: false });
-  ```
-
-```rust
-// You have to init blocks first, but main.rs already does it
-BLOCKS.get_or_init(init_blocks);
-
-let block = BLOCKS.get().unwrap().namespaced_key_by_state_id(3).unwrap();
 ```

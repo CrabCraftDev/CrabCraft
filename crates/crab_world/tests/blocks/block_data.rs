@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use strum::{Display, EnumString};
 
 use crab_macros::BlockData;
+use crab_world::blocks::BlockType;
+use crab_world::blocks::GrassBlock;
 use crab_world::blocks::block_data::{BlockData, Snowy};
-use crab_world::blocks::{BLOCKS, BlockType};
-use crab_world::blocks::{GrassBlock, init_blocks};
 
 #[derive(Debug, Clone, PartialEq, Eq, BlockData)]
 struct ComplexBlockData {
@@ -52,8 +52,6 @@ fn missing_block_data() {
 
 #[test]
 fn get_block_struct_information() {
-    BLOCKS.get_or_init(init_blocks);
-
     let mut block = GrassBlock::default_state_id().unwrap();
 
     assert!(!block.property::<Snowy>().unwrap());

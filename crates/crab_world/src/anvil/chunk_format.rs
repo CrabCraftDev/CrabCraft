@@ -8,8 +8,11 @@ use crate::chunks::section::ChunkSection;
 use crate::error::AnvilError;
 use crate::error::AnvilError::BlockEntityDoesNotExist;
 use crab_nbt::NbtCompound;
-use crab_registry::RegistryManager;
 use crab_protocol::packets::play::ChunkDataBlockEntity;
+use crab_registry::REGISTRY;
+use crab_registry::crabcraft::BlockEntity;
+use crab_registry::minecraft::Biome;
+use crab_registry::registry::RegistryBase;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -43,6 +46,7 @@ struct RawSection {
     #[serde(rename = "Y")]
     pub y: i8,
     pub block_states: PaletteData<BlockStatePaletteEntry>,
+    // FIXME: We could probably use NamespacedKey instead of String here
     pub biomes: PaletteData<String>,
 }
 
@@ -71,18 +75,16 @@ struct BlockStatePaletteEntry {
 }
 
 impl AnvilChunk {
-    pub fn to_chunk(self, get_biome: impl Fn(&str) -> u64, registry: &RegistryManager) -> Result<Chunk, AnvilError> {
+    pub fn to_chunk(self) -> Result<Chunk, AnvilError> {
         Ok(Chunk {
-            sections: Self::load_sections(self.sections, get_biome)?,
-            block_entities: Self::load_block_entities(self.block_entities.unwrap_or_default(), registry)?,
+            sections: Self::load_sections(self.sections)?,
+            block_entities: Self::load_block_entities(self.block_entities.unwrap_or_default())?,
         })
     }
 
     #[allow(clippy::too_many_arguments)]
     pub fn from_chunk(
         chunk: Chunk,
-        get_biome_name: impl Fn(u64) -> String,
-        registry: &RegistryManager,
         x_pos: i32,
         z_pos: i32,
         y_pos: i32,
@@ -94,18 +96,17 @@ impl AnvilChunk {
             .sections
             .into_iter()
             .enumerate()
-            .map(|(y_index, section)| RawSection::from_chunk_section(y_index as i8, section, &get_biome_name))
+            .map(|(y_index, section)| RawSection::from_chunk_section(y_index as i8, section))
             .collect::<Result<Vec<_>, _>>()?;
+
+        let root_registry = REGISTRY.load();
+        let registry = root_registry.registry_by_type::<BlockEntity>();
 
         let block_entities = chunk
             .block_entities
             .into_iter()
             .map(|entity| {
-                let key = registry
-                    .block_entities
-                    .get_by_right(&(entity.block_entity_type as u16))
-                    .unwrap()
-                    .clone();
+                let key = registry.id_to_key(entity.block_entity_type as usize).unwrap().clone();
 
                 Ok(AnvilBlockEntity {
                     id: key,
@@ -129,26 +130,22 @@ impl AnvilChunk {
         })
     }
 
-    fn load_sections(
-        sections: Vec<RawSection>,
-        get_biome: impl Fn(&str) -> u64,
-    ) -> Result<Vec<ChunkSection>, AnvilError> {
+    fn load_sections(sections: Vec<RawSection>) -> Result<Vec<ChunkSection>, AnvilError> {
         sections
             .into_iter()
-            .map(|section| section.into_chunk_section(&get_biome))
+            .map(|section| section.into_chunk_section())
             .collect()
     }
 
-    fn load_block_entities(
-        block_entities: Vec<AnvilBlockEntity>,
-        registry: &RegistryManager,
-    ) -> Result<Vec<ChunkDataBlockEntity>, AnvilError> {
+    fn load_block_entities(block_entities: Vec<AnvilBlockEntity>) -> Result<Vec<ChunkDataBlockEntity>, AnvilError> {
+        let root_registry = REGISTRY.load();
+        let registry = root_registry.registry_by_type::<BlockEntity>();
+
         block_entities
             .into_iter()
             .map(|entity| {
-                let numeric_id = *registry
-                    .block_entities
-                    .get_by_left(&entity.id)
+                let numeric_id = registry
+                    .key_to_id(&entity.id)
                     .ok_or(BlockEntityDoesNotExist(entity.id))?;
 
                 Ok(ChunkDataBlockEntity {
@@ -164,8 +161,15 @@ impl AnvilChunk {
 }
 
 impl RawSection {
-    fn into_chunk_section(self, get_biome: &impl Fn(&str) -> u64) -> Result<ChunkSection, AnvilError> {
-        let biome_id_getter = |name: &String| Ok(get_biome(name) as u32);
+    fn into_chunk_section(self) -> Result<ChunkSection, AnvilError> {
+        let registry = REGISTRY.load();
+        let registry = registry.registry_by_type::<Biome>();
+        let biome_id_getter = |name: &String| {
+            registry
+                .key_to_id(&NamespacedKey::from_str(name)?)
+                .map(|n| n as u32)
+                .ok_or_else(|| AnvilError::InvalidBiomeId(name.clone()))
+        };
         let block_id_getter = |entry: &BlockStatePaletteEntry| {
             let props = entry
                 .properties
@@ -203,11 +207,7 @@ impl<T> PaletteData<T> {
 }
 
 impl RawSection {
-    fn from_chunk_section(
-        y: i8,
-        section: ChunkSection,
-        get_biome_name: &impl Fn(u64) -> String,
-    ) -> Result<Self, AnvilError> {
+    fn from_chunk_section(y: i8, section: ChunkSection) -> Result<Self, AnvilError> {
         let (block_palette, block_data) = section.blocks.into_parts();
         let (biome_palette, biome_data) = section.biomes.into_parts();
 
@@ -223,9 +223,17 @@ impl RawSection {
             })
             .collect::<Result<Vec<_>, AnvilError>>()?;
 
+        let registry = REGISTRY.load();
+        let registry = registry.registry_by_type::<Biome>();
+
         let biome_palette = biome_palette
             .into_iter()
-            .map(|id| Ok(get_biome_name(id as u64)))
+            .map(|id| {
+                registry
+                    .id_to_key(id as usize)
+                    .map(|n| n.to_string())
+                    .ok_or(AnvilError::InvalidBiomeId(id.to_string()))
+            })
             .collect::<Result<Vec<_>, AnvilError>>()?;
 
         Ok(Self {
