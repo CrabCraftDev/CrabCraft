@@ -164,7 +164,9 @@ impl NetworkConnection {
     pub async fn keep_alive(&self) {
         loop {
             sleep(KEEPALIVE_INTERVAL).await;
-
+            if !self.state().should_entity_be_spawned() {
+                continue;
+            }
             let mut keep_alive_state = self.keep_alive_state.lock();
             if keep_alive_state.pending {
                 self.disconnect_with_reason(PlayerQuitReason::TimedOut);
@@ -272,11 +274,6 @@ impl NetworkConnection {
 
     pub fn set_state(&self, new_state: ProtocolState) {
         *self.state.write().unwrap() = new_state;
-        if new_state == ProtocolState::Configuration {
-            self.send_packet(KeepAliveS2CPacket {
-                keep_alive_id: self.keep_alive_state.lock().last_keep_alive_time,
-            });
-        }
     }
 
     pub fn entity_id(&self) -> Option<EntityId> {
