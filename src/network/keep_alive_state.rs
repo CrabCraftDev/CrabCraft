@@ -9,7 +9,7 @@ pub struct KeepAliveState {
 impl Default for KeepAliveState {
     fn default() -> Self {
         Self {
-            pending: true,
+            pending: false,
             last_keep_alive_time: Local::now().timestamp_millis(),
         }
     }
