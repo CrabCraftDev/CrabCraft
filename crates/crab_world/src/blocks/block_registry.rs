@@ -1,13 +1,9 @@
-use crate::blocks::Block;
+use crate::blocks::{Block, init_blocks};
 use crate::error::BlockError;
 use crab_registry::registry_key::RegistryKey;
+use crab_registry::{REGISTRY_POPULATORS, RootRegistry};
+use linkme::distributed_slice;
 use std::collections::HashMap;
-
-// todo: maybe new arc
-// pub fn get_block_registry() -> &'static Registry<BlockInformation> {
-//     let registry = REGISTRY.load();
-//     registry.get_registry(BlockInformation::REGISTRY).unwrap()
-// }
 
 #[derive(Debug, Clone)]
 pub struct BlockInformation {
@@ -16,6 +12,9 @@ pub struct BlockInformation {
     pub starting_state_id: u16,
     pub default_state_id: u16,
 }
+
+#[distributed_slice(REGISTRY_POPULATORS)]
+static BLOCKS_REGISTRY_POPULATOR: fn(&mut RootRegistry) = init_blocks;
 
 impl BlockInformation {
     pub const REGISTRY: RegistryKey<Self> = RegistryKey::new("crabcraft:block_state");

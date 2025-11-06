@@ -1,5 +1,6 @@
-use crab_registry::registry_key::{Registry, RegistryKey};
-use crab_registry::{REGISTRY, RootRegistry};
+use crab_registry::REGISTRY;
+use crab_registry::registry::{Registry, RootRegistry};
+use crab_registry::registry_key::RegistryKey;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::str::FromStr;
 use std::sync::Arc;

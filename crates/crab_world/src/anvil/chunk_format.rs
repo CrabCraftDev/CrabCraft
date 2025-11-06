@@ -10,7 +10,7 @@ use crate::error::AnvilError::BlockEntityDoesNotExist;
 use crab_nbt::NbtCompound;
 use crab_protocol::packets::play::ChunkDataBlockEntity;
 use crab_registry::REGISTRY;
-use crab_registry::minecraft::BlockEntity;
+use crab_registry::vanilla::BlockEntity;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

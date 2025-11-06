@@ -1,4 +1,3 @@
-use crate::init_registries;
 use crab_world::blocks::{Block, BlockType, Stone};
 use crab_world::chunks::palette::palette_content_type::PaletteContentType;
 use crab_world::chunks::palette::paletted_storage::PalettedStorage;
@@ -6,8 +5,6 @@ use crab_world::chunks::section::{AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION, ChunkSectio
 
 #[test]
 fn test_automatic_count_air_blocks() {
-    init_registries();
-
     let mut section = ChunkSection::default();
     for x in 0..16 {
         for z in 0..16 {
@@ -20,8 +17,6 @@ fn test_automatic_count_air_blocks() {
 
 #[test]
 fn test_count_air_blocks() {
-    init_registries();
-
     let mut section = ChunkSection::default();
     for x in 0..5 {
         section.set_block(x, 0, 0, Block(1)).unwrap()
@@ -35,16 +30,12 @@ fn test_count_air_blocks() {
 
 #[test]
 fn test_count_only_air_blocks() {
-    init_registries();
-
     let section = ChunkSection::default();
     assert_eq!(section.non_air_block_amount, 0);
 }
 
 #[test]
 fn test_count_only_non_air_blocks() {
-    init_registries();
-
     let section = ChunkSection::new(
         PalettedStorage::single(PaletteContentType::Blocks, Stone::default_state_id().unwrap().0 as u32),
         PalettedStorage::single(PaletteContentType::Biomes, 0),
@@ -54,8 +45,6 @@ fn test_count_only_non_air_blocks() {
 
 #[test]
 fn modify_blocks() {
-    init_registries();
-
     let mut section = ChunkSection::default();
     section.set_block(0, 0, 0, Block(5)).unwrap();
 
@@ -66,8 +55,6 @@ fn modify_blocks() {
 #[test]
 #[should_panic]
 fn modify_invalid_block() {
-    init_registries();
-
     let mut section = ChunkSection::default();
     section.set_block(0, 21, 0, Block(5)).unwrap();
 }

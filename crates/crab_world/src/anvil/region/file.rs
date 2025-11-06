@@ -11,7 +11,7 @@ use crate::world::World;
 use crab_nbt::serde::de::from_bytes;
 use crab_nbt::serde::ser::to_bytes;
 use crab_registry::REGISTRY;
-use crab_registry::minecraft::Biome;
+use crab_registry::vanilla::Biome;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom, Write};

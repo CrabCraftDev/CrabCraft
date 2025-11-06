@@ -1,4 +1,3 @@
-use crate::init_registries;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::blocks::BlockType;
 use crab_world::blocks::GrassBlock;
@@ -7,8 +6,6 @@ use std::collections::HashMap;
 
 #[test]
 fn get_block_struct_information() {
-    init_registries();
-
     let block = GrassBlock::default_state_id().unwrap();
     let (id, properties) = block.properties().unwrap();
 
@@ -20,8 +17,6 @@ fn get_block_struct_information() {
 
 #[test]
 fn create_block_from_properties() {
-    init_registries();
-
     let mut hashmap = HashMap::new();
     hashmap.insert("snowy", "false".to_string());
 
@@ -33,8 +28,6 @@ fn create_block_from_properties() {
 
 #[test]
 fn invalid_create_block_from_properties() {
-    init_registries();
-
     let mut hashmap = HashMap::new();
     hashmap.insert("snowy", "cat".to_string());
 

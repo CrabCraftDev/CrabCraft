@@ -4,7 +4,7 @@ use crate::chunks::palette::paletted_storage::{Palette, PalettedStorage};
 use crate::error::WorldError;
 use bytes::{BufMut, BytesMut};
 use crab_registry::REGISTRY;
-use crab_registry::minecraft::Biome;
+use crab_registry::vanilla::Biome;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::fmt::Debug;
 use std::str::FromStr;

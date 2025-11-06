@@ -1,12 +1,10 @@
 use chrono::Local;
 use crab_craft::config::manager::ConfigManager;
 use crab_craft::utils::{errors::print_error_report_instructions, log};
-use crab_registry::{REGISTRY, RootRegistry, init, load_block_entities};
-use crab_world::blocks::init_blocks;
+use crab_registry::REGISTRY;
 use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir};
 use std::process::exit;
-use std::str::FromStr;
-use std::sync::Arc;
+use std::time::Instant;
 use std::{backtrace::Backtrace, panic, thread};
 use tracing::{error, info, info_span};
 
@@ -14,9 +12,6 @@ use crab_craft::mc_server::McServer;
 use crab_craft::utils::files::FILES;
 use crab_craft::world::OVERWORLD_IDENTIFIER;
 use crab_craft::world::storage::WORLDS_STORAGE;
-use crab_registry::minecraft::{Biome, Empty};
-use crab_text::utils::namespaced_key::NamespacedKey;
-use crab_world::blocks::block_registry::BlockInformation;
 
 #[tokio::main]
 async fn main() {
@@ -37,26 +32,12 @@ async fn main() {
         exit(1);
     }
 
-    let mut registry = RootRegistry::new();
+    // It calls lazy lock
+    let startup_finish = Instant::now();
 
-    // init_normal(&mut registry);
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("cat_variant").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("chicken_variant").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("cow_variant").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("damage_type").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("dimension_type").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("frog_variant").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("painting_variant").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("pig_variant").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("wolf_sound_variant").unwrap());
-    init::<Empty>(&mut registry, NamespacedKey::minecraft("wolf_variant").unwrap());
-    init::<Biome>(&mut registry, NamespacedKey::from_str(Biome::REGISTRY.id).unwrap());
+    REGISTRY.load();
 
-    load_block_entities(&mut registry);
-
-    registry.register_registry(BlockInformation::REGISTRY, init_blocks());
-
-    REGISTRY.store(Arc::new(registry));
+    info!("{:?}", startup_finish.elapsed());
 
     WORLDS_STORAGE.init_dimension(OVERWORLD_IDENTIFIER.clone(), -64);
 

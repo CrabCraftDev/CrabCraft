@@ -1,6 +1,6 @@
 use crate::error::{AnvilError, WorldError};
 use crab_registry::REGISTRY;
-use crab_registry::minecraft::Biome;
+use crab_registry::vanilla::Biome;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::anvil::region::file::RegionFile;
 use crab_world::chunks::chunk::Chunk;

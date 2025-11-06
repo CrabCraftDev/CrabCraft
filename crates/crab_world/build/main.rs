@@ -102,14 +102,15 @@ pub fn generate() -> TokenStream {
         use crab_text::utils::namespaced_key::NamespacedKey;
         use std::collections::HashMap;
         use crab_world::blocks::block_registry::BlockInformation;
-        use crab_registry::registry_key::Registry;
+        use crab_registry::registry::Registry;
+        use crab_registry::RootRegistry;
 
-        #[allow(unused_assignments)]
-        pub fn init_blocks() -> Registry<BlockInformation> {
+        #[allow(unused_assignments, clippy::identity_op)]
+        pub fn init_blocks(root_registry: &mut RootRegistry) {
             let mut i = 0;
             let mut blocks = Registry::<BlockInformation>::new();
             #(#blocks_initialization)*
-            blocks
+            root_registry.register_registry(BlockInformation::REGISTRY, blocks);
         }
 
         #(#blocks)*

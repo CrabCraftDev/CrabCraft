@@ -3,7 +3,7 @@ use crate::chunks::palette::paletted_storage::calculate_bits_per_entry;
 use crate::chunks::section::AMOUNT_OF_BIOMES_IN_CHUNK_SECTION;
 use crate::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
 use crab_registry::REGISTRY;
-use crab_registry::minecraft::Biome;
+use crab_registry::vanilla::Biome;
 
 #[derive(Clone, Debug, Copy, PartialEq)]
 pub enum PaletteContentType {

@@ -2,12 +2,8 @@ use crab_world::anvil::region::file::RegionFile;
 use std::fs::{self, File};
 use std::path::PathBuf;
 
-use crate::init_registries;
-
 #[test]
 fn test_read_write_read_all_chunks() {
-    init_registries();
-
     let src = PathBuf::from("tests/data/r.0.0.mca");
     let dst = std::env::temp_dir().join("r.0.0.test.mca");
     fs::copy(&src, &dst).expect("failed to copy region file");

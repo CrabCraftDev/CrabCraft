@@ -1,12 +1,9 @@
-use crate::init_registries;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::world::World;
 use std::sync::Arc;
 
 #[test]
 fn load_missing_region_file() {
-    init_registries();
-
     let world = World {
         identifier: NamespacedKey::minecraft("world").unwrap(),
         path: Default::default(),

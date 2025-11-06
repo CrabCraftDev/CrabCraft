@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use strum::{Display, EnumString};
 
-use crate::init_registries;
 use crab_macros::BlockData;
 use crab_world::blocks::BlockType;
 use crab_world::blocks::GrassBlock;
@@ -53,8 +52,6 @@ fn missing_block_data() {
 
 #[test]
 fn get_block_struct_information() {
-    init_registries();
-
     let mut block = GrassBlock::default_state_id().unwrap();
 
     assert!(!block.property::<Snowy>().unwrap());
