@@ -4,7 +4,6 @@ use crab_craft::utils::{errors::print_error_report_instructions, log};
 use crab_registry::REGISTRY;
 use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir};
 use std::process::exit;
-use std::time::Instant;
 use std::{backtrace::Backtrace, panic, thread};
 use tracing::{error, info, info_span};
 
@@ -32,12 +31,7 @@ async fn main() {
         exit(1);
     }
 
-    // It calls lazy lock
-    let startup_finish = Instant::now();
-
     REGISTRY.load();
-
-    info!("{:?}", startup_finish.elapsed());
 
     WORLDS_STORAGE.init_dimension(OVERWORLD_IDENTIFIER.clone(), -64);
 
