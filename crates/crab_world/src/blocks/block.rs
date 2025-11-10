@@ -16,7 +16,7 @@ pub struct Block(pub u16);
 impl Block {
     pub fn namespaced_key(&self) -> Result<NamespacedKey, BlockError> {
         let registry = REGISTRY.load();
-        let registry = registry.get_registry2::<BlockInformation>();
+        let registry = registry.registry_by_type::<BlockInformation>();
 
         Ok(registry.id_to_key(self.0 as usize).unwrap().clone())
     }
@@ -25,7 +25,7 @@ impl Block {
         let namespaced_key = self.namespaced_key()?;
 
         let registry = REGISTRY.load();
-        let block_information = registry.get_by_key2::<BlockInformation>(&namespaced_key).unwrap();
+        let block_information = registry.entry_by_key::<BlockInformation>(&namespaced_key).unwrap();
 
         let local_state = self.0 - block_information.starting_state_id;
         let properties = (block_information.properties)(local_state)?;
@@ -39,7 +39,7 @@ impl Block {
         properties: &HashMap<&str, String>,
     ) -> Result<Block, BlockError> {
         let registry = REGISTRY.load();
-        let block_information = registry.get_by_key2::<BlockInformation>(namespaced_key).unwrap();
+        let block_information = registry.entry_by_key::<BlockInformation>(namespaced_key).unwrap();
 
         (block_information.from_properties)(properties)
     }
@@ -90,7 +90,7 @@ pub trait BlockType {
         let registry = REGISTRY.load();
 
         Ok((*registry
-            .get_by_key2::<BlockInformation>(&Self::namespaced_key())
+            .entry_by_key::<BlockInformation>(&Self::namespaced_key())
             .unwrap())
         .clone())
     }

@@ -99,7 +99,7 @@ impl AnvilChunk {
             .collect::<Result<Vec<_>, _>>()?;
 
         let root_registry = REGISTRY.load();
-        let registry = root_registry.get_registry2::<BlockEntity>();
+        let registry = root_registry.registry_by_type::<BlockEntity>();
 
         let block_entities = chunk
             .block_entities
@@ -141,7 +141,7 @@ impl AnvilChunk {
             .into_iter()
             .map(|entity| {
                 let root_registry = REGISTRY.load();
-                let registry = root_registry.get_registry2::<BlockEntity>();
+                let registry = root_registry.registry_by_type::<BlockEntity>();
 
                 let numeric_id = registry
                     .key_to_id(&entity.id)
@@ -162,7 +162,7 @@ impl AnvilChunk {
 impl RawSection {
     fn into_chunk_section(self) -> Result<ChunkSection, AnvilError> {
         let registry = REGISTRY.load();
-        let registry = registry.get_registry2::<Biome>();
+        let registry = registry.registry_by_type::<Biome>();
         let biome_id_getter = |name: &String| {
             registry
                 .key_to_id(&NamespacedKey::from_str(name).unwrap())
@@ -223,7 +223,7 @@ impl RawSection {
             .collect::<Result<Vec<_>, AnvilError>>()?;
 
         let registry = REGISTRY.load();
-        let registry = registry.get_registry2::<Biome>();
+        let registry = registry.registry_by_type::<Biome>();
 
         let biome_palette = biome_palette
             .into_iter()

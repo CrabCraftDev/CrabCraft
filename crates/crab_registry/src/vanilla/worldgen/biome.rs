@@ -2,7 +2,7 @@ use crate::key::RegistryKey;
 use crate::registrable::Registrable;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, PartialEq, Eq)]
 pub struct Biome {}
 
 impl Registrable for Biome {

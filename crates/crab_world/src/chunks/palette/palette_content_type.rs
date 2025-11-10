@@ -36,12 +36,12 @@ impl PaletteContentType {
         let value = match self {
             PaletteContentType::Biomes => {
                 let registry = REGISTRY.load();
-                let registry = registry.get_registry2::<Biome>();
+                let registry = registry.registry_by_type::<Biome>();
                 registry.len()
             }
             PaletteContentType::Blocks => {
                 let registry = REGISTRY.load();
-                let registry = registry.get_registry2::<BlockInformation>();
+                let registry = registry.registry_by_type::<BlockInformation>();
 
                 registry.len()
             }

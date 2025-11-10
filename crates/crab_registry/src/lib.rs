@@ -16,6 +16,7 @@ mod registry;
 mod root;
 pub mod vanilla;
 mod vanilla_populator;
+pub mod registry_id;
 
 #[distributed_slice]
 pub static REGISTRY_POPULATORS: [fn(&mut RootRegistry)];

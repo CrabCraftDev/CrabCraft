@@ -2,6 +2,7 @@ use crate::REGISTRY_POPULATORS;
 use crate::key::RegistryKey;
 use crate::registrable::Registrable;
 use crate::registry::{Registry, RegistryBase};
+use crate::registry_id::RegistryId;
 use ahash::RandomState;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::collections::HashMap;
@@ -37,7 +38,7 @@ impl RootRegistry {
             .and_then(|arc| arc.as_ref().as_any().downcast_ref::<Registry<V>>())
     }
 
-    pub fn get_registry2<V: Send + Sync + Registrable + 'static>(&self) -> &Registry<V> {
+    pub fn registry_by_type<V: Send + Sync + Registrable + 'static>(&self) -> &Registry<V> {
         self.registries
             .get(&V::REGISTRY.id)
             .and_then(|arc| arc.as_ref().as_any().downcast_ref::<Registry<V>>())
@@ -52,7 +53,7 @@ impl RootRegistry {
     }
 
     pub fn key_to_id<T: Registrable + Send + Sync + 'static>(&self, key: RegistryKey<T>) -> usize {
-        let registry = self.get_registry2::<T>();
+        let registry = self.registry_by_type::<T>();
 
         registry
             .key_to_id(&key.as_namespaced_key())
@@ -60,13 +61,24 @@ impl RootRegistry {
     }
 
     pub fn key_to_id2<T: Registrable + Send + Sync + 'static>(&self, key: &NamespacedKey) -> Option<usize> {
-        let registry = self.get_registry2::<T>();
+        let registry = self.registry_by_type::<T>();
         registry.key_to_id(key)
     }
 
-    pub fn get_by_key2<T: Registrable + Send + Sync + 'static>(&self, key: &NamespacedKey) -> Option<Arc<T>> {
-        let registry = self.get_registry2::<T>();
+    pub fn entry_by_key<T: Registrable>(&self, key: &impl RegistryId<T>) -> <impl RegistryId<T>>::AsValue {
+        let registry = self.registry_by_type::<T>();
+        key.entry_from_registry(registry)
+    }
+}
 
-        registry.get_by_key(key)
+#[cfg(test)]
+mod test {
+    use crate::{RootRegistry, vanilla::Biome};
+
+    #[test]
+    fn test() {
+        let r = RootRegistry::populated();
+        r.entry_by_key::<Biome, _>(&0); // AAAAAA
+        // Trzeba drugi paramietr podać
     }
 }

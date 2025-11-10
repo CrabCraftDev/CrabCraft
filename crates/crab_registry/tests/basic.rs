@@ -36,7 +36,7 @@ fn main() {
     REGISTRY.store(Arc::new(registry));
 
     let root_registry = REGISTRY.load();
-    let registry = root_registry.get_registry2::<Biome>();
+    let registry = root_registry.registry_by_type::<Biome>();
 
     let plains = registry
         .get_by_key(&NamespacedKey::from_str(Biome::PLAINS.id).unwrap())
