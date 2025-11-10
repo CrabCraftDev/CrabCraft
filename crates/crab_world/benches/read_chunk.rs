@@ -7,7 +7,7 @@ pub fn read_chunk(criterion: &mut Criterion) {
 
     criterion.bench_with_input(BenchmarkId::new("read_chunk", 1), &1, |b, &_| {
         b.iter(|| {
-            region.read_chunk(0, 0, |_| 0).unwrap();
+            region.read_chunk(0, 0).unwrap();
         });
     });
 
@@ -15,7 +15,7 @@ pub fn read_chunk(criterion: &mut Criterion) {
         b.iter(|| {
             for x in 0..8 {
                 for z in 0..8 {
-                    region.read_chunk(x, z, |_| 0).unwrap();
+                    region.read_chunk(x, z).unwrap();
                 }
             }
         });

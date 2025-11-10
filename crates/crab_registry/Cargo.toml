@@ -1,5 +1,6 @@
 [package]
 name = "crab_registry"
+description = "A central, type-safe, data-driven registry architecture for CrabCraft inspired by Minecraft's registry model."
 version.workspace = true
 edition.workspace = true
 

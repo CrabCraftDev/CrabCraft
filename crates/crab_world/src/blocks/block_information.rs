@@ -1,7 +1,8 @@
-use crate::blocks::{Block, init_blocks};
+use crate::blocks::{Block, populate_blocks};
 use crate::error::BlockError;
-use crab_registry::registry_key::RegistryKey;
-use crab_registry::{REGISTRY_POPULATORS, RootRegistry};
+use crab_registry::REGISTRY_POPULATORS;
+use crab_registry::key::RegistryKey;
+use crab_registry::{Registrable, RootRegistry};
 use linkme::distributed_slice;
 use std::collections::HashMap;
 
@@ -14,8 +15,8 @@ pub struct BlockInformation {
 }
 
 #[distributed_slice(REGISTRY_POPULATORS)]
-static BLOCKS_REGISTRY_POPULATOR: fn(&mut RootRegistry) = init_blocks;
+static BLOCKS_REGISTRY_POPULATOR: fn(&mut RootRegistry) = populate_blocks;
 
-impl BlockInformation {
-    pub const REGISTRY: RegistryKey<Self> = RegistryKey::new("crabcraft:block_state");
+impl Registrable for BlockInformation {
+    const REGISTRY: RegistryKey<Self> = RegistryKey::new("crabcraft:block_information");
 }

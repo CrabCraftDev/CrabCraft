@@ -1,6 +1,6 @@
 use crab_registry::REGISTRY;
-use crab_registry::registry::{Registry, RootRegistry};
-use crab_registry::registry_key::RegistryKey;
+use crab_registry::key::RegistryKey;
+use crab_registry::{Registrable, Registry, RootRegistry};
 use crab_text::utils::namespaced_key::NamespacedKey;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -10,16 +10,18 @@ struct Biome {
     pub name: &'static str,
 }
 
-impl Biome {
-    pub const REGISTRY: RegistryKey<Self> = RegistryKey::new("minecraft:biomes");
+impl Registrable for Biome {
+    const REGISTRY: RegistryKey<Self> = RegistryKey::new("minecraft:biomes");
+}
 
+impl Biome {
     pub const PLAINS: RegistryKey<Self> = RegistryKey::new("minecraft:plains");
     pub const THE_VOID: RegistryKey<Self> = RegistryKey::new("minecraft:the_void");
 }
 
 #[test]
 fn main() {
-    let mut biomes = Registry::<Biome>::new();
+    let mut biomes = Registry::<Biome>::default();
     biomes.register(
         NamespacedKey::from_str(Biome::PLAINS.id).unwrap(),
         Biome { name: "Plains" },
@@ -29,12 +31,12 @@ fn main() {
         Biome { name: "The Void" },
     );
 
-    let mut registry = RootRegistry::new();
+    let mut registry = RootRegistry::populated();
     registry.register_registry(Biome::REGISTRY, biomes);
     REGISTRY.store(Arc::new(registry));
 
     let root_registry = REGISTRY.load();
-    let registry = root_registry.get_registry(Biome::REGISTRY).unwrap();
+    let registry = root_registry.get_registry2::<Biome>();
 
     let plains = registry
         .get_by_key(&NamespacedKey::from_str(Biome::PLAINS.id).unwrap())

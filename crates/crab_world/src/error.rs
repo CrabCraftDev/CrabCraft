@@ -70,6 +70,8 @@ pub enum AnvilError {
     NbtTagNotFound,
     #[error("BlockType {0} doesn't exist!")]
     BlockEntityDoesNotExist(NamespacedKey),
+    #[error("Invalid biome id {0}")]
+    InvalidBiomeId(String),
 
     #[error(transparent)]
     Protocol(#[from] ProtocolError),

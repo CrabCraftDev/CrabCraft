@@ -11,7 +11,7 @@ pub fn write_chunk(criterion: &mut Criterion) {
     let file = OpenOptions::new().read(true).write(true).open(&dst).unwrap();
 
     let mut region = RegionFile::load(file).unwrap();
-    let chunk = region.read_chunk(0, 0, |_| 0).unwrap();
+    let chunk = region.read_chunk(0, 0).unwrap();
 
     criterion.bench_with_input(BenchmarkId::new("write_chunk", 1), &1, |b, &_| {
         b.iter(|| {

@@ -113,7 +113,6 @@ pub fn configuration_packets(
         );
         connection.send_packet(UpdateTagsS2CPacket { tags });
 
-        // todo: check what datapacks are sent in notchian
         let registry_data = &REGISTRY.load();
         for (registry_name, values) in registry_data.get_all_registries() {
             if !registry_name.starts_with("minecraft:") {
@@ -122,7 +121,6 @@ pub fn configuration_packets(
 
             let data_entries = values
                 .ids()
-                .iter()
                 .map(|value| RegistryDataEntry {
                     id: value.clone(),
                     data: None,

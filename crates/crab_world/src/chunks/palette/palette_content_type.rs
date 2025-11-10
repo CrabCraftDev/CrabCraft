@@ -1,4 +1,4 @@
-use crate::blocks::block_registry::BlockInformation;
+use crate::blocks::block_information::BlockInformation;
 use crate::chunks::palette::paletted_storage::calculate_bits_per_entry;
 use crate::chunks::section::AMOUNT_OF_BIOMES_IN_CHUNK_SECTION;
 use crate::chunks::section::AMOUNT_OF_BLOCKS_IN_CHUNK_SECTION;
@@ -36,12 +36,12 @@ impl PaletteContentType {
         let value = match self {
             PaletteContentType::Biomes => {
                 let registry = REGISTRY.load();
-                let registry = registry.get_registry(Biome::REGISTRY).unwrap();
+                let registry = registry.get_registry2::<Biome>();
                 registry.len()
             }
             PaletteContentType::Blocks => {
                 let registry = REGISTRY.load();
-                let registry = registry.get_registry(BlockInformation::REGISTRY).unwrap();
+                let registry = registry.get_registry2::<BlockInformation>();
 
                 registry.len()
             }

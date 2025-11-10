@@ -5,9 +5,7 @@ use crate::error::WorldError;
 use bytes::{BufMut, BytesMut};
 use crab_registry::REGISTRY;
 use crab_registry::vanilla::Biome;
-use crab_text::utils::namespaced_key::NamespacedKey;
 use std::fmt::Debug;
-use std::str::FromStr;
 
 pub const CHUNK_SIZE: u16 = 16;
 pub const CHUNK_SIZE_SHIFT: u32 = CHUNK_SIZE.trailing_zeros();
@@ -104,10 +102,7 @@ impl ChunkSection {
 impl Default for ChunkSection {
     fn default() -> Self {
         let registry = REGISTRY.load();
-        let registry = registry.get_registry(Biome::REGISTRY).unwrap();
-        let plains_biome_id = registry
-            .key_to_id(&NamespacedKey::from_str(Biome::PLAINS.id).unwrap())
-            .unwrap() as u32;
+        let plains_biome_id = registry.key_to_id(Biome::PLAINS) as u32;
 
         ChunkSection {
             non_air_block_amount: 0,

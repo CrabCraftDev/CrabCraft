@@ -1,6 +1,4 @@
 use crate::error::{AnvilError, WorldError};
-use crab_registry::REGISTRY;
-use crab_registry::vanilla::Biome;
 use crab_text::utils::namespaced_key::NamespacedKey;
 use crab_world::anvil::region::file::RegionFile;
 use crab_world::chunks::chunk::Chunk;
@@ -9,7 +7,6 @@ use dashmap::DashMap;
 use dashmap::mapref::one::{Ref, RefMut};
 use nohash_hasher::BuildNoHashHasher;
 use std::path::PathBuf;
-use std::str::FromStr;
 use std::sync::Arc;
 use tracing::warn;
 
@@ -89,28 +86,17 @@ impl World {
     fn load_chunk_from_anvil(&self, x: i32, z: i32) -> Result<Chunk, WorldError> {
         let mut region = self.get_or_load_region_file(x, z)?;
 
-        // todo:map_err(RegistryError::RegistryNotInitialized)?
         let (local_chunk_x, local_chunk_z) = Self::chunk_coordinates_inside_region(x, z);
-        let chunk = region.read_chunk(local_chunk_x, local_chunk_z, Self::get_biome)?;
+        let chunk = region.read_chunk(local_chunk_x, local_chunk_z)?;
 
         Ok(chunk)
     }
 
     pub fn save_chunk(&self, x: i32, z: i32, chunk: &Chunk) -> Result<(), WorldError> {
         let mut region = self.get_or_load_region_file(x, z)?;
-        // todo: error
         region.write_chunk(x, z, chunk)?;
 
         Ok(())
-    }
-
-    // FIXME: Remove this, there is no need to pass it to 20 methods
-    fn get_biome(biome: &str) -> u64 {
-        let registry = REGISTRY.load();
-        let registry = registry.get_registry(Biome::REGISTRY).unwrap();
-        registry
-            .key_to_id(&NamespacedKey::from_str(biome).unwrap())
-            .expect("Invalid biome id") as u64
     }
 
     // FIXME: Create struct ChunkCoordinates and move these methods there (#255)

@@ -1,5 +1,5 @@
 use crate::blocks::block_data::BlockData;
-use crate::blocks::block_registry::BlockInformation;
+use crate::blocks::block_information::BlockInformation;
 use crate::error::BlockError;
 use crab_registry::REGISTRY;
 use crab_text::utils::namespaced_key::NamespacedKey;
@@ -15,18 +15,17 @@ pub struct Block(pub u16);
 
 impl Block {
     pub fn namespaced_key(&self) -> Result<NamespacedKey, BlockError> {
-        // TODO: New registry system
         let registry = REGISTRY.load();
-        let root = registry.get_registry(BlockInformation::REGISTRY).unwrap();
+        let registry = registry.get_registry2::<BlockInformation>();
 
-        Ok(root.id_to_key(self.0 as usize).unwrap().clone())
+        Ok(registry.id_to_key(self.0 as usize).unwrap().clone())
     }
 
     pub fn properties(&self) -> Result<(NamespacedKey, HashMap<&'static str, String>), BlockError> {
         let namespaced_key = self.namespaced_key()?;
+
         let registry = REGISTRY.load();
-        let root = registry.get_registry(BlockInformation::REGISTRY).unwrap();
-        let block_information = root.get_by_key(&namespaced_key).unwrap();
+        let block_information = registry.get_by_key2::<BlockInformation>(&namespaced_key).unwrap();
 
         let local_state = self.0 - block_information.starting_state_id;
         let properties = (block_information.properties)(local_state)?;
@@ -40,8 +39,7 @@ impl Block {
         properties: &HashMap<&str, String>,
     ) -> Result<Block, BlockError> {
         let registry = REGISTRY.load();
-        let root = registry.get_registry(BlockInformation::REGISTRY).unwrap();
-        let block_information = root.get_by_key(namespaced_key).unwrap();
+        let block_information = registry.get_by_key2::<BlockInformation>(namespaced_key).unwrap();
 
         (block_information.from_properties)(properties)
     }
@@ -90,9 +88,11 @@ pub trait BlockType {
 
     fn information() -> Result<BlockInformation, BlockError> {
         let registry = REGISTRY.load();
-        let blocks = registry.get_registry(BlockInformation::REGISTRY).unwrap();
 
-        Ok((*blocks.get_by_key(&Self::namespaced_key()).unwrap()).clone())
+        Ok((*registry
+            .get_by_key2::<BlockInformation>(&Self::namespaced_key())
+            .unwrap())
+        .clone())
     }
 
     fn default_state_id() -> Result<Block, BlockError> {

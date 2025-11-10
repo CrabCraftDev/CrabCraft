@@ -14,7 +14,7 @@ fn test_read_write_read_all_chunks() {
     let mut original_chunks = Vec::new();
     for x in 0..8 {
         for z in 0..8 {
-            let chunk = region.read_chunk(x, z, |_| 0).unwrap();
+            let chunk = region.read_chunk(x, z).unwrap();
             original_chunks.push(((x, z), chunk));
         }
     }
@@ -29,7 +29,7 @@ fn test_read_write_read_all_chunks() {
     let mut region2 = RegionFile::load(file2).unwrap();
 
     for ((x, z), original_chunk) in &original_chunks {
-        let reread_chunk_opt = region2.read_chunk(*x, *z, |_| 0).unwrap();
+        let reread_chunk_opt = region2.read_chunk(*x, *z).unwrap();
 
         assert_eq!(
             format!("{:?}", original_chunk),

@@ -41,15 +41,18 @@ pub fn generate() -> TokenStream {
         let block_name = &block.name;
 
         blocks_initialization.push(quote! {
-            for _i in 0..#states_amount {
-                blocks.register(#name::namespaced_key(), BlockInformation {
-                    from_properties: #name::from_properties,
-                    properties: #name::properties,
-                    starting_state_id: i,
-                    default_state_id: #default_state_offset + i
-                });
+            blocks.register(#name::namespaced_key(), BlockInformation {
+                from_properties: #name::from_properties,
+                properties: #name::properties,
+                starting_state_id: i,
+                default_state_id: #default_state_offset + i
+            });
+
+            for j in 0..#states_amount {
+                blocks.add_alias((i + j) as usize, entry_index as usize);
             }
             i += #states_amount;
+            entry_index += 1;
         });
 
         states_combinations_amounts.reverse();
@@ -101,14 +104,14 @@ pub fn generate() -> TokenStream {
     quote! {
         use crab_text::utils::namespaced_key::NamespacedKey;
         use std::collections::HashMap;
-        use crab_world::blocks::block_registry::BlockInformation;
-        use crab_registry::registry::Registry;
-        use crab_registry::RootRegistry;
+        use crab_world::blocks::block_information::BlockInformation;
+        use crab_registry::{Registry, Registrable, RootRegistry};
 
         #[allow(unused_assignments, clippy::identity_op)]
-        pub fn init_blocks(root_registry: &mut RootRegistry) {
+        pub fn populate_blocks(root_registry: &mut RootRegistry) {
             let mut i = 0;
-            let mut blocks = Registry::<BlockInformation>::new();
+            let mut entry_index = 0;
+            let mut blocks = Registry::<BlockInformation>::default();
             #(#blocks_initialization)*
             root_registry.register_registry(BlockInformation::REGISTRY, blocks);
         }
