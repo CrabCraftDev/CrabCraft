@@ -24,17 +24,23 @@
   ],
   "packageRules": [
     {
-      "groupName": "Dev dependencies",
-      "matchDepTypes": ["dev-dependencies"]
+      "groupName": "Rust dev dependencies",
+      "matchDepTypes": ["dev-dependencies"],
+      "matchDatasources": ["crates.io"]
     },
     {
-      "groupName": "Compiled dependencies",
-      "matchDepTypes": ["dependencies"]
+      "groupName": "Rust runtime dependencies",
+      "matchDepTypes": ["dependencies"],
+      "matchDatasources": ["crates.io"]
     },
     {
       "groupName": "Rust toolchain",
-      "matchManagers": ["regex"],
-      "matchDepNames": ["rust"]
+      "matchManagers": ["regex", "dockerfile"],
+      "matchDepNames": ["rust", "lukemathwalker/cargo-chef"],
+      "separateMultipleMajor": false
     }
-  ]
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  }
 }
