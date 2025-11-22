@@ -26,12 +26,12 @@
     {
       "groupName": "Rust dev dependencies",
       "matchDepTypes": ["dev-dependencies"],
-      "matchDatasources": ["crates.io"]
+      "matchManagers": ["cargo"]
     },
     {
       "groupName": "Rust runtime dependencies",
       "matchDepTypes": ["dependencies"],
-      "matchDatasources": ["crates.io"]
+      "matchManagers": ["cargo"]
     },
     {
       "groupName": "Rust toolchain",
