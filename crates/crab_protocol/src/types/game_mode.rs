@@ -32,10 +32,8 @@ impl ProtocolSerializer for OptionalGameMode {
         match value {
             -1 => Ok(None.into()),
             _ => {
-                let game_mode = GameMode::from_repr(value as u8).ok_or(ProtocolError::EnumOutOfBounds(
-                    "OptionalGameMode".to_string(),
-                    value as usize,
-                ))?;
+                let game_mode = GameMode::from_repr(value as u8)
+                    .ok_or_else(|| ProtocolError::EnumOutOfBounds("OptionalGameMode".to_string(), value as usize))?;
                 Ok(Some(game_mode).into())
             }
         }

@@ -46,7 +46,7 @@ impl ProtocolSerializer for Equipment {
             let slot_enum_index = (slot_byte & 127) as usize;
 
             let slot = EquipmentSlot::from_repr(slot_enum_index)
-                .ok_or(ProtocolError::EnumOutOfBounds("Equipment".to_string(), slot_enum_index))?;
+                .ok_or_else(|| ProtocolError::EnumOutOfBounds("Equipment".to_string(), slot_enum_index))?;
             let item = ProtocolSerializer::deserialize(buf)?;
             slots.insert(slot, item);
 

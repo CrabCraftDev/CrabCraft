@@ -232,7 +232,7 @@ impl RawSection {
                 registry
                     .id_to_key(id as usize)
                     .map(|n| n.to_string())
-                    .ok_or(AnvilError::InvalidBiomeId(id.to_string()))
+                    .ok_or_else(|| AnvilError::InvalidBiomeId(id.to_string()))
             })
             .collect::<Result<Vec<_>, AnvilError>>()?;
 

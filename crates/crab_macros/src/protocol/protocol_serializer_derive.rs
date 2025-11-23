@@ -57,7 +57,7 @@ fn generate_enum(input_attrs: &Vec<Attribute>, input_name_str: &str) -> (TokenSt
     let serialize_impl = quote! { buf.#put_method(*self as #enum_type); };
     let deserialize_impl = quote! {
         let value = buf.#get_method;
-        Self::from_repr(value.into()).ok_or(::crab_protocol::error::ProtocolError::EnumOutOfBounds(#input_name_str.to_string(), value as usize))
+        Self::from_repr(value.into()).ok_or_else(|| ::crab_protocol::error::ProtocolError::EnumOutOfBounds(#input_name_str.to_string(), value as usize))
     };
     (serialize_impl, deserialize_impl)
 }
