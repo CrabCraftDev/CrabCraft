@@ -6,13 +6,24 @@ use syn::punctuated::Punctuated;
 use syn::token::Comma;
 
 pub fn generate_enum_code(name_of_config: Ident, variants: Punctuated<Variant, Comma>) -> TokenStream {
-    let mut doc_parts: Vec<String> = vec![" Possible values:".to_string()];
-
+    let mut documentation_modifiers = Vec::new();
     for variant in variants.into_iter() {
-        doc_parts.push(format!("  - {} -{}", variant.ident, collect_docs(&variant)));
-    }
+        let collected = collect_docs(&variant);
+        let collected = collected.trim_end_matches('\n');
+        let ident = &variant.ident;
 
-    let docs_option = doc_parts.join("\n");
+        // Note: We use to_string method, to convert enum variant to string in the correct case
+        documentation_modifiers.push(quote! {
+            lines.push({
+                let base = crab_config::to_string(&Self::#ident).unwrap_or_default().trim().to_string();
+                if #collected.is_empty() {
+                    format!("  - {}", base)
+                } else {
+                    format!("  - {} -{}", base, #collected)
+                }
+            });
+        });
+    }
 
     quote! {
         impl crab_config::types::config::Config for #name_of_config {
@@ -23,8 +34,12 @@ pub fn generate_enum_code(name_of_config: Ident, variants: Punctuated<Variant, C
             }
 
             fn as_configuration_node(&self) -> crab_config::node::ConfigurationNode {
-                crab_config::node::ConfigurationNode::with_value(serde_value).set_doc(Some(#docs_option.to_string()))
                 let serde_value = crab_config::to_value(&self).unwrap();
+
+                let mut lines = vec![" Possible values:".to_string()];
+                #(#documentation_modifiers)*
+
+                crab_config::node::ConfigurationNode::with_value(serde_value).set_doc(Some(lines.join("\n"))).clone()
             }
         }
     }
