@@ -6,3 +6,4 @@ mod game_mode;
 mod namespaced_key;
 mod slot_type;
 mod vec;
+mod isolated_nbt;

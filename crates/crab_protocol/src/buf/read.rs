@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::str::from_utf8;
 
 use bytes::{Buf, Bytes};
@@ -38,7 +39,7 @@ macro_rules! get_var_num {
 
 pub(crate) use get_var_num;
 
-pub trait ReadByteBuf: Buf + Sized {
+pub trait ReadByteBuf: Buf + Sized + Debug {
     fn get_var_int(&mut self) -> Result<i32, ProtocolError> {
         get_var_num!(i32, self.get_i8())
     }
@@ -86,4 +87,4 @@ pub trait ReadByteBuf: Buf + Sized {
     }
 }
 
-impl<T: Buf> ReadByteBuf for T {}
+impl<T: Buf + Debug> ReadByteBuf for T {}

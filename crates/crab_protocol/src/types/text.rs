@@ -8,11 +8,11 @@ use crab_text::text::Text;
 
 impl ProtocolSerializer for Text {
     fn serialize(&self, buf: &mut impl WriteByteBuf) -> Result<(), ProtocolError> {
-        buf.put(NbtTextFormat.write(self)?);
+        buf.put_array(&NbtTextFormat.write(self)?)?;
         Ok(())
     }
 
     fn deserialize(buf: &mut impl ReadByteBuf) -> Result<Self, ProtocolError> {
-        Ok(from_bytes_unnamed(buf)?)
+        Ok(from_bytes_unnamed(&*buf.get_array::<u8>()?)?)
     }
 }
