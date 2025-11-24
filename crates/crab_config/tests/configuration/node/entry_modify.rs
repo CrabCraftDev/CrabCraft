@@ -1,6 +1,6 @@
 use crate::utils::get_test_configuration_node;
 use crab_config::node::search::get_configuration_node_from_flat_key;
-use serde_yml::Value;
+use serde_json::Value;
 
 #[test]
 fn modify_existing_configuration_node() {

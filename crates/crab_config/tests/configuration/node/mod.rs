@@ -1,5 +1,5 @@
 use crab_config::node::{ConfigurationNode, NodeContent};
-use serde_yml::Value;
+use serde_json::Value;
 
 mod entry_modify;
 mod flat_path_removal;

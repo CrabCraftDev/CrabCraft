@@ -4,7 +4,7 @@ use crate::node::ConfigurationNode;
 use crate::types::config::Config;
 use crate::version_control::migrations::migration::Migration;
 use semver::Version;
-use serde_yml::Value;
+use serde_json::Value;
 use std::marker::PhantomData;
 use std::path::Path;
 

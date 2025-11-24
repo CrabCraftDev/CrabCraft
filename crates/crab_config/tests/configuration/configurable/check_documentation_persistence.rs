@@ -21,7 +21,7 @@ fn check_documentation_persistence() {
     let configuration_node = get_configuration_node_from_flat_key(&result, VERSION_CONFIG_FIELD_NAME).unwrap();
     assert_eq!(
         configuration_node.documentation.unwrap(),
-        " First value documentation\n Which has second line :3\n Default value: \"0.0.2\""
+        " First value documentation\n Which has second line :3\n Default value: 0.0.2"
     );
     let configuration_node = get_configuration_node_from_flat_key(&result, "test").unwrap();
     assert_eq!(
