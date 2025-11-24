@@ -6,7 +6,7 @@ use crab_config::node::ConfigurationNode;
 use crab_config::types::config::Config;
 use crab_config::version_control::migrations::migration::Migration;
 use semver::Version;
-use serde_yml::{Number, Value};
+use serde_json::{Number, Value};
 use std::fs;
 
 const TEST_FILE: &str = "migration_config_test.yml";

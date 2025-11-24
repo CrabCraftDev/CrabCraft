@@ -2,10 +2,11 @@ use crab_config::node::ConfigurationNode;
 use crab_config::types::config::Config;
 use crab_macros::Config;
 use serde::{Deserialize, Serialize};
-use serde_yml::Value;
+use serde_json::Value;
 use std::fs;
 use std::fs::OpenOptions;
 use std::path::Path;
+
 #[derive(Default, Config, Deserialize, Serialize, PartialEq, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum TestEnum {
@@ -15,7 +16,7 @@ pub enum TestEnum {
     /// Second variant documentation
     T2,
     /// Third variant documentation
-    T3 { value: String },
+    T3,
 }
 
 #[derive(Config, Deserialize, Serialize, PartialEq, Debug)]
@@ -61,9 +62,9 @@ pub fn create_test_file(test_structure: impl Config + Serialize, file: &str) {
         return;
     }
 
-    let file = OpenOptions::new().create_new(true).append(true).open(file).unwrap();
+    let mut file = OpenOptions::new().create_new(true).append(true).open(file).unwrap();
 
-    serde_yml::to_writer(file, &test_structure).unwrap();
+    serde_saphyr::to_io_writer(&mut file, &test_structure).unwrap();
 }
 
 pub fn remove_test_file(file: &str) {

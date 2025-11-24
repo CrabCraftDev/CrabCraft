@@ -5,7 +5,7 @@ use crab_config::node::search::get_configuration_node_from_flat_key;
 use crab_macros::Config;
 use semver::Version;
 use serde::Serialize;
-use serde_yml::{Number, Value};
+use serde_json::{Number, Value};
 
 const TEST_FILE: &str = "read_config_yaml.yml";
 const TEST_FILE2: &str = "read_config_yaml_index_access.yml";
@@ -25,7 +25,7 @@ pub struct TestStructure2 {
 
 #[derive(Config, Serialize)]
 pub struct TestStructure3 {
-    pub test_value_4: f32,
+    pub test_value_4: f64,
 }
 
 #[test]
@@ -45,7 +45,7 @@ fn read_config_yaml_and_verify_using_flattening() {
         test_structure_2: TestStructure2 {
             test_value_3: TEST_VALUE_3,
             test_structure_3: TestStructure3 {
-                test_value_4: TEST_VALUE_4 as f32,
+                test_value_4: TEST_VALUE_4,
             },
         },
     };
@@ -66,7 +66,7 @@ fn read_config_yaml_and_verify_using_flattening() {
     );
     assert_eq!(
         map.get("test_structure_2.test_structure_3.test_value_4").unwrap(),
-        &Value::Number(Number::from(TEST_VALUE_4))
+        &Value::Number(Number::from_f64(TEST_VALUE_4).unwrap())
     );
 
     remove_test_file(TEST_FILE)
@@ -89,7 +89,7 @@ fn read_config_yaml_and_verify_using_index_access() {
         test_structure_2: TestStructure2 {
             test_value_3: TEST_VALUE_3,
             test_structure_3: TestStructure3 {
-                test_value_4: TEST_VALUE_4 as f32,
+                test_value_4: TEST_VALUE_4,
             },
         },
     };
@@ -131,7 +131,7 @@ fn read_config_yaml_and_verify_using_index_access() {
                 .unwrap()
                 .get_value()
                 .unwrap(),
-                Value::from(Number::from(TEST_VALUE_4))
+                Value::from(Number::from_f64(TEST_VALUE_4).unwrap())
             );
         }
         Err(error) => {

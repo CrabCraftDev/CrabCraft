@@ -1,6 +1,6 @@
 use crate::utils::get_test_configuration_node;
 use crab_config::node::ConfigurationNode;
-use serde_yml::Value;
+use serde_json::Value;
 
 #[test]
 fn merge_test() {

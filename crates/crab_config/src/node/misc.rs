@@ -1,6 +1,6 @@
 use crate::error::ConfigError;
 use crate::node::{ConfigurationNode, FLAT_PATH_SEPARATOR, NodeContent};
-use serde_yml::Value;
+use serde_json::Value;
 use std::collections::HashMap;
 
 impl ConfigurationNode {

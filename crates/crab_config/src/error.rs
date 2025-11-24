@@ -15,7 +15,7 @@ pub enum ConfigError {
     #[error("Found configuration node with value, expected mapping")]
     FoundValueExpectedMapping,
     #[error("Invalid field value ({})", serde_error.to_string())]
-    InvalidFieldValue { serde_error: serde_yml::Error },
+    InvalidFieldValue { serde_error: serde_json::Error },
     #[error(
         "Invalid enum config value for enum {} found value: {} Expected values: {:?}",
         enum_name,
@@ -36,5 +36,7 @@ pub enum ConfigError {
     #[error(transparent)]
     IO(#[from] std::io::Error),
     #[error(transparent)]
-    Serde(#[from] serde_yml::modules::error::Error),
+    SerdeSaphyrSerialization(#[from] serde_saphyr::ser_error::Error),
+    #[error(transparent)]
+    SerdeSaphyr(#[from] serde_saphyr::Error),
 }

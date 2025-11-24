@@ -1,5 +1,5 @@
 use crate::node::{ConfigurationNode, FLAT_PATH_SEPARATOR, NodeContent};
-use serde_yml::Value;
+use serde_json::Value;
 
 impl ConfigurationNode {
     pub fn add_child_by_flat_path(&mut self, flat_path: &str, configuration_node: ConfigurationNode) -> bool {

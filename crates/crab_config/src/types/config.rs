@@ -2,7 +2,7 @@ use crate::error::ConfigError;
 use crate::node::ConfigurationNode;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
-use serde_yml::{from_value, to_value};
+use serde_json::{from_value, to_value};
 
 /// Used to implement serializing specific structs inside config
 pub trait Config: Default {

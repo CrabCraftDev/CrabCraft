@@ -1,6 +1,6 @@
 use serde::ser::SerializeMap;
 use serde::{Serialize, Serializer};
-use serde_yml::Value;
+use serde_json::Value;
 use std::collections::HashMap;
 
 pub mod add;
@@ -13,7 +13,7 @@ pub const FLAT_PATH_SEPARATOR: &str = ".";
 /// Represents a single node in configuration tree
 /// Node can either have:
 ///  - children - object containing other nodes
-///  - value - serde_yml value containing actual data
+///  - value - value parsed by serde-saphyr and stored as serde_json' Value
 ///
 /// It also stores additional metadata like documentation
 #[derive(PartialEq, Debug, Clone, Default)]

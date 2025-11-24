@@ -8,12 +8,12 @@ use serde::{Deserialize, Serialize};
 const CONFIG_FILE: &str = "test_enum_documentation_persistence.yaml";
 
 const EXPECTED_FILE_CONTENT: &str = r#"# Popular compression types
-# Default value: Gzip
+# Default value: gzip
 # Possible values:
-#  - Gzip - Gzip is a widely used compression algorithm based on the DEFLATE algorithm.
-#  - Bzip2 - Bzip2 is a high-compression algorithm using the Burrows-Wheeler transform.
-#  - Lzma - Lzma offers high compression ratios and is used in formats like 7z.
-#  - Zstd - Zstd is a fast compression algorithm providing good ratios and speed.
+#  - gzip - Gzip is a widely used compression algorithm based on the DEFLATE algorithm.
+#  - bzip2 - Bzip2 is a high-compression algorithm using the Burrows-Wheeler transform.
+#  - lzma - Lzma offers high compression ratios and is used in formats like 7z.
+#  - zstd - Zstd is a fast compression algorithm providing good ratios and speed.
 compression: gzip
 "#;
 
@@ -53,6 +53,5 @@ fn enum_documentation_persistence() {
     assert_eq!(file_content, EXPECTED_FILE_CONTENT);
 
     // Cleanup
-
-    // std::fs::remove_file(CONFIG_FILE).unwrap();
+    std::fs::remove_file(CONFIG_FILE).unwrap();
 }
