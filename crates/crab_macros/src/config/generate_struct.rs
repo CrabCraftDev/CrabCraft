@@ -97,7 +97,7 @@ fn fields_to_configuration_node(
         }
 
         if let Some(default_expr) = collect_default_value(field) {
-            parts.push(quote! { format!(" Default value: {:?}", #default_expr) });
+            parts.push(quote! { format!(" Default value: {}", crab_config::to_string(&#default_expr).unwrap().trim_end_matches('\n')) });
         }
 
         let docs_option = if parts.is_empty() {
