@@ -13,7 +13,7 @@ rust-version = "1.85"
 members = ["tools/*", "crates/*"]
 
 [workspace.package]
-version = "0.0.5"
+version = "0.0.6"
 edition = "2024"
 
 [workspace.dependencies]
