@@ -32,7 +32,7 @@ impl ConfigManager {
             Box::new(yaml_handler),
         );
 
-        let config = match configurable.load_or_create_default_config(vec![migrations::up()]) {
+        let config = match configurable.load_or_create_default_config(migrations::list()) {
             Ok(config) => config,
             Err(error) => {
                 error!("Error while loading config files");
