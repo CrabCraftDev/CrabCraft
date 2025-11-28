@@ -31,3 +31,21 @@ Version field name is defined in: `configurable.rs` under the name of const vari
 ### Core concepts
 - **Node** - A node is a single value in the config tree. It can be a primitive type, a list, or a map.
 - **Migration** - A migration is a function that takes a config and returns a new config. It is used to update the config to a new version.
+
+### Migration Version
+
+> This documentation applies only for the CrabCraft project. For other projects, you can use any versioning scheme you like.
+
+CrabCraft uses a strict versioning scheme for configuration migrations to ensure compatibility and safe upgrades. The format is:
+
+```txt
+MAJOR.MINOR.PATCH-migration.<MIGRATION>
+```
+
+* **MAJOR.MINOR.PATCH** – Matches the version of the CrabCraft binary.
+* **MIGRATION** – A sequential index representing a specific migration step for this binary version. Each migration transforms the config from one version to the next, allowing the system to safely apply incremental updates.
+
+Each migration should be placed in a separate file inside the `src/config/migrations/` directory. File names must follow this pattern:
+```txt
+m_<MAJOR>_<MINOR>_<PATCH>_<MIGRATION>_<VERY SHORT DESCRIPTION>.rs
+```
