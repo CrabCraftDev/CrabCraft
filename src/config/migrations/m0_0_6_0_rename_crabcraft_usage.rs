@@ -6,13 +6,13 @@ pub struct ConfigMigration;
 
 impl Migration<SemverVersion> for ConfigMigration {
     fn up(&self, configuration: &mut ConfigurationNode) {
-        let value = configuration.get_value_from_flat_path("mention_crabcraft_usage");
+        let value = configuration.get_value_from_flat_path("mention_crab_craft_usage");
         if let Some(value) = value {
-            configuration.set_value_by_flat_path("mention_crab_craft_usage", value.clone());
+            configuration.set_value_by_flat_path("mention_crabcraft_usage", value.clone());
         }
     }
 
     fn version(&self) -> SemverVersion {
-        SemverVersion::new(0, 0, 3)
+        SemverVersion::parse("0.0.6-migration.0").unwrap()
     }
 }
