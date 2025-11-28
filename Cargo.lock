@@ -507,41 +507,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "crab_craft"
-version = "0.0.6"
-dependencies = [
- "base64 0.22.1",
- "bytes",
- "cargo-husky",
- "chrono",
- "console-subscriber",
- "crab_config",
- "crab_macros",
- "crab_nbt",
- "crab_protocol",
- "crab_registry",
- "crab_text",
- "crab_world",
- "crossbeam",
- "dashmap",
- "derive_more 1.0.0",
- "evenio",
- "futures",
- "kanal",
- "nu-ansi-term 0.50.1",
- "parking_lot",
- "serde",
- "serde_json",
- "supports-color",
- "thiserror 2.0.11",
- "tokio",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
 name = "crab_macros"
 version = "0.0.6"
 dependencies = [
@@ -652,6 +617,41 @@ dependencies = [
  "strum",
  "thiserror 2.0.11",
  "tracing",
+]
+
+[[package]]
+name = "crabcraft"
+version = "0.0.6"
+dependencies = [
+ "base64 0.22.1",
+ "bytes",
+ "cargo-husky",
+ "chrono",
+ "console-subscriber",
+ "crab_config",
+ "crab_macros",
+ "crab_nbt",
+ "crab_protocol",
+ "crab_registry",
+ "crab_text",
+ "crab_world",
+ "crossbeam",
+ "dashmap",
+ "derive_more 1.0.0",
+ "evenio",
+ "futures",
+ "kanal",
+ "nu-ansi-term 0.50.1",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "supports-color",
+ "thiserror 2.0.11",
+ "tokio",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

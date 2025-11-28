@@ -1,5 +1,5 @@
 services:
-  crab_craft:
+  crabcraft:
     build:
       context: .
       dockerfile: Dockerfile

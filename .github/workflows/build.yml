@@ -21,7 +21,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: crabcraft_build_${{ github.event.head_commit.id }}
-          path: target/release/crab_craft
+          path: target/release/crabcraft
       - name: Download windows buildtools
         run: rustup target add x86_64-pc-windows-gnu
       - run: sudo apt-get install -y mingw-w64
@@ -30,4 +30,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: crabcraft_build_${{ github.event.head_commit.id }}.exe
-          path: target/x86_64-pc-windows-gnu/release/crab_craft.exe
+          path: target/x86_64-pc-windows-gnu/release/crabcraft.exe

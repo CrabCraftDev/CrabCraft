@@ -10,7 +10,7 @@ To build CrabCraft for production (this is what you usually want) run:
 cargo build --release
 ```
 
-CrabCraft binary named `crab_craft` will be found in target/release directory.
+CrabCraft binary named `crabcraft` will be found in target/release directory.
 
 > [!TIP] You can prefix the command with `RUSTFLAGS='-C target-cpu=native'` to
 > build CrabCraft specifically for your CPU, which will enable extra performance

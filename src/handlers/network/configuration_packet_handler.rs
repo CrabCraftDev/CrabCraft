@@ -46,7 +46,7 @@ pub fn configuration_packets(
     if let Some(packet) = packet.decode::<ClientInformationC2SPacket>(*state) {
         sender.insert(entity, packet as ClientInformation);
 
-        if ConfigManager::get().main.mention_crab_craft_usage {
+        if ConfigManager::get().main.mention_crabcraft_usage {
             let crabcraft_version = env!("CARGO_PKG_VERSION");
             connection.send_packet(ReportDetailsS2CPacket {
                 details: vec![ReportDetail {

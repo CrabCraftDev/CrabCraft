@@ -1,5 +1,5 @@
 [package]
-name = "crab_craft"
+name = "crabcraft"
 description = "A drop-in replacement for Paper Minecraft Server written in Rust."
 keywords = ["minecraft", "game-server", "crabcraft"]
 authors = ["Norbiros", "goteusz-maszyk", "other CrabCraft Contributors"]

@@ -1,16 +1,16 @@
 use chrono::Local;
-use crab_craft::config::manager::ConfigManager;
-use crab_craft::utils::{errors::print_error_report_instructions, log};
 use crab_registry::REGISTRY;
 use crab_world::blocks::{Air, BlockType, CaveAir, VoidAir};
+use crabcraft::config::manager::ConfigManager;
+use crabcraft::utils::{errors::print_error_report_instructions, log};
 use std::process::exit;
 use std::{backtrace::Backtrace, panic, thread};
 use tracing::{error, info, info_span};
 
-use crab_craft::mc_server::McServer;
-use crab_craft::utils::files::FILES;
-use crab_craft::world::OVERWORLD_IDENTIFIER;
-use crab_craft::world::storage::WORLDS_STORAGE;
+use crabcraft::mc_server::McServer;
+use crabcraft::utils::files::FILES;
+use crabcraft::world::OVERWORLD_IDENTIFIER;
+use crabcraft::world::storage::WORLDS_STORAGE;
 
 #[tokio::main]
 async fn main() {

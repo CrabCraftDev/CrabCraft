@@ -17,11 +17,11 @@ pub struct MainConfig {
     /// CrabCraft bug tracker or current version of CrabCraft
     ///
     /// *But please, leave it to true and be proud CrabCraft user :3*
-    pub mention_crab_craft_usage: bool,
+    pub mention_crabcraft_usage: bool,
 
     /// The current configuration version.
     /// **Do not modify this value, as it may cause configuration corruption.**
-    #[default_value("0.0.4".to_string())]
+    #[default_value("0.0.6-migration.0".to_string())]
     pub _version: String,
 }
 
