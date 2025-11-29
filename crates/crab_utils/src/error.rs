@@ -9,7 +9,9 @@ use tracing_error::{SpanTrace, SpanTraceStatus};
 #[derive(Debug)]
 pub struct DetailedError<T: Error> {
     pub error: T,
-    pub trace: SpanTrace,
+    // We use Box because SpanTrace is 40 bytes, Box is 8
+    // This way we save 32 bytes on the stack
+    pub trace: Box<SpanTrace>,
     pub file: &'static str,
     pub line: u32,
 }
@@ -20,7 +22,7 @@ impl<T: Error> DetailedError<T> {
         let location = Location::caller();
         Self {
             error,
-            trace: SpanTrace::capture(),
+            trace: SpanTrace::capture().into(),
             file: location.file(),
             line: location.line(),
         }
