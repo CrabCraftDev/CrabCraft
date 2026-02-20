@@ -12,3 +12,6 @@ bytes.workspace = true
 strum.workspace = true
 nu-ansi-term.workspace = true
 ratatui.workspace = true
+
+crab_macros = { path = "../crab_macros" }
+crab_utils = { path = "../crab_utils" }

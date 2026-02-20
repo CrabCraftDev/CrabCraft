@@ -11,5 +11,5 @@ serde-saphyr.workspace = true
 regex = "1.11.1"
 semver = "1.0.26"
 
-[dev-dependencies]
 crab_macros = { path = "../crab_macros" }
+crab_utils = { path = "../crab_utils" }

@@ -498,6 +498,7 @@ name = "crab_config"
 version = "0.0.6"
 dependencies = [
  "crab_macros",
+ "crab_utils",
  "regex",
  "semver",
  "serde",
@@ -537,6 +538,7 @@ dependencies = [
  "crab_macros",
  "crab_nbt",
  "crab_text",
+ "crab_utils",
  "derive_more 1.0.0",
  "evenio",
  "flate2",
@@ -567,7 +569,9 @@ version = "0.0.6"
 dependencies = [
  "ahash",
  "arc-swap",
+ "crab_macros",
  "crab_text",
+ "crab_utils",
  "include_dir",
  "linkme",
  "ordermap",
@@ -581,7 +585,9 @@ name = "crab_text"
 version = "0.0.6"
 dependencies = [
  "bytes",
+ "crab_macros",
  "crab_nbt",
+ "crab_utils",
  "nu-ansi-term 0.50.1",
  "ratatui",
  "serde",
@@ -611,6 +617,7 @@ dependencies = [
  "crab_protocol",
  "crab_registry",
  "crab_text",
+ "crab_utils",
  "criterion",
  "dashmap",
  "derive_more 1.0.0",
@@ -643,6 +650,7 @@ dependencies = [
  "crab_protocol",
  "crab_registry",
  "crab_text",
+ "crab_utils",
  "crab_world",
  "crossbeam",
  "dashmap",

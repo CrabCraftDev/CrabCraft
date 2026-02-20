@@ -187,3 +187,25 @@ pub fn async_event(item: TokenStream) -> TokenStream {
         Err(e) => e.into_compile_error().into(),
     }
 }
+
+/// Derives an implementation of `TryFrom<AsyncEvent>` for the annotated type.
+///
+/// This macro allows converting an `AsyncEvent` into the annotated struct or enum,
+/// provided the `AsyncEvent` contains a matching variant.
+///
+/// The matching variant is determined by stripping the `Event` suffix from the annotated type's name.
+///
+/// # Example
+/// ```ignore
+/// use crab_macros::AsyncEvent;
+///
+/// #[derive(AsyncEvent)]
+/// struct MyEvent;
+/// ```
+#[proc_macro_derive(DetailedFrom, attributes(detailed))]
+pub fn detailed_from(item: TokenStream) -> TokenStream {
+    match core::detailed_from::detailed_from_impl(item.into()) {
+        Ok(tokens) => tokens.into(),
+        Err(e) => e.into_compile_error().into(),
+    }
+}

@@ -15,3 +15,5 @@ arc-swap = "1.7.1"
 ordermap = "1.0.0"
 
 crab_text = { path = "../../crates/crab_text" }
+crab_macros = { path = "../crab_macros" }
+crab_utils = { path = "../crab_utils" }

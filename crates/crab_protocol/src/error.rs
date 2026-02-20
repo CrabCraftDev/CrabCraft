@@ -1,9 +1,10 @@
 use crate::protocol_state::ProtocolState;
+use crab_macros::DetailedFrom;
 use libdeflater::DecompressionError;
 use std::{io, str::Utf8Error};
 use thiserror::Error;
 
-#[derive(Debug, Error)]
+#[derive(Debug, DetailedFrom, Error)]
 pub enum ProtocolError {
     #[error("Encountered invalid string {0:?}")]
     InvalidString(#[from] Utf8Error),
@@ -12,7 +13,11 @@ pub enum ProtocolError {
     #[error(transparent)]
     Nbt(#[from] crab_nbt::error::Error),
     #[error(transparent)]
-    Text(#[from] crab_text::error::TextError),
+    Text(
+        #[from]
+        #[detailed(crab_text::error::DetailedTextError)]
+        crab_text::error::TextError,
+    ),
     #[error(transparent)]
     SerdeJson(#[from] serde_json::Error),
     #[error(transparent)]

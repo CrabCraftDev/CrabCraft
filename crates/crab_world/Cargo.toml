@@ -24,6 +24,7 @@ crab_registry = { path = "../crab_registry" }
 crab_protocol = { path = "../crab_protocol" }
 crab_macros = { path = "../crab_macros" }
 crab_text = { path = "../crab_text" }
+crab_utils = { path = "../crab_utils" }
 
 [build-dependencies]
 serde.workspace = true
