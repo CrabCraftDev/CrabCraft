@@ -82,6 +82,7 @@ crab_world = { path = "crates/crab_world" }
 crab_config = { path = "crates/crab_config" }
 crab_macros = { path = "crates/crab_macros" }
 crab_text = { path = "crates/crab_text" }
+crab_utils = { path = "crates/crab_utils" }
 
 [dev-dependencies]
 cargo-husky = { version = "1.5.0", default-features = false, features = [

@@ -1,8 +1,9 @@
+use crab_macros::DetailedFrom;
 use crab_nbt::error::Error as NbtError;
 use serde_json::error::Error as JsonError;
 use thiserror::Error;
 
-#[derive(Debug, Error)]
+#[derive(Debug, DetailedFrom, Error)]
 pub enum TextError {
     #[error("Invalid namespaced key {0}")]
     InvalidNamespacedKeyFormat(String),

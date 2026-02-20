@@ -1,13 +1,14 @@
+use crab_macros::DetailedFrom;
 use std::io;
 use thiserror::Error;
 
 use crab_nbt::error::Error as NbtError;
-use crab_protocol::error::ProtocolError;
-use crab_registry::error::RegistryError;
-use crab_text::error::TextError;
+use crab_protocol::error::{DetailedProtocolError, ProtocolError};
+use crab_registry::error::{DetailedRegistryError, RegistryError};
+use crab_text::error::{DetailedTextError, TextError};
 use crab_text::utils::namespaced_key::NamespacedKey;
 
-#[derive(Debug, Error)]
+#[derive(Debug, DetailedFrom, Error)]
 pub enum BlockError {
     #[error("Invalid property value")]
     InvalidPropertyValue,
@@ -26,10 +27,14 @@ pub enum BlockError {
     DuplicateBlock(NamespacedKey),
 
     #[error(transparent)]
-    Registry(#[from] RegistryError),
+    Registry(
+        #[from]
+        #[detailed(DetailedRegistryError)]
+        RegistryError,
+    ),
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, DetailedFrom, Error)]
 pub enum WorldError {
     #[error("Attempted to set index {0} in BitStorage of size {1}")]
     BitStorageSetOutOfRange(usize, usize),
@@ -50,16 +55,32 @@ pub enum WorldError {
     InvalidPositionInChunk,
 
     #[error(transparent)]
-    Protocol(#[from] ProtocolError),
+    Protocol(
+        #[from]
+        #[detailed(DetailedProtocolError)]
+        ProtocolError,
+    ),
     #[error(transparent)]
-    Block(#[from] BlockError),
+    Block(
+        #[from]
+        #[detailed(DetailedBlockError)]
+        BlockError,
+    ),
     #[error(transparent)]
-    Anvil(#[from] AnvilError),
+    Anvil(
+        #[from]
+        #[detailed(DetailedAnvilError)]
+        AnvilError,
+    ),
     #[error(transparent)]
-    Registry(#[from] RegistryError),
+    Registry(
+        #[from]
+        #[detailed(DetailedRegistryError)]
+        RegistryError,
+    ),
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, DetailedFrom, Error)]
 pub enum AnvilError {
     #[error("Invalid world file compression scheme {0}")]
     InvalidCompressionScheme(u8),
@@ -77,11 +98,23 @@ pub enum AnvilError {
     InvalidBiomeId(String),
 
     #[error(transparent)]
-    Protocol(#[from] ProtocolError),
+    Protocol(
+        #[from]
+        #[detailed(DetailedProtocolError)]
+        ProtocolError,
+    ),
     #[error(transparent)]
-    Text(#[from] TextError),
+    Text(
+        #[from]
+        #[detailed(DetailedTextError)]
+        TextError,
+    ),
     #[error(transparent)]
     Nbt(#[from] NbtError),
     #[error(transparent)]
-    Block(#[from] BlockError),
+    Block(
+        #[from]
+        #[detailed(DetailedBlockError)]
+        BlockError,
+    ),
 }

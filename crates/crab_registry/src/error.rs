@@ -1,8 +1,9 @@
-use crab_text::error::TextError;
+use crab_macros::DetailedFrom;
+use crab_text::error::{DetailedTextError, TextError};
 use crab_text::utils::namespaced_key::NamespacedKey;
 use thiserror::Error;
 
-#[derive(Debug, Error)]
+#[derive(Debug, DetailedFrom, Error)]
 pub enum RegistryError {
     #[error("There is no key '{key}' in registry {registry}")]
     MissingKeyInRegistry { key: NamespacedKey, registry: &'static str },
@@ -19,5 +20,9 @@ pub enum RegistryError {
     #[error("Failed to parse JSON for '{path}': {source}")]
     JsonParseError { path: String, source: serde_json::Error },
     #[error(transparent)]
-    Text(#[from] TextError),
+    Text(
+        #[from]
+        #[detailed(DetailedTextError)]
+        TextError,
+    ),
 }

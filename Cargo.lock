@@ -498,6 +498,7 @@ name = "crab_config"
 version = "0.0.6"
 dependencies = [
  "crab_macros",
+ "crab_utils",
  "regex",
  "semver",
  "serde",
@@ -537,6 +538,7 @@ dependencies = [
  "crab_macros",
  "crab_nbt",
  "crab_text",
+ "crab_utils",
  "derive_more 1.0.0",
  "evenio",
  "flate2",
@@ -567,7 +569,9 @@ version = "0.0.6"
 dependencies = [
  "ahash",
  "arc-swap",
+ "crab_macros",
  "crab_text",
+ "crab_utils",
  "include_dir",
  "linkme",
  "ordermap",
@@ -581,13 +585,24 @@ name = "crab_text"
 version = "0.0.6"
 dependencies = [
  "bytes",
+ "crab_macros",
  "crab_nbt",
+ "crab_utils",
  "nu-ansi-term 0.50.1",
  "ratatui",
  "serde",
  "serde_json",
  "strum",
  "thiserror 2.0.11",
+]
+
+[[package]]
+name = "crab_utils"
+version = "0.0.6"
+dependencies = [
+ "tracing",
+ "tracing-error",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -602,6 +617,7 @@ dependencies = [
  "crab_protocol",
  "crab_registry",
  "crab_text",
+ "crab_utils",
  "criterion",
  "dashmap",
  "derive_more 1.0.0",
@@ -634,6 +650,7 @@ dependencies = [
  "crab_protocol",
  "crab_registry",
  "crab_text",
+ "crab_utils",
  "crab_world",
  "crossbeam",
  "dashmap",
@@ -2495,6 +2512,16 @@ checksum = "e672c95779cf947c5311f83787af4fa8fffd12fb27e4993211a84bdfd9610f9c"
 dependencies = [
  "once_cell",
  "valuable",
+]
+
+[[package]]
+name = "tracing-error"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b1581020d7a273442f5b45074a6a57d5757ad0a47dac0e9f0bd57b81936f3db"
+dependencies = [
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

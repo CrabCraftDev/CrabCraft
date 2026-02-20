@@ -1,6 +1,7 @@
+use crab_macros::DetailedFrom;
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, DetailedFrom)]
 pub enum ConfigError {
     #[error("Configuration file {configuration_file_path} wasn't found")]
     ConfigurationFileNotFound { configuration_file_path: String },
